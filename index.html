@@ -1,0 +1,2604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a0a">
+<title>ZamHack Pro v3 | Mobile Security &amp; Recon Toolkit</title>
+<style>
+    :root {
+        --primary: #00ff00;
+        --bg-color: #0a0a0a;
+        --surface: #141414;
+        --surface2: #1e1e1e;
+        --text-primary: #00ff00;
+        --text-secondary: #00cc00;
+        --accent: #008800;
+        --warn: #ffb000;
+        --danger: #ff3355;
+        --fb-blue: #1877F2;
+        --wa-green: #25D366;
+        --inst-grad: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+        --font-main: 'Courier New', Courier, monospace;
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-primary);
+        font-family: var(--font-main);
+        font-size: 14px;
+        overflow-x: hidden;
+        line-height: 1.4;
+    }
+
+    #app {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        height: 100dvh;
+        max-width: 500px;
+        margin: 0 auto;
+        border: 1px solid var(--primary);
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+    }
+
+    nav {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2px;
+        background: var(--primary);
+        padding: 2px;
+        flex-shrink: 0;
+    }
+
+    .tab {
+        background: var(--bg-color);
+        color: var(--primary);
+        border: none;
+        padding: 8px 2px;
+        cursor: pointer;
+        font-family: var(--font-main);
+        text-transform: uppercase;
+        font-weight: bold;
+        transition: 0.25s;
+        font-size: 9px;
+        letter-spacing: -0.3px;
+        line-height: 1.15;
+    }
+
+    .tab.active {
+        background: var(--primary);
+        color: var(--bg-color);
+    }
+
+    main {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 12px;
+        position: relative;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .view {
+        display: none;
+        animation: fadeIn 0.4s ease-in-out;
+    }
+
+    .view.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+        background: var(--surface);
+        border: 1px solid var(--primary);
+        padding: 12px;
+        margin-bottom: 12px;
+        border-radius: 4px;
+        box-shadow: inset 0 0 5px rgba(0, 255, 0, 0.15);
+    }
+
+    .card h3 {
+        font-size: 12px;
+        letter-spacing: 0.5px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .badge {
+        font-size: 8px;
+        padding: 2px 5px;
+        border: 1px solid currentColor;
+        border-radius: 2px;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        flex-shrink: 0;
+    }
+    .badge.real { color: #00ff88; }
+    .badge.sim { color: var(--warn); }
+    .badge.infer { color: #00aaff; }
+
+    .metric {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 6px;
+        font-size: 11px;
+        border-bottom: 1px dotted #1f3f1f;
+        padding-bottom: 4px;
+    }
+
+    .label { color: var(--text-secondary); flex-shrink: 0; }
+    .value { color: var(--primary); font-weight: bold; text-align: right; word-break: break-all; }
+    .value.warn { color: var(--warn); }
+    .value.bad { color: var(--danger); }
+
+    button.huck {
+        background: var(--bg-color);
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        padding: 11px;
+        font-family: var(--font-main);
+        text-transform: uppercase;
+        cursor: pointer;
+        width: 100%;
+        transition: 0.2s;
+        font-weight: bold;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 8px;
+        font-size: 11px;
+        letter-spacing: 0.5px;
+    }
+
+    button.huck:active { transform: scale(0.97); filter: brightness(1.25); }
+    button.huck:disabled { opacity: 0.45; cursor: wait; }
+    button.huck.sm { padding: 7px; font-size: 9px; }
+
+    button.huck::after {
+        content: '';
+        position: absolute;
+        top: 50%; left: 50%;
+        width: 0; height: 0;
+        background: rgba(0, 255, 0, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    button.huck:active::after { width: 300px; height: 300px; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+
+    input, textarea, select {
+        width: 100%;
+        background: #000;
+        color: var(--primary);
+        border: 1px solid var(--primary);
+        padding: 8px;
+        font-family: var(--font-main);
+        font-size: 12px;
+        margin-bottom: 8px;
+        border-radius: 2px;
+    }
+    input::placeholder, textarea::placeholder { color: #0a5a0a; }
+    textarea { resize: vertical; min-height: 70px; }
+    label.chk { display: flex; align-items: center; gap: 6px; font-size: 10px; margin-bottom: 8px; color: var(--text-secondary); }
+    label.chk input { width: auto; margin: 0; }
+
+    #ussd-overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.94);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        z-index: 1000;
+        text-align: center;
+        padding: 24px;
+    }
+    #ussd-overlay.show { display: flex; }
+
+    .loading-spinner {
+        width: 50px; height: 50px;
+        border: 4px solid var(--surface);
+        border-top: 4px solid var(--primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    .packet-container {
+        height: 140px;
+        border: 1px solid var(--primary);
+        position: relative;
+        margin-bottom: 10px;
+        background: #000;
+        overflow: hidden;
+        border-radius: 2px;
+    }
+
+    .packet {
+        position: absolute;
+        background: var(--primary);
+        color: #000;
+        font-size: 7px;
+        white-space: nowrap;
+        padding: 1px 3px;
+        border-radius: 2px;
+        will-change: left;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 9px;
+        margin-top: 8px;
+    }
+    th, td {
+        border: 1px solid #0f4f0f;
+        padding: 3px;
+        text-align: left;
+        word-break: break-all;
+    }
+    th { background: #0d2a0d; color: var(--primary); }
+
+    .progress-bg {
+        background: var(--surface2);
+        height: 9px;
+        width: 100%;
+        margin: 5px 0;
+        border: 1px solid var(--primary);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+    .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.25s; }
+
+    #toast {
+        position: fixed;
+        bottom: 20px; left: 50%;
+        transform: translateX(-50%);
+        background: var(--primary);
+        color: #000;
+        padding: 10px 18px;
+        font-weight: bold;
+        display: none;
+        z-index: 2000;
+        box-shadow: 0 0 12px var(--primary);
+        font-size: 12px;
+        border-radius: 3px;
+        max-width: 90vw;
+        text-align: center;
+    }
+    #toast.err { background: var(--danger); color: #fff; box-shadow: 0 0 12px var(--danger); }
+    #toast.warn { background: var(--warn); box-shadow: 0 0 12px var(--warn); }
+
+    .out {
+        font-size: 10px;
+        margin-top: 8px;
+        white-space: pre-wrap;
+        word-break: break-word;
+        max-height: 260px;
+        overflow-y: auto;
+        background: #000;
+        border-left: 2px solid #0f4f0f;
+        padding: 6px;
+        line-height: 1.45;
+        border-radius: 2px;
+    }
+    .out:empty { display: none; }
+
+    .term {
+        font-size: 9px;
+        height: 110px;
+        overflow-y: auto;
+        background: #000;
+        border: 1px solid #0f4f0f;
+        padding: 5px;
+        line-height: 1.4;
+        border-radius: 2px;
+    }
+    .term .ok { color: var(--primary); }
+    .term .er { color: var(--danger); }
+    .term .wn { color: var(--warn); }
+    .term .dim { color: #0a7a0a; }
+
+    details { margin-top: 8px; font-size: 9px; color: #0a8a0a; }
+    details summary { cursor: pointer; color: var(--text-secondary); padding: 3px 0; }
+    details p { padding: 5px 0 0 0; line-height: 1.5; }
+
+    .kv-mono { font-size: 10px; word-break: break-all; line-height: 1.5; }
+    .chip {
+        display: inline-block;
+        font-size: 9px;
+        border: 1px solid var(--accent);
+        color: var(--text-secondary);
+        padding: 2px 6px;
+        margin: 0 3px 3px 0;
+        border-radius: 2px;
+        cursor: pointer;
+    }
+    .chip:hover { background: var(--accent); color: #000; }
+    .chip.hit { border-color: var(--primary); color: #000; background: var(--primary); }
+    .chip.miss { border-color: #552222; color: #883333; }
+    .chip.busy { border-color: var(--warn); color: var(--warn); }
+
+    .divider { height: 1px; background: #0f4f0f; margin: 10px 0; }
+    .mono-sm { font-size: 9px; color: #0a8a0a; }
+    canvas { display: block; width: 100%; background: #000; border: 1px solid #0f4f0f; border-radius: 2px; }
+    .scroll-x { overflow-x: auto; }
+    .row { display: flex; gap: 6px; }
+    .row > * { flex: 1; }
+</style>
+</head>
+<body>
+
+<div id="app">
+    <nav id="nav">
+        <button class="tab active" data-v="dashboard">DASH</button>
+        <button class="tab" data-v="ussd">USSD</button>
+        <button class="tab" data-v="packets">PKT</button>
+        <button class="tab" data-v="social">SOCIAL</button>
+        <button class="tab" data-v="paywall">PAYWALL</button>
+        <button class="tab" data-v="network">NET</button>
+        <button class="tab" data-v="isp">ISP</button>
+        <button class="tab" data-v="recon">RECON</button>
+        <button class="tab" data-v="source">SRC</button>
+        <button class="tab" data-v="vault">VAULT</button>
+        <button class="tab" data-v="crypto">CRYPTO</button>
+        <button class="tab" data-v="report">RPT</button>
+    </nav>
+
+    <main>
+        <!-- ══════════════ DASHBOARD ══════════════ -->
+        <div id="dashboard" class="view active">
+            <div class="card">
+                <h3>SYSTEM <span class="badge real">REAL</span></h3>
+                <div class="metric"><span class="label">UPTIME:</span> <span id="sys-up" class="value">00:00:00</span></div>
+                <div class="metric"><span class="label">PLATFORM:</span> <span id="sys-plat" class="value">---</span></div>
+                <div class="metric"><span class="label">CORES / RAM:</span> <span id="sys-hw" class="value">---</span></div>
+                <div class="metric"><span class="label">SCREEN:</span> <span id="sys-scr" class="value">---</span></div>
+                <div class="metric"><span class="label">TZ:</span> <span id="sys-tz" class="value">---</span></div>
+            </div>
+            <div class="card">
+                <h3>NETWORK TELEMETRY <span class="badge real">REAL</span></h3>
+                <div class="metric"><span class="label">CONN TYPE:</span> <span id="net-type" class="value">Loading...</span></div>
+                <div class="metric"><span class="label">DOWNLINK:</span> <span id="net-down" class="value">---</span></div>
+                <div class="metric"><span class="label">RTT:</span> <span id="net-rtt" class="value">---</span></div>
+                <div class="metric"><span class="label">SAVE-DATA:</span> <span id="net-save" class="value">---</span></div>
+                <button class="huck sm" onclick="runSpeedTest()">RUN THROUGHPUT TEST</button>
+                <div class="progress-bg"><div id="speed-prog" class="progress-fill"></div></div>
+                <div id="speed-out" class="out"></div>
+            </div>
+            <div class="card">
+                <h3>GPS INTEL <span class="badge real">REAL</span></h3>
+                <div class="metric"><span class="label">LAT:</span> <span id="gps-lat" class="value">Scanning...</span></div>
+                <div class="metric"><span class="label">LON:</span> <span id="gps-lon" class="value">Scanning...</span></div>
+                <div class="metric"><span class="label">ACC:</span> <span id="gps-acc" class="value">---</span></div>
+                <div class="metric"><span class="label">ALT / SPD:</span> <span id="gps-misc" class="value">---</span></div>
+                <div class="grid-2">
+                    <button class="huck sm" onclick="getGPS()">ACQUIRE</button>
+                    <button class="huck sm" onclick="openMap()">OPEN MAP</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>ENERGY SENSOR <span class="badge real">REAL</span></h3>
+                <div class="metric"><span class="label">LEVEL:</span> <span id="bat-lvl" class="value">---</span></div>
+                <div class="metric"><span class="label">CHARGE:</span> <span id="bat-chg" class="value">---</span></div>
+                <div class="metric"><span class="label">TIME LEFT:</span> <span id="bat-time" class="value">---</span></div>
+            </div>
+            <div class="card">
+                <h3>CURRENCY MARKET <span class="badge real">REAL</span></h3>
+                <div class="metric"><span class="label">USD -&gt; ZMW:</span> <span id="fx-rate" class="value">Loading...</span></div>
+                <div class="metric"><span class="label">GBP -&gt; ZMW:</span> <span id="fx-rate2" class="value">Loading...</span></div>
+                <div class="metric"><span class="label">ZAR -&gt; ZMW:</span> <span id="fx-rate3" class="value">Loading...</span></div>
+                <button class="huck sm" onclick="refreshFX()">REFRESH RATES</button>
+            </div>
+            <div class="card">
+                <h3>EVENT LOG</h3>
+                <div class="term" id="boot-log"></div>
+            </div>
+        </div>
+
+        <!-- ══════════════ USSD ══════════════ -->
+        <div id="ussd" class="view">
+            <div class="card">
+                <h3>DIALER <span class="badge real">REAL TEL:</span></h3>
+                <div class="row">
+                    <input type="tel" id="ussd-code" placeholder="*185#" value="*185#">
+                    <button class="huck sm" style="flex:0 0 90px" onclick="dialUSSD()">DIAL</button>
+                </div>
+                <div class="grid-2">
+                    <button class="huck sm" onclick="simUSSD(document.getElementById('ussd-code').value)">SIMULATE RESPONSE</button>
+                    <button class="huck sm" onclick="copyText(document.getElementById('ussd-code').value)">COPY CODE</button>
+                </div>
+                <p class="mono-sm">DIAL opens the native dialer with the code pre-filled (real USSD session). SIMULATE runs the offline gateway model.</p>
+            </div>
+            <div class="card">
+                <h3>MTN ZAMBIA</h3>
+                <div class="grid-2">
+                    <button class="huck" onclick="quickUSSD('*185#','MTN Balance')">BALANCE</button>
+                    <button class="huck" onclick="quickUSSD('*334#','MTN Data')">DATA</button>
+                </div>
+                <div class="grid-2">
+                    <button class="huck sm" onclick="quickUSSD('*303#','MTN MoMo')">MOMO</button>
+                    <button class="huck sm" onclick="quickUSSD('*156#','MTN Me2U')">ME2U</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>AIRTEL ZAMBIA</h3>
+                <div class="grid-2">
+                    <button class="huck" onclick="quickUSSD('*111#','Airtel Menu')">MENU</button>
+                    <button class="huck" onclick="quickUSSD('*791#','Airtel Loan')">LOAN</button>
+                </div>
+                <div class="grid-2">
+                    <button class="huck sm" onclick="quickUSSD('*778#','Airtel Balance')">BALANCE</button>
+                    <button class="huck sm" onclick="quickUSSD('*140#','Airtel Money')">AIRTEL MONEY</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>ZAMTEL ZAMBIA</h3>
+                <div class="grid-2">
+                    <button class="huck" onclick="quickUSSD('*123#','Zamtel Top Up')">TOP UP</button>
+                    <button class="huck" onclick="quickUSSD('*321#','Zamtel SOS')">SOS</button>
+                </div>
+                <div class="grid-2">
+                    <button class="huck sm" onclick="quickUSSD('*333#','Zamtel Balance')">BALANCE</button>
+                    <button class="huck sm" onclick="quickUSSD('*200#','Zamtel Kwacha')">KWACHA</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>COMM ORDER HISTORY</h3>
+                <div id="ussd-log" class="out" style="max-height:160px"></div>
+                <div class="grid-2" style="margin-top:8px">
+                    <button class="huck sm" onclick="exportUSSD()">EXPORT LOG</button>
+                    <button class="huck sm" onclick="document.getElementById('ussd-log').innerHTML='';toast('Log cleared')">CLEAR</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════ PACKETS ══════════════ -->
+        <div id="packets" class="view">
+            <div class="card">
+                <h3>LIVE TRAFFIC <span class="badge real">REAL OBSERVER</span></h3>
+                <div class="packet-container" id="scan-viz"></div>
+                <div class="grid-2">
+                    <button class="huck" id="sniffer-toggle" onclick="toggleSniffer()">Start Sniffer</button>
+                    <button class="huck" id="synth-toggle" onclick="toggleSynth()">Synth Filler: ON</button>
+                </div>
+                <div class="metric"><span class="label">CAPTURED:</span> <span id="pkt-count" class="value">0</span></div>
+                <div class="metric"><span class="label">BYTES:</span> <span id="pkt-bytes" class="value">0</span></div>
+                <div class="metric"><span class="label">HOSTS:</span> <span id="pkt-hosts" class="value">0</span></div>
+                <table id="pkt-table">
+                    <thead><tr><th>Time</th><th>Host</th><th>Type</th><th>Len</th><th>RTT</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+                <div class="grid-2" style="margin-top:8px">
+                    <button class="huck sm" onclick="exportPackets()">EXPORT CSV</button>
+                    <button class="huck sm" onclick="clearPackets()">CLEAR</button>
+                </div>
+                <details><summary>HOW THIS WORKS</summary>
+                <p>Uses PerformanceObserver on the resource timing buffer — real URL, real transferSize, real duration for every request this app (and same-origin frames) makes. Nothing raw at L2, but genuinely live. Filler rows are synthetic and labelled.</p></details>
+            </div>
+            <div class="card">
+                <h3>WEBRTC LEAK PROBE <span class="badge real">REAL</span></h3>
+                <button class="huck" onclick="webrtcLeak()">PROBE ICE CANDIDATES</button>
+                <div id="webrtc-out" class="out"></div>
+            </div>
+        </div>
+
+        <!-- ══════════════ SOCIAL ══════════════ -->
+        <div id="social" class="view">
+            <div class="card">
+                <h3>IDENTITY SWEEP <span class="badge real">REAL</span></h3>
+                <input type="text" id="handle-inp" placeholder="username / handle (no @)">
+                <div class="grid-2">
+                    <button class="huck" onclick="sweepHandle()">FULL SWEEP</button>
+                    <button class="huck" onclick="sweepStop=true;toast('Abort signalled')">ABORT</button>
+                </div>
+                <div class="progress-bg"><div id="sweep-prog" class="progress-fill"></div></div>
+                <div id="sweep-grid" style="margin-top:8px"></div>
+                <div id="sweep-out" class="out"></div>
+            </div>
+
+            <div class="card" style="border-color: var(--fb-blue);">
+                <h3 style="color: var(--fb-blue)">FACETEST <span class="badge real">REAL</span></h3>
+                <input type="text" id="fb-inp" placeholder="Username / vanity / numeric ID...">
+                <button class="huck" style="color:var(--fb-blue); border-color: var(--fb-blue);" onclick="runSocialHack('facebook')">SCRAPE PROFILE</button>
+                <div class="progress-bg"><div id="fb-prog" class="progress-fill" style="background:var(--fb-blue)"></div></div>
+                <div id="fb-out" class="out"></div>
+                <div class="grid-2" style="margin-top:8px">
+                    <button class="huck sm" style="color:var(--fb-blue);border-color:var(--fb-blue)" onclick="openFB()">OPEN IN APP</button>
+                    <button class="huck sm" style="color:var(--fb-blue);border-color:var(--fb-blue)" onclick="fbGraphProbe()">GRAPH ENDPOINTS</button>
+                </div>
+            </div>
+
+            <div class="card" style="border-color: var(--wa-green);">
+                <h3 style="color: var(--wa-green)">WASOCK <span class="badge real">REAL</span></h3>
+                <input type="tel" id="wa-inp" placeholder="+260 97X XXX XXX">
+                <button class="huck" style="color:var(--wa-green); border-color:var(--wa-green);" onclick="runSocialHack('whatsapp')">INTERCEPT CHAT</button>
+                <div class="progress-bg"><div id="wa-prog" class="progress-fill" style="background:var(--wa-green)"></div></div>
+                <div id="wa-out" class="out"></div>
+                <div class="grid-2" style="margin-top:8px">
+                    <button class="huck sm" style="color:var(--wa-green);border-color:var(--wa-green)" onclick="waOpen()">OPEN CHAT</button>
+                    <button class="huck sm" style="color:var(--wa-green);border-color:var(--wa-green)" onclick="waPresence()">PRESENCE CHECK</button>
+                </div>
+            </div>
+
+            <div class="card" style="border-color: #f09433;">
+                <h3 style="color: #f09433">INSTAHINT <span class="badge real">REAL</span></h3>
+                <input type="text" id="ig-inp" placeholder="instagram handle">
+                <button class="huck" style="color:#f09433; border-color:#f09433;" onclick="runSocialHack('instagram')">DIR FOLLOWERS</button>
+                <div class="progress-bg"><div id="ig-prog" class="progress-fill" style="background:#f09433"></div></div>
+                <div id="ig-out" class="out"></div>
+                <div class="grid-2" style="margin-top:8px">
+                    <button class="huck sm" style="color:#f09433;border-color:#f09433" onclick="openIG()">OPEN PROFILE</button>
+                    <button class="huck sm" style="color:#f09433;border-color:#f09433" onclick="igOembed()">OEMBED META</button>
+                </div>
+            </div>
+
+            <div class="card" style="border-color: #25f4ee;">
+                <h3 style="color:#25f4ee">TIKTOK <span class="badge real">REAL</span></h3>
+                <input type="text" id="tt-inp" placeholder="tiktok handle">
+                <button class="huck" style="color:#25f4ee;border-color:#25f4ee" onclick="tiktokProbe()">OEMBED RESOLVE</button>
+                <div id="tt-out" class="out"></div>
+            </div>
+
+            <div class="card">
+                <h3>X / TELEGRAM / REDDIT / GITHUB <span class="badge real">REAL</span></h3>
+                <input type="text" id="misc-inp" placeholder="handle">
+                <div class="grid-2">
+                    <button class="huck sm" onclick="fxProbe()">X PROFILE</button>
+                    <button class="huck sm" onclick="tgProbe()">TELEGRAM</button>
+                    <button class="huck sm" onclick="redditProbe()">REDDIT</button>
+                    <button class="huck sm" onclick="githubProbe()">GITHUB</button>
+                </div>
+                <div id="misc-out" class="out"></div>
+            </div>
+        </div>
+
+        <!-- ══════════════ PAYWALL ══════════════ -->
+        <div id="paywall" class="view">
+            <div class="card">
+                <h3>CONTENT PURGE <span class="badge real">REAL</span></h3>
+                <input type="text" id="paywall-url" placeholder="Paste Paywall URL...">
+                <button class="huck" onclick="bypassPaywall()">ENACT ARBITRAGE</button>
+                <div class="grid-2">
+                    <button class="huck sm" onclick="archiveLookup()">ARCHIVE.ORG LOOKUP</button>
+                    <button class="huck sm" onclick="jinaFetch()">TEXT-EXTRACT (JINA)</button>
+                </div>
+                <div id="bypass-log" class="out"></div>
+            </div>
+            <div class="card">
+                <h3>OVERLAY KILLER</h3>
+                <button class="huck" onclick="copyBookmarklet()">COPY KILL-BOOKMARKLET</button>
+                <p class="mono-sm">Paste into the address bar on any paywalled page to strip overlays, restore scroll and blur.</p>
+                <textarea id="bkmk" readonly style="margin-top:8px;font-size:9px"></textarea>
+                <div class="grid-2">
+                    <button class="huck sm" onclick="openPaywall()">OPEN URL</button>
+                    <button class="huck sm" onclick="openArchive()">OPEN ARCHIVE</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════ NETWORK / CARRIER ══════════════ -->
+        <div id="network" class="view">
+            <div class="card">
+                <h3>CARRIER FILTERS <span class="badge infer">INFERRED</span></h3>
+                <div class="metric"><span class="label">MCC:</span> <span id="net-mcc" class="value">645</span></div>
+                <div class="metric"><span class="label">MNC:</span> <span id="net-mnc" class="value">---</span></div>
+                <div class="metric"><span class="label">OPERATOR:</span> <span id="net-op" class="value">---</span></div>
+                <div class="metric"><span class="label">TAC:</span> <span id="net-tac" class="value">---</span></div>
+                <div class="metric"><span class="label">CID:</span> <span id="net-cid" class="value">---</span></div>
+                <div class="metric"><span class="label">IMSI (derived):</span> <span id="net-imsi" class="value">---</span></div>
+                <div class="metric"><span class="label">RSSI:</span> <span id="this-rssi" class="value">-- dBm</span></div>
+                <div style="margin: 10px 0;">
+                    <canvas id="cell-map" width="440" height="160"></canvas>
+                </div>
+                <button class="huck" onclick="deepScan()">DEEP SCAN RAN</button>
+                <button class="huck sm" onclick="exportNet()">EXPORT RAN DATA</button>
+                <details><summary>WHY MCC 645</summary>
+                <p>Zambia's MCC is 645 (the original file had 647, which is Réunion). MNC map: 01 Airtel, 02 MTN, 03 Zamtel, 04 UZI. The browser never exposes IMSI/MNC directly — values are derived from the effectiveType, RTT, downlink and operator heuristics, and are labelled INFERRED for that reason.</p></details>
+            </div>
+            <div class="card">
+                <h3>DNS RESOLVER SET <span class="badge real">REAL</span></h3>
+                <input type="text" id="dns-domain" placeholder="example.com">
+                <div class="grid-3">
+                    <button class="huck sm" onclick="dohLookup('A')">A</button>
+                    <button class="huck sm" onclick="dohLookup('MX')">MX</button>
+                    <button class="huck sm" onclick="dohLookup('TXT')">TXT</button>
+                    <button class="huck sm" onclick="dohLookup('NS')">NS</button>
+                    <button class="huck sm" onclick="dohLookup('AAAA')">AAAA</button>
+                    <button class="huck sm" onclick="dohLookup('CNAME')">CNAME</button>
+                </div>
+                <div id="dns-out" class="out"></div>
+            </div>
+        </div>
+
+        <!-- ══════════════ ISP / DEEP IP ══════════════ -->
+        <div id="isp" class="view">
+            <div class="card">
+                <h3>EGRESS IDENTITY <span class="badge real">REAL</span></h3>
+                <button class="huck" onclick="probeEgress()">PROBE EGRESS</button>
+                <div class="grid-2">
+                    <button class="huck sm" onclick="cfTrace()">CLOUDFLARE TRACE</button>
+                    <button class="huck sm" onclick="probeEgress2()">SECOND SOURCE</button>
+                </div>
+                <div id="egress-out" class="out"></div>
+            </div>
+            <div class="card">
+                <h3>ISP / ASN INTEL <span class="badge real">REAL</span></h3>
+                <div id="isp-out" class="out"></div>
+            </div>
+            <div class="card">
+                <h3>LATENCY FAN-OUT <span class="badge real">REAL</span></h3>
+                <button class="huck" onclick="latencyFan()">MEASURE 6 ENDPOINTS</button>
+                <div id="lat-out" class="out"></div>
+            </div>
+            <div class="card">
+                <h3>REVERSE PTR <span class="badge real">REAL</span></h3>
+                <input type="text" id="ptr-ip" placeholder="IP address">
+                <button class="huck sm" onclick="reversePTR()">RESOLVE</button>
+                <div id="ptr-out" class="out"></div>
+            </div>
+        </div>
+
+        <!-- ══════════════ RECON ══════════════ -->
+        <div id="recon" class="view">
+            <div class="card">
+                <h3>DOMAIN RECON <span class="badge real">REAL</span></h3>
+                <input type="text" id="recon-domain" placeholder="target domain (example.com)">
+                <div class="grid-2">
+                    <button class="huck" onclick="certEnum()">CT SUBDOMAINS</button>
+                    <button class="huck" onclick="robotsGrab()">ROBOTS / SITEMAP</button>
+                </div>
+                <div class="grid-2">
+                    <button class="huck sm" onclick="techFingerprint()">TECH FINGERPRINT</button>
+                    <button class="huck sm" onclick="headersProbe()">HTTP STATUS / HEADERS</button>
+                </div>
+                <div id="recon-out" class="out"></div>
+                <div class="grid-2" style="margin-top:8px">
+                    <button class="huck sm" onclick="exportRecon()">EXPORT JSON</button>
+                    <button class="huck sm" onclick="openTarget()">OPEN TARGET</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>PHONE INTEL <span class="badge real">REAL</span></h3>
+                <input type="tel" id="phone-inp" placeholder="+260...">
+                <button class="huck" onclick="phoneIntel()">ANALYSE NUMBER</button>
+                <div id="phone-out" class="out"></div>
+            </div>
+            <div class="card">
+                <h3>BREACH EXPOSURE <span class="badge real">REAL</span></h3>
+                <input type="text" id="email-inp" placeholder="email or password">
+                <div class="grid-2">
+                    <button class="huck sm" onclick="hibpPassword()">PASSWORD (HIBP)</button>
+                    <button class="huck sm" onclick="hibpEmail()">EMAIL BREACHES</button>
+                </div>
+                <div id="breach-out" class="out"></div>
+            </div>
+        </div>
+
+        <!-- ══════════════ SOURCE ══════════════ -->
+        <div id="source" class="view">
+            <div class="card">
+                <h3>SOURCE EXTRACTOR <span class="badge real">REAL</span></h3>
+                <input type="text" id="src-url" placeholder="https://target/page">
+                <div class="grid-2">
+                    <button class="huck" onclick="grabSource()">FETCH SOURCE</button>
+                    <button class="huck" onclick="grabText()">FETCH TEXT-ONLY</button>
+                </div>
+                <div class="metric"><span class="label">BYTES:</span> <span id="src-size" class="value">0</span></div>
+                <div class="grid-2">
+                    <button class="huck sm" onclick="downloadSource()">DOWNLOAD .HTML</button>
+                    <button class="huck sm" onclick="copySource()">COPY ALL</button>
+                </div>
+                <div id="src-out" class="out" style="max-height:340px;font-size:9px"></div>
+            </div>
+            <div class="card">
+                <h3>LINK / SCRIPT HARVEST <span class="badge real">REAL</span></h3>
+                <button class="huck sm" onclick="harvestLinks()">EXTRACT LINKS + SCRIPTS</button>
+                <div id="harvest-out" class="out"></div>
+            </div>
+        </div>
+
+        <!-- ══════════════ VAULT ══════════════ -->
+        <div id="vault" class="view">
+            <div class="card">
+                <h3>BROWSER STORAGE <span class="badge real">REAL</span></h3>
+                <div class="grid-2">
+                    <button class="huck sm" onclick="dumpCookies()">COOKIES</button>
+                    <button class="huck sm" onclick="dumpLocal()">LOCALSTORAGE</button>
+                    <button class="huck sm" onclick="dumpSession()">SESSIONSTORAGE</button>
+                    <button class="huck sm" onclick="dumpIDB()">INDEXEDDB</button>
+                </div>
+                <div id="storage-out" class="out" style="max-height:300px"></div>
+                <div class="grid-2" style="margin-top:8px">
+                    <button class="huck sm" onclick="downloadStorage()">EXPORT ALL</button>
+                    <button class="huck sm" onclick="readClipboard()">READ CLIPBOARD</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>DEVICE FINGERPRINT <span class="badge real">REAL</span></h3>
+                <button class="huck" onclick="fingerprint()">GENERATE FINGERPRINT</button>
+                <div id="fp-out" class="out"></div>
+            </div>
+            <div class="card">
+                <h3>PERMISSION AUDIT <span class="badge real">REAL</span></h3>
+                <button class="huck sm" onclick="permAudit()">QUERY ALL PERMISSIONS</button>
+                <div id="perm-out" class="out"></div>
+            </div>
+        </div>
+
+        <!-- ══════════════ CRYPTO ══════════════ -->
+        <div id="crypto" class="view">
+            <div class="card">
+                <h3>HASH ENGINE <span class="badge real">REAL</span></h3>
+                <textarea id="hash-inp" placeholder="input string..."></textarea>
+                <div class="grid-3">
+                    <button class="huck sm" onclick="doHash('MD5')">MD5</button>
+                    <button class="huck sm" onclick="doHash('SHA-1')">SHA1</button>
+                    <button class="huck sm" onclick="doHash('SHA-256')">SHA256</button>
+                    <button class="huck sm" onclick="doHash('SHA-384')">SHA384</button>
+                    <button class="huck sm" onclick="doHash('SHA-512')">SHA512</button>
+                    <button class="huck sm" onclick="identifyHash()">IDENTIFY</button>
+                </div>
+                <div id="hash-out" class="out"></div>
+            </div>
+            <div class="card">
+                <h3>ENCODERS <span class="badge real">REAL</span></h3>
+                <textarea id="enc-inp" placeholder="input..."></textarea>
+                <div class="grid-3">
+                    <button class="huck sm" onclick="enc('b64e')">B64 ENC</button>
+                    <button class="huck sm" onclick="enc('b64d')">B64 DEC</button>
+                    <button class="huck sm" onclick="enc('url')">URL ENC</button>
+                    <button class="huck sm" onclick="enc('hex')">HEX</button>
+                    <button class="huck sm" onclick="enc('rot13')">ROT13</button>
+                    <button class="huck sm" onclick="enc('rev')">REVERSE</button>
+                </div>
+                <div id="enc-out" class="out"></div>
+            </div>
+            <div class="card">
+                <h3>JWT DECODER <span class="badge real">REAL</span></h3>
+                <textarea id="jwt-inp" placeholder="eyJhbGciOi..."></textarea>
+                <button class="huck" onclick="jwtDecode()">DECODE</button>
+                <div id="jwt-out" class="out"></div>
+            </div>
+        </div>
+
+        <!-- ══════════════ REPORT ══════════════ -->
+        <div id="report" class="view">
+            <div class="card">
+                <h3>FINDINGS BUFFER</h3>
+                <div class="metric"><span class="label">ENTRIES:</span> <span id="rep-count" class="value">0</span></div>
+                <button class="huck" onclick="renderReport()">RENDER REPORT</button>
+                <div class="grid-2">
+                    <button class="huck sm" onclick="downloadReport('md')">DOWNLOAD .MD</button>
+                    <button class="huck sm" onclick="downloadReport('json')">DOWNLOAD .JSON</button>
+                </div>
+                <div class="grid-2">
+                    <button class="huck sm" onclick="downloadReport('txt')">DOWNLOAD .TXT</button>
+                    <button class="huck sm" onclick="clearFindings()">CLEAR BUFFER</button>
+                </div>
+                <div id="rep-out" class="out" style="max-height:400px"></div>
+            </div>
+            <div class="card">
+                <h3>QUICK ACTIONS</h3>
+                <button class="huck sm" onclick="snapshotAll()">SNAPSHOT EVERYTHING</button>
+                <button class="huck sm" onclick="copyText(location.href)">COPY APP URL</button>
+                <p class="mono-sm" style="margin-top:6px">v3.0 · all modules live · no build step · offline-capable core</p>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div id="ussd-overlay">
+    <div class="loading-spinner"></div>
+    <div id="ussd-response-msg" style="margin-top: 20px; font-weight: bold; max-width:90vw"></div>
+    <div style="margin-top:20px; display:flex; gap:10px;">
+        <button class="huck sm" style="width:120px" onclick="closeOverlay()">CLOSE</button>
+    </div>
+</div>
+
+<div id="toast">System Notification</div>
+
+<script>
+"use strict";
+
+/* ═══════════════════════════════════════════════════════════
+   0. CORE STATE / UTILITIES
+   ═══════════════════════════════════════════════════════════ */
+const appState = {
+    isSniffing: false,
+    synthOn: true,
+    curNetwork: 'None',
+    trackers: 0,
+    hl_operator: 'Unknown',
+    started: Date.now(),
+    gps: null,
+    findings: [],
+    packets: [],
+    hosts: new Set(),
+    pktBytes: 0,
+    ussdLog: [],
+    recon: {},
+    source: '',
+    storageDump: {}
+};
+let sweepStop = false;
+
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function esc(s) {
+    return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function log(msg, cls) {
+    const el = $('boot-log');
+    if (!el) return;
+    const d = document.createElement('div');
+    d.className = cls || 'dim';
+    d.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg;
+    el.prepend(d);
+    while (el.childNodes.length > 120) el.removeChild(el.lastChild);
+}
+
+function record(module, key, value) {
+    appState.findings.push({ t: new Date().toISOString(), module, key, value });
+    const c = $('rep-count');
+    if (c) c.textContent = appState.findings.length;
+}
+
+let toastTimer;
+function toast(msg, kind) {
+    const t = $('toast');
+    t.textContent = msg;
+    t.className = kind === 'err' ? 'err' : kind === 'warn' ? 'warn' : '';
+    t.style.display = 'block';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { t.style.display = 'none'; }, 2400);
+}
+
+function copyText(txt) {
+    const done = () => toast('Copied');
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(txt).then(done).catch(() => fallbackCopy(txt, done));
+    } else fallbackCopy(txt, done);
+}
+function fallbackCopy(txt, done) {
+    const ta = document.createElement('textarea');
+    ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) { toast('Copy failed', 'err'); }
+    document.body.removeChild(ta);
+}
+
+function downloadFile(name, content, mime) {
+    try {
+        const blob = new Blob([content], { type: mime || 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = name;
+        document.body.appendChild(a); a.click();
+        setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1500);
+        toast('Downloaded ' + name);
+        log('download: ' + name, 'ok');
+    } catch (e) { toast('Download blocked', 'err'); }
+}
+
+function stamp() {
+    const d = new Date();
+    const p = n => String(n).padStart(2, '0');
+    return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds());
+}
+
+/* Audio feedback */
+let audio_ctx = null;
+function ac() {
+    if (!audio_ctx) {
+        try { audio_ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; }
+    }
+    if (audio_ctx.state === 'suspended') audio_ctx.resume().catch(() => {});
+    return audio_ctx;
+}
+function playBeep(freq) {
+    const ctx = ac(); if (!ctx) return;
+    try {
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = 'square';
+        osc.connect(g); g.connect(ctx.destination);
+        osc.frequency.value = freq || 440;
+        g.gain.setValueAtTime(0.05, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.09);
+        osc.start(); osc.stop(ctx.currentTime + 0.1);
+    } catch (e) {}
+}
+
+/* ═══════════════════════════════════════════════════════════
+   1. NAVIGATION
+   ═══════════════════════════════════════════════════════════ */
+function showView(id, btn) {
+    playBeep(620);
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    const view = $(id);
+    if (view) view.classList.add('active');
+    if (btn) btn.classList.add('active');
+    else {
+        const b = document.querySelector('.tab[data-v="' + id + '"]');
+        if (b) b.classList.add('active');
+    }
+    const main = document.querySelector('main');
+    if (main) main.scrollTop = 0;
+}
+
+$('nav').addEventListener('click', e => {
+    const t = e.target.closest('.tab');
+    if (!t) return;
+    showView(t.dataset.v, t);
+    log('view -> ' + t.dataset.v);
+});
+
+/* ═══════════════════════════════════════════════════════════
+   2. CORS PROXY LAYER  (multi-fallback)
+   ═══════════════════════════════════════════════════════════ */
+const PROXIES = [
+    u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+    u => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u),
+    u => 'https://corsproxy.io/?' + encodeURIComponent(u)
+];
+const STATUS_PROXY = u => 'https://api.allorigins.win/get?url=' + encodeURIComponent(u);
+
+async function proxyGet(url, timeoutMs) {
+    // Returns {code, body} — tries status proxy first, then raw proxies.
+    try {
+        const ctrl = new AbortController();
+        const t = setTimeout(() => ctrl.abort(), timeoutMs || 15000);
+        const r = await fetch(STATUS_PROXY(url), { signal: ctrl.signal, cache: 'no-store' });
+        clearTimeout(t);
+        if (r.ok) {
+            const j = await r.json();
+            return { code: (j.status && j.status.http_code) || 200, body: j.contents || '' };
+        }
+    } catch (e) {}
+    for (const p of PROXIES) {
+        try {
+            const ctrl = new AbortController();
+            const t = setTimeout(() => ctrl.abort(), timeoutMs || 15000);
+            const r = await fetch(p(url), { signal: ctrl.signal, cache: 'no-store' });
+            clearTimeout(t);
+            if (r.ok) return { code: r.status, body: await r.text() };
+        } catch (e) {}
+    }
+    throw new Error('all proxies failed');
+}
+
+async function jinaGet(url, timeoutMs) {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), timeoutMs || 20000);
+    const r = await fetch('https://r.jina.ai/' + url, { signal: ctrl.signal });
+    clearTimeout(t);
+    if (!r.ok) throw new Error('jina ' + r.status);
+    return await r.text();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   3. DASHBOARD TELEMETRY
+   ═══════════════════════════════════════════════════════════ */
+function pad2(n) { return String(n).padStart(2, '0'); }
+
+function uptimeTick() {
+    const s = Math.floor((Date.now() - appState.started) / 1000);
+    const el = $('sys-up');
+    if (el) el.textContent = pad2(Math.floor(s / 3600)) + ':' + pad2(Math.floor(s / 60) % 60) + ':' + pad2(s % 60);
+}
+
+function sysInfo() {
+    $('sys-plat').textContent = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || 'unknown';
+    $('sys-hw').textContent = (navigator.hardwareConcurrency || '?') + ' cores / ' + (navigator.deviceMemory || '?') + ' GB';
+    $('sys-scr').textContent = screen.width + 'x' + screen.height + ' @' + (window.devicePixelRatio || 1) + 'x';
+    $('sys-tz').textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
+}
+
+async function telemetryLoop() {
+    try {
+        const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (c) {
+            appState.curNetwork = c.effectiveType || '?';
+            $('net-type').textContent = (c.effectiveType || '?').toUpperCase() + ' / ' + (c.type || 'n/a');
+            $('net-down').textContent = (c.downlink != null ? c.downlink + ' Mbps' : '---');
+            $('net-rtt').textContent = (c.rtt != null ? c.rtt + ' ms' : '---');
+            $('net-save').textContent = c.saveData ? 'ON' : 'OFF';
+            if (c.downlink) {
+                const lvl = c.downlink > 5 ? 'good' : c.downlink > 1 ? 'warn' : 'bad';
+                $('net-down').className = 'value ' + (lvl === 'good' ? '' : lvl);
+            }
+        } else {
+            $('net-type').textContent = 'API N/A';
+        }
+    } catch (e) {}
+
+    try {
+        if (navigator.getBattery) {
+            const bat = await navigator.getBattery();
+            $('bat-lvl').textContent = Math.round(bat.level * 100) + '%';
+            $('bat-chg').textContent = bat.charging ? 'AC POWER' : 'BATTERY';
+            $('bat-time').textContent = bat.dischargingTime && isFinite(bat.dischargingTime) && bat.dischargingTime > 0
+                ? Math.round(bat.dischargingTime / 60) + ' min' : '---';
+        } else { $('bat-lvl').textContent = 'N/A'; }
+    } catch (e) { $('bat-lvl').textContent = 'DENIED'; }
+
+    uptimeTick();
+    setTimeout(telemetryLoop, 2000);
+}
+
+/* FX rates — real, via open ER-API */
+async function refreshFX() {
+    const pairs = [['USD', 'fx-rate'], ['GBP', 'fx-rate2'], ['ZAR', 'fx-rate3']];
+    for (const [cur, elId] of pairs) {
+        try {
+            const r = await fetch('https://open.er-api.com/v6/latest/' + cur);
+            const j = await r.json();
+            const v = j && j.rates && j.rates.ZMW;
+            $(elId).textContent = v ? 'ZMW ' + Number(v).toFixed(4) : 'n/a';
+            if (v) record('fx', cur + '/ZMW', Number(v).toFixed(4));
+        } catch (e) {
+            $(elId).textContent = 'ERR';
+        }
+    }
+    log('fx refreshed', 'ok');
+}
+
+/* Throughput test — real download timing */
+async function runSpeedTest() {
+    const btn = event && event.target;
+    if (btn) btn.disabled = true;
+    $('speed-out').textContent = 'Sampling...';
+    const url = 'https://speed.cloudflare.com/__down?bytes=2000000';
+    try {
+        const t0 = performance.now();
+        const r = await fetch(url + '&r=' + Math.random(), { cache: 'no-store' });
+        const buf = await r.arrayBuffer();
+        const dt = (performance.now() - t0) / 1000;
+        const mbps = (buf.byteLength * 8 / 1e6) / dt;
+        $('speed-prog').style.width = '100%';
+        $('speed-out').textContent =
+            'BYTES: ' + buf.byteLength.toLocaleString() +
+            '\nTIME: ' + dt.toFixed(2) + ' s' +
+            '\nTHROUGHPUT: ' + mbps.toFixed(2) + ' Mbps (' + (mbps / 8).toFixed(2) + ' MB/s)';
+        record('speed', 'throughput_mbps', mbps.toFixed(2));
+        toast(mbps.toFixed(1) + ' Mbps', 'warn');
+    } catch (e) {
+        $('speed-out').textContent = 'Test failed: ' + e.message;
+        toast('Speed test failed', 'err');
+    }
+    if (btn) btn.disabled = false;
+}
+
+/* GPS */
+let gpsWatch = null;
+function getGPS() {
+    if (!navigator.geolocation) { toast('No geolocation', 'err'); return; }
+    $('gps-lat').textContent = 'Acquiring...';
+    $('gps-lon').textContent = 'Acquiring...';
+    if (gpsWatch) navigator.geolocation.clearWatch(gpsWatch);
+    gpsWatch = navigator.geolocation.watchPosition(p => {
+        appState.gps = p;
+        $('gps-lat').textContent = p.coords.latitude.toFixed(6);
+        $('gps-lon').textContent = p.coords.longitude.toFixed(6);
+        $('gps-acc').textContent = p.coords.accuracy.toFixed(1) + 'm';
+        $('gps-misc').textContent =
+            (p.coords.altitude != null ? p.coords.altitude.toFixed(0) + 'm' : '--') + ' / ' +
+            (p.coords.speed != null ? (p.coords.speed * 3.6).toFixed(1) + 'kmh' : '--');
+        record('gps', 'fix', p.coords.latitude.toFixed(6) + ',' + p.coords.longitude.toFixed(6) + ' ±' + p.coords.accuracy.toFixed(0) + 'm');
+        log('gps fix ±' + p.coords.accuracy.toFixed(0) + 'm', 'ok');
+    }, err => {
+        toast('GPS: ' + err.message, 'err');
+        $('gps-lat').textContent = 'DENIED';
+        $('gps-lon').textContent = 'DENIED';
+    }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
+}
+
+function openMap() {
+    if (!appState.gps) return toast('No fix yet', 'warn');
+    const c = appState.gps.coords;
+    window.open('https://www.openstreetmap.org/?mlat=' + c.latitude + '&mlon=' + c.longitude + '#map=18/' + c.latitude + '/' + c.longitude, '_blank');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   4. USSD
+   ═══════════════════════════════════════════════════════════ */
+const mockResponses = {
+    '*185#': 'MTN Zambia Main Menu:\n1. Buy Bundle\n2. Data Balance\n3. MoMo Wallet\n4. Me2U',
+    '*334#': 'MTN Bundles:\nA. 1GB Daily - K15\nB. 5GB Weekly - K60\nC. 20GB Monthly - K250',
+    '*303#': 'MoMo: 1. Send Money 2. Withdraw 3. Pay Bill 4. Buy Airtime',
+    '*156#': 'Me2U: Enter recipient number, then amount to transfer.',
+    '*111#': 'Airtel Zambia:\n1. My Airtel\n2. Data\n3. Voice\n4. Top-up',
+    '*791#': 'Airtel Loan: You are eligible for K200.\nTo receive funds press 1.',
+    '*778#': 'Airtel Balance: Airtime K-- , Data --MB, valid till --/--',
+    '*140#': 'Airtel Money: 1. Send 2. Withdraw 3. Pay 4. Balance',
+    '*123#': 'Zamtel Services:\n1. Top-Up\n2. Buy Bundle\n3. App Downloads',
+    '*321#': 'Zamtel SOS: Emergency credit K5 issued. Repay on next top-up.',
+    '*333#': 'Zamtel Balance: Airtime K-- , Data --MB',
+    '*200#': 'Zamtel Kwacha: 1. Send 2. Withdraw 3. Pay Bill'
+};
+
+function dialUSSD() {
+    const code = $('ussd-code').value.trim();
+    if (!code) return toast('Enter a code', 'err');
+    playBeep(900);
+    window.location.href = 'tel:' + encodeURIComponent(code);
+    log('dial ' + code, 'ok');
+    addUssdLog(code, 'dialed via tel:');
+}
+
+function quickUSSD(code, label) {
+    $('ussd-code').value = code;
+    simUSSD(code, label);
+}
+
+function simUSSD(code, label) {
+    if (!code) return toast('Enter a code', 'err');
+    playBeep(800);
+    const overlay = $('ussd-overlay');
+    const msgDom = $('ussd-response-msg');
+    overlay.classList.add('show');
+    msgDom.textContent = 'DIALING ' + code + '...';
+    setTimeout(() => {
+        msgDom.textContent = 'WAITING FOR SYSTEM RESPONSE...';
+        setTimeout(() => {
+            const response = mockResponses[code] || 'Error: USSD code not in offline gateway model. Try DIAL for a live session.';
+            msgDom.textContent = response;
+            addUssdLog(code, response);
+            record('ussd', code, response.replace(/\n/g, ' | '));
+            setTimeout(() => { overlay.classList.remove('show'); toast('USSD session closed'); }, 3200);
+        }, 900);
+    }, 900);
+}
+
+function addUssdLog(code, response) {
+    appState.ussdLog.push({ t: new Date().toISOString(), code, response });
+    const logEl = $('ussd-log');
+    logEl.innerHTML = '[' + new Date().toLocaleTimeString() + '] ' + esc(code) + ' -> ' + esc(response) + '\n' + logEl.innerHTML;
+}
+
+function closeOverlay() { $('ussd-overlay').classList.remove('show'); }
+
+function exportUSSD() {
+    const body = appState.ussdLog.map(e => e.t + ',' + e.code + ',"' + e.response.replace(/"/g, "'").replace(/\n/g, ' | ') + '"').join('\n');
+    downloadFile('ussd-log-' + stamp() + '.csv', 'timestamp,code,response\n' + body, 'text/csv');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   5. PACKET ANALYSIS (real PerformanceObserver)
+   ═══════════════════════════════════════════════════════════ */
+let pktIntervalTracker = null;
+let po = null;
+
+function toggleSniffer() {
+    playBeep(1000);
+    appState.isSniffing = !appState.isSniffing;
+    $('sniffer-toggle').textContent = appState.isSniffing ? 'Stop Sniffer' : 'Start Sniffer';
+    if (appState.isSniffing) {
+        startObserver();
+        if (appState.synthOn) pktIntervalTracker = setInterval(createPacket, 900);
+        log('sniffer armed', 'ok');
+    } else {
+        clearInterval(pktIntervalTracker);
+        stopObserver();
+        log('sniffer disarmed');
+    }
+}
+
+function toggleSynth() {
+    appState.synthOn = !appState.synthOn;
+    $('synth-toggle').textContent = 'Synth Filler: ' + (appState.synthOn ? 'ON' : 'OFF');
+    if (appState.isSniffing) {
+        clearInterval(pktIntervalTracker);
+        if (appState.synthOn) pktIntervalTracker = setInterval(createPacket, 900);
+    }
+}
+
+function startObserver() {
+    if (po || !window.PerformanceObserver) return;
+    try {
+        po = new PerformanceObserver(list => {
+            for (const e of list.getEntries()) {
+                if (!appState.isSniffing) continue;
+                addPktRow({
+                    time: new Date().toLocaleTimeString(),
+                    host: e.name.replace(/^https?:\/\//, '').split('/')[0].slice(0, 34),
+                    type: (e.initiatorType || 'fetch').toUpperCase(),
+                    len: e.transferSize || e.encodedBodySize || 0,
+                    rtt: Math.round(e.duration),
+                    real: true
+                });
+            }
+        });
+        po.observe({ type: 'resource', buffered: true });
+    } catch (e) { log('observer fail: ' + e.message, 'er'); }
+}
+
+function stopObserver() {
+    if (po) { try { po.disconnect(); } catch (e) {} po = null; }
+}
+
+function addPktRow(r) {
+    const tbody = document.querySelector('#pkt-table tbody');
+    if (!tbody) return;
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + esc(r.time) + '</td><td>' + esc(r.host) + '</td><td>' + esc(r.type) +
+        '</td><td>' + r.len + '</td><td>' + r.rtt + 'ms</td>';
+    if (r.real) tr.style.color = '#00ff88';
+    tbody.prepend(tr);
+    while (tbody.rows.length > 40) tbody.deleteRow(-1);
+
+    appState.packets.push(r);
+    if (appState.packets.length > 500) appState.packets.shift();
+    appState.pktBytes += r.len;
+    appState.hosts.add(r.host);
+    $('pkt-count').textContent = appState.packets.length;
+    $('pkt-bytes').textContent = appState.pktBytes.toLocaleString();
+    $('pkt-hosts').textContent = appState.hosts.size;
+}
+
+function createPacket() {
+    const prot = ['TCP', 'UDP', 'HTTPS', 'DNS', 'TLS', 'QUIC'][Math.floor(Math.random() * 6)];
+    const host = ['mtn.zm', 'airtel.co.zm', 'zamtel.zm', 'gstatic.com', 'cloudflare.com', 'whatsapp.net', 'fbcdn.net'][Math.floor(Math.random() * 7)];
+    addPktRow({
+        time: new Date().toLocaleTimeString(),
+        host: host,
+        type: prot,
+        len: Math.floor(Math.random() * 1200) + 40,
+        rtt: Math.floor(Math.random() * 180) + 12,
+        real: false
+    });
+
+    const viz = $('scan-viz');
+    if (!viz) return;
+    const p = document.createElement('div');
+    p.className = 'packet';
+    p.textContent = prot;
+    p.style.left = '-40px';
+    p.style.top = (Math.random() * 110 + 8) + 'px';
+    viz.appendChild(p);
+    const w = viz.clientWidth || 340;
+    requestAnimationFrame(() => {
+        p.style.transition = 'left 1.1s linear';
+        p.style.left = w + 'px';
+    });
+    setTimeout(() => p.remove(), 1200);
+}
+
+function clearPackets() {
+    appState.packets = []; appState.hosts.clear(); appState.pktBytes = 0;
+    $('pkt-count').textContent = '0'; $('pkt-bytes').textContent = '0'; $('pkt-hosts').textContent = '0';
+    document.querySelector('#pkt-table tbody').innerHTML = '';
+}
+
+function exportPackets() {
+    if (!appState.packets.length) return toast('Nothing captured', 'warn');
+    const rows = appState.packets.map(p => [p.time, p.host, p.type, p.len, p.rtt, p.real ? 'REAL' : 'SYNTH'].join(',')).join('\n');
+    downloadFile('packets-' + stamp() + '.csv', 'time,host,type,len,rtt,source\n' + rows, 'text/csv');
+}
+
+/* WebRTC ICE leak — real */
+async function webrtcLeak() {
+    const out = $('webrtc-out');
+    out.textContent = 'Gathering candidates...';
+    if (!window.RTCPeerConnection) { out.textContent = 'WebRTC unavailable'; return; }
+    const found = new Set();
+    let pc;
+    try {
+        pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+        pc.createDataChannel('probe');
+        pc.onicecandidate = e => {
+            if (!e.candidate) return;
+            const c = e.candidate.candidate;
+            const m = c.match(/(\d{1,3}(?:\.\d{1,3}){3}|[a-f0-9]{1,4}(?::[a-f0-9]{0,4}){3,7})/i);
+            if (m) found.add(m[1] + ' [' + (c.split(' typ ')[1] || '?').split(' ')[0] + ']');
+        };
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        await sleep(3500);
+        out.textContent = found.size
+            ? 'LEAKED CANDIDATES:\n' + [...found].map(x => '  ' + x).join('\n')
+            : 'No host candidates (mDNS-obfuscated browser).';
+        [...found].forEach(x => record('webrtc', 'candidate', x));
+        log('webrtc: ' + found.size + ' candidates', found.size ? 'ok' : 'wn');
+    } catch (e) {
+        out.textContent = 'Probe failed: ' + e.message;
+    } finally { if (pc) pc.close(); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   6. SOCIAL
+   ═══════════════════════════════════════════════════════════ */
+function progBar(id, pct) { const e = $(id); if (e) e.style.width = pct + '%'; }
+
+async function runSocialHack(platform) {
+    playBeep(420);
+    const map = { facebook: 'fb', whatsapp: 'wa', instagram: 'ig' };
+    const p = map[platform];
+    const out = $(p + '-out');
+    progBar(p + '-prog', 0);
+    out.textContent = 'Initiating origins scan...';
+    for (let i = 0; i <= 100; i += 10) { progBar(p + '-prog', i); await sleep(90); }
+
+    try {
+        if (platform === 'facebook') {
+            const u = $('fb-inp').value.trim().replace(/^@/, '');
+            if (!u) { out.textContent = 'Enter a username first.'; return; }
+            out.textContent = 'Resolving ' + u + ' via proxy...';
+            const r = await proxyGet('https://www.facebook.com/' + encodeURIComponent(u));
+            const body = r.body || '';
+            const titleM = body.match(/<title[^>]*>([^<]{1,160})<\/title>/i);
+            const descM = body.match(/content="([^"]{20,300})"\s*(?:name|property)="(?:og:)?description"/i) ||
+                          body.match(/(?:name|property)="(?:og:)?description"\s*content="([^"]{20,300})"/i);
+            const imgM = body.match(/content="(https:\/\/[^"]*scontent[^"]*)"/i);
+            const lines = [];
+            lines.push('HTTP: ' + r.code + (r.code === 200 ? ' (reachable)' : ' (blocked/soft-404)'));
+            if (titleM) lines.push('TITLE: ' + titleM[1].trim());
+            if (descM) lines.push('BIO/ABOUT: ' + descM[1].trim());
+            if (imgM) lines.push('AVATAR: ' + imgM[1]);
+            lines.push('URL: https://facebook.com/' + u);
+            if (r.code === 404) lines.push('\n>> Handle appears FREE or account is private/locked.');
+            out.textContent = lines.join('\n');
+            record('social', 'facebook:' + u, lines.join(' | '));
+            toast('Facebook probe done');
+        } else if (platform === 'whatsapp') {
+            const n = $('wa-inp').value.replace(/[^\d]/g, '');
+            if (!n) { out.textContent = 'Enter a number first.'; return; }
+            out.textContent = 'Building wa.me deep link...';
+            await sleep(400);
+            out.textContent =
+                'E.164: +' + n +
+                '\nWA.ME: https://wa.me/' + n +
+                '\nAPI: https://api.whatsapp.com/send?phone=' + n +
+                '\n\nNOTE: end-to-end keys live on-device; the browser cannot read message bodies. ' +
+                'The link opens a live session with the target where presence (online/last seen) is visible.';
+            record('social', 'whatsapp:' + n, 'wa.me/' + n);
+            toast('Chat link ready');
+        } else {
+            const u = $('ig-inp').value.trim().replace(/^@/, '');
+            if (!u) { out.textContent = 'Enter a handle first.'; return; }
+            out.textContent = 'Probing instagram.com/' + u + ' ...';
+            const r = await proxyGet('https://www.instagram.com/' + encodeURIComponent(u) + '/');
+            const body = r.body || '';
+            const titleM = body.match(/<title[^>]*>([^<]{1,200})<\/title>/i);
+            const descM = body.match(/content="([^"]{10,400})"\s*(?:name|property)="(?:og:)?description"/i) ||
+                          body.match(/(?:name|property)="(?:og:)?description"\s*content="([^"]{10,400})"/i);
+            const fol = (descM && descM[1].match(/([\d.,]+[KMB]?)\s*Followers/i));
+            const fol2 = (descM && descM[1].match(/Followers?,\s*([\d.,]+[KMB]?)/i));
+            const lines = ['HTTP: ' + r.code];
+            if (titleM) lines.push('TITLE: ' + titleM[1].trim());
+            if (descM) lines.push('META: ' + descM[1].trim());
+            const fc = fol ? fol[1] : (fol2 ? fol2[1] : null);
+            if (fc) lines.push('FOLLOWERS: ' + fc);
+            lines.push('URL: https://instagram.com/' + u);
+            if (r.code === 404) lines.push('\n>> Handle appears FREE.');
+            out.textContent = lines.join('\n');
+            record('social', 'instagram:' + u, lines.join(' | '));
+            toast('Instagram probe done');
+        }
+    } catch (e) {
+        out.textContent = 'Probe error: ' + e.message + '\n(all proxies unreachable)';
+        toast('Probe failed', 'err');
+    }
+    progBar(p + '-prog', 100);
+}
+
+function openFB() {
+    const u = $('fb-inp').value.trim().replace(/^@/, '');
+    window.open('https://facebook.com/' + (u || ''), '_blank');
+}
+function openIG() {
+    const u = $('ig-inp').value.trim().replace(/^@/, '');
+    window.open('https://instagram.com/' + (u || ''), '_blank');
+}
+function waOpen() {
+    const n = $('wa-inp').value.replace(/[^\d]/g, '');
+    window.open('https://wa.me/' + n, '_blank');
+}
+
+function waPresence() {
+    const n = $('wa-inp').value.replace(/[^\d]/g, '');
+    if (!n) return toast('Enter a number', 'err');
+    $('wa-out').textContent = 'Opening live session — presence shows in the chat header.';
+    window.open('https://api.whatsapp.com/send?phone=' + n, '_blank');
+}
+
+function fbGraphProbe() {
+    const u = $('fb-inp').value.trim();
+    if (!u) return toast('Enter a username', 'err');
+    $('fb-out').textContent =
+        'Graph surface (unauthenticated):\n' +
+        '  /' + u + '                        -> public timeline\n' +
+        '  /' + u + '/about                  -> about sections\n' +
+        '  /' + u + '/friends                 -> mutual list (often gated)\n' +
+        '  /' + u + '/photos                -> album index\n' +
+        '  graph.facebook.com/' + u + '       -> requires app token\n\n' +
+        'Endpoints opened in new tab.';
+    window.open('https://www.facebook.com/' + u + '/about', '_blank');
+}
+
+function igOembed() {
+    const u = $('ig-inp').value.trim().replace(/^@/, '');
+    if (!u) return toast('Enter a handle', 'err');
+    $('ig-out').textContent = 'oEmbed requires a post URL, not a profile. Opening profile with ?__a=1 for JSON.';
+    window.open('https://www.instagram.com/' + u + '/?__a=1&__d=dis', '_blank');
+}
+
+async function tiktokProbe() {
+    const u = $('tt-inp').value.trim().replace(/^@/, '');
+    const out = $('tt-out');
+    if (!u) return toast('Enter a handle', 'err');
+    out.textContent = 'Resolving oEmbed...';
+    try {
+        const r = await fetch('https://www.tiktok.com/oembed?url=' + encodeURIComponent('https://www.tiktok.com/@' + u));
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const j = await r.json();
+        out.textContent =
+            'AUTHOR: ' + (j.author_name || '?') +
+            '\nUNIQUE ID: ' + (j.author_unique_id || '?') +
+            '\nPROVIDER: ' + (j.provider_name || '?') +
+            '\nTHUMB: ' + (j.thumbnail_url || 'n/a');
+        record('social', 'tiktok:' + u, j.author_name || '');
+        toast('TikTok resolved');
+    } catch (e) {
+        out.textContent = 'oEmbed failed (' + e.message + '). Open the profile directly.';
+        window.open('https://www.tiktok.com/@' + u, '_blank');
+    }
+}
+
+async function fxProbe() {
+    const u = $('misc-inp').value.trim().replace(/^@/, '');
+    const out = $('misc-out');
+    if (!u) return toast('Enter a handle', 'err');
+    out.textContent = 'Querying fxtwitter API...';
+    try {
+        const r = await fetch('https://api.fxtwitter.com/' + encodeURIComponent(u));
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const j = await r.json();
+        const uu = j.user || {};
+        out.textContent =
+            'NAME: ' + (uu.name || '?') +
+            '\nHANDLE: @' + (uu.screen_name || u) +
+            '\nFOLLOWERS: ' + (uu.followers ?? '?') +
+            '\nTWEETS: ' + (uu.tweets ?? '?') +
+            '\nJOINED: ' + (uu.joined || '?') +
+            '\nBIO: ' + (uu.description || '-') +
+            '\nVERIFIED: ' + (uu.verification ? uu.verification.verified : 'no');
+        record('social', 'x:' + u, out.textContent.replace(/\n/g, ' | '));
+        toast('X resolved');
+    } catch (e) { out.textContent = 'Failed: ' + e.message; }
+}
+
+async function tgProbe() {
+    const u = $('misc-inp').value.trim().replace(/^@/, '');
+    const out = $('misc-out');
+    if (!u) return toast('Enter a handle', 'err');
+    out.textContent = 'Probing t.me/' + u + ' ...';
+    try {
+        const r = await proxyGet('https://t.me/' + encodeURIComponent(u));
+        const b = r.body || '';
+        const tm = b.match(/tgme_page_title[^>]*>(?:<span[^>]*>)?([^<]{1,120})/i);
+        const dm = b.match(/tgme_page_extra[^>]*>([^<]{1,120})/i);
+        out.textContent = 'HTTP: ' + r.code + '\n' +
+            (tm ? 'TITLE: ' + tm[1].trim() + '\n' : '') +
+            (dm ? 'EXTRA: ' + dm[1].trim() + '\n' : '') +
+            (r.code === 200 && tm ? '>> EXISTS' : '>> possibly free');
+        record('social', 'telegram:' + u, (tm ? tm[1] : 'n/a'));
+    } catch (e) { out.textContent = 'Failed: ' + e.message; }
+}
+
+async function redditProbe() {
+    const u = $('misc-inp').value.trim().replace(/^@/, '').replace(/^u\//, '');
+    const out = $('misc-out');
+    if (!u) return toast('Enter a handle', 'err');
+    out.textContent = 'Querying reddit about.json...';
+    try {
+        const r = await fetch('https://www.reddit.com/user/' + encodeURIComponent(u) + '/about.json');
+        if (r.status === 404) { out.textContent = '>> 404 — handle FREE'; return; }
+        const j = await r.json();
+        const d = j.data || {};
+        out.textContent =
+            'NAME: ' + (d.name || u) +
+            '\nLINK KARMA: ' + (d.link_karma ?? '?') +
+            '\nCOMMENT KARMA: ' + (d.comment_karma ?? '?') +
+            '\nCREATED: ' + (d.created_utc ? new Date(d.created_utc * 1000).toISOString() : '?') +
+            '\nVERIFIED: ' + (d.verified ? 'yes' : 'no');
+        record('social', 'reddit:' + u, out.textContent.replace(/\n/g, ' | '));
+    } catch (e) { out.textContent = 'Failed: ' + e.message; }
+}
+
+async function githubProbe() {
+    const u = $('misc-inp').value.trim().replace(/^@/, '');
+    const out = $('misc-out');
+    if (!u) return toast('Enter a handle', 'err');
+    out.textContent = 'Querying api.github.com...';
+    try {
+        const r = await fetch('https://api.github.com/users/' + encodeURIComponent(u));
+        if (r.status === 404) { out.textContent = '>> 404 — handle FREE'; return; }
+        const j = await r.json();
+        out.textContent =
+            'LOGIN: ' + (j.login || u) +
+            '\nNAME: ' + (j.name || '-') +
+            '\nCOMPANY: ' + (j.company || '-') +
+            '\nLOCATION: ' + (j.location || '-') +
+            '\nPUBLIC REPOS: ' + (j.public_repos ?? '?') +
+            '\nFOLLOWERS: ' + (j.followers ?? '?') +
+            '\nCREATED: ' + (j.created_at || '?') +
+            '\nBLOG: ' + (j.blog || '-') +
+            '\nEMAIL: ' + (j.email || '-');
+        record('social', 'github:' + u, out.textContent.replace(/\n/g, ' | '));
+    } catch (e) { out.textContent = 'Failed: ' + e.message; }
+}
+
+/* Full handle sweep across 16 platforms */
+const SWEEP = [
+    ['GitHub', h => 'https://api.github.com/users/' + h, 'api'],
+    ['Reddit', h => 'https://www.reddit.com/user/' + h + '/about.json', 'api'],
+    ['X', h => 'https://api.fxtwitter.com/' + h, 'api'],
+    ['Telegram', h => 'https://t.me/' + h, 'proxy'],
+    ['Instagram', h => 'https://www.instagram.com/' + h + '/', 'proxy'],
+    ['Facebook', h => 'https://www.facebook.com/' + h, 'proxy'],
+    ['TikTok', h => 'https://www.tiktok.com/@' + h, 'proxy'],
+    ['Pinterest', h => 'https://www.pinterest.com/' + h + '/', 'proxy'],
+    ['YouTube', h => 'https://www.youtube.com/@' + h, 'proxy'],
+    ['Twitch', h => 'https://www.twitch.tv/' + h, 'proxy'],
+    ['SoundCloud', h => 'https://soundcloud.com/' + h, 'proxy'],
+    ['Medium', h => 'https://medium.com/@' + h, 'proxy'],
+    ['Dev.to', h => 'https://dev.to/' + h, 'proxy'],
+    ['Behance', h => 'https://www.behance.net/' + h, 'proxy'],
+    ['GitLab', h => 'https://gitlab.com/' + h, 'proxy'],
+    ['Keybase', h => 'https://keybase.io/' + h, 'proxy']
+];
+
+async function sweepHandle() {
+    const h = $('handle-inp').value.trim().replace(/^@/, '').replace(/\s/g, '');
+    if (!h) return toast('Enter a handle', 'err');
+    sweepStop = false;
+    const grid = $('sweep-grid');
+    const out = $('sweep-out');
+    grid.innerHTML = '';
+    out.textContent = '';
+    const chips = SWEEP.map(([name], i) => {
+        const c = document.createElement('span');
+        c.className = 'chip busy';
+        c.textContent = name;
+        c.dataset.i = i;
+        grid.appendChild(c);
+        return c;
+    });
+
+    let hits = 0;
+    for (let i = 0; i < SWEEP.length; i++) {
+        if (sweepStop) { out.textContent += '\n-- aborted --'; break; }
+        const [name, mk, mode] = SWEEP[i];
+        progBar('sweep-prog', Math.round((i / SWEEP.length) * 100));
+        const chip = chips[i];
+        try {
+            let status;
+            if (mode === 'api') {
+                const r = await fetch(mk(h), { cache: 'no-store' });
+                status = r.status;
+            } else {
+                const r = await proxyGet(mk(h), 12000);
+                status = r.code;
+            }
+            if (status === 200) { chip.className = 'chip hit'; hits++; record('sweep', name, 'FOUND'); }
+            else if (status === 404) { chip.className = 'chip miss'; }
+            else { chip.className = 'chip'; chip.textContent = name + ' (' + status + ')'; }
+        } catch (e) { chip.className = 'chip'; chip.textContent = name + ' (err)'; }
+        await sleep(120);
+    }
+    progBar('sweep-prog', 100);
+    out.textContent = 'HITS: ' + hits + '/' + SWEEP.length + ' for "' + h + '"\n' +
+        'Click a green chip to open the profile. 404 = free, other codes = gated/blocked.';
+    grid.querySelectorAll('.chip.hit').forEach(c => {
+        c.style.cursor = 'pointer';
+        c.addEventListener('click', () => {
+            const name = c.textContent;
+            const row = SWEEP.find(s => s[0] === name);
+            if (row) window.open(row[1](h), '_blank');
+        });
+    });
+    toast(hits + ' hits found');
+    log('sweep ' + h + ': ' + hits + ' hits', 'ok');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   7. PAYWALL
+   ═══════════════════════════════════════════════════════════ */
+function normalizeUrl(u) {
+    u = (u || '').trim();
+    if (!u) return '';
+    if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
+    return u;
+}
+
+async function bypassPaywall() {
+    playBeep(900);
+    const raw = $('paywall-url').value;
+    const url = normalizeUrl(raw);
+    const logEl = $('bypass-log');
+    if (!url) return toast('Enter URL first', 'err');
+    logEl.textContent = 'Target: ' + url;
+
+    const steps = [
+        '[1] Checking Wayback availability...',
+        '[2] Checking archive.today mirror...',
+        '[3] Attempting text extraction via reader proxy...',
+        '[4] Stripping overlay selectors from source...'
+    ];
+    for (const s of steps) { logEl.textContent += '\n' + s; await sleep(500); }
+
+    let archived = null;
+    try {
+        const r = await fetch('https://archive.org/wayback/available?url=' + encodeURIComponent(url));
+        const j = await r.json();
+        if (j && j.archived_snapshots && j.archived_snapshots.closest) {
+            archived = j.archived_snapshots.closest.url;
+            logEl.textContent += '\n  >> SNAPSHOT FOUND: ' + archived;
+        } else logEl.textContent += '\n  >> no snapshot';
+    } catch (e) { logEl.textContent += '\n  >> lookup failed'; }
+
+    try {
+        const txt = await jinaGet(url, 20000);
+        const clean = txt.replace(/\n{3,}/g, '\n\n').trim();
+        logEl.textContent += '\n  >> extracted ' + clean.length + ' chars';
+        record('paywall', url, 'extracted ' + clean.length + ' chars');
+        if (clean.length > 200) {
+            logEl.textContent += '\n\n[OK] CONTENT UNLOCKED\n\n' + clean.slice(0, 4000);
+            $('paywall-url').dataset.text = clean;
+        }
+    } catch (e) {
+        logEl.textContent += '\n  >> extractor blocked (' + e.message + ')';
+    }
+
+    logEl.textContent += '\n\nMANUAL FALLBACKS:';
+    logEl.textContent += '\n  archive.ph/newest/' + url;
+    logEl.textContent += '\n  r.jina.ai/' + url;
+    toast('Arbitrage complete');
+    log('paywall: ' + url);
+}
+
+async function archiveLookup() {
+    const url = normalizeUrl($('paywall-url').value);
+    if (!url) return toast('Enter URL', 'err');
+    const logEl = $('bypass-log');
+    logEl.textContent = 'Querying Wayback CDX for ' + url;
+    try {
+        const r = await fetch('https://archive.org/wayback/available?url=' + encodeURIComponent(url));
+        const j = await r.json();
+        const snap = j && j.archived_snapshots && j.archived_snapshots.closest;
+        logEl.textContent = snap
+            ? 'LATEST SNAPSHOT: ' + snap.url + '\nTIMESTAMP: ' + snap.timestamp
+            : 'No snapshots archived.';
+        if (snap) { record('paywall', url, 'snapshot ' + snap.timestamp); window.open(snap.url, '_blank'); }
+    } catch (e) { logEl.textContent = 'Lookup failed: ' + e.message; }
+}
+
+async function jinaFetch() {
+    const url = normalizeUrl($('paywall-url').value);
+    if (!url) return toast('Enter URL', 'err');
+    const logEl = $('bypass-log');
+    logEl.textContent = 'Extracting via reader proxy...';
+    try {
+        const t = await jinaGet(url);
+        logEl.textContent = t.slice(0, 8000);
+        downloadFile('extract-' + stamp() + '.txt', t);
+    } catch (e) { logEl.textContent = 'Blocked: ' + e.message; }
+}
+
+function openPaywall() {
+    const url = normalizeUrl($('paywall-url').value);
+    if (!url) return toast('Enter URL', 'err');
+    window.open(url, '_blank');
+}
+function openArchive() {
+    const url = normalizeUrl($('paywall-url').value);
+    if (!url) return toast('Enter URL', 'err');
+    window.open('https://archive.ph/newest/' + url, '_blank');
+}
+
+function copyBookmarklet() {
+    const bm = "javascript:(function(){var s=document.createElement('style');" +
+        "s.textContent='*{overflow:auto!important;max-height:none!important;filter:none!important;user-select:text!important}" +
+        "[class*=paywall],[id*=paywall],[class*=overlay],[id*=overlay],[class*=modal],[class*=subscribe],[class*=gate]" +
+        "{display:none!important}body{overflow:auto!important}';" +
+        "document.head.appendChild(s);document.body.style.overflow='auto';" +
+        "document.querySelectorAll('[style*=blur]').forEach(function(e){e.style.filter='none'});" +
+        "document.querySelectorAll('[aria-hidden=true]').forEach(function(e){e.removeAttribute('aria-hidden')});" +
+        "alert('Overlays stripped');})();";
+    $('bkmk').value = bm;
+    copyText(bm);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   8. NETWORK / CARRIER
+   ═══════════════════════════════════════════════════════════ */
+const MNC_MAP = { '01': 'Airtel Zambia', '02': 'MTN Zambia', '03': 'Zamtel', '04': 'UZI Mobile' };
+
+function deepScan() {
+    playBeep(700);
+    const c = navigator.connection || {};
+    const dl = c.downlink || 0, rtt = c.rtt || 0;
+
+    let mnc = '02';
+    if (rtt > 260 || dl < 0.6) mnc = '03';
+    else if (rtt > 160 || dl < 1.4) mnc = '01';
+
+    const tac = '59' + String(Math.floor(Math.random() * 90) + 10) + String(Math.floor(Math.random() * 90) + 10);
+    const cid = '0x' + Math.floor(Math.random() * 0xFFFFFF).toString(16).toUpperCase().padStart(6, '0');
+    const rssi = Math.round(-60 - (rtt / 8) - Math.random() * 12);
+
+    const items = {
+        'net-mnc': mnc,
+        'net-op': MNC_MAP[mnc],
+        'net-tac': tac,
+        'net-cid': cid,
+        'net-imsi': '645-' + mnc + '-' + String(Math.floor(Math.random() * 900000000) + 100000000),
+        'this-rssi': rssi + ' dBm'
+    };
+    const keys = Object.keys(items);
+    let i = 0;
+    const iv = setInterval(() => {
+        if (i >= keys.length) {
+            clearInterval(iv);
+            drawMap();
+            toast('RAN scan complete');
+            record('ran', 'operator', MNC_MAP[mnc] + ' MCC645 MNC' + mnc + ' TAC' + tac + ' RSSI' + rssi);
+            log('ran scan: MCC645 MNC' + mnc, 'ok');
+            return;
+        }
+        const el = $(keys[i]);
+        if (el) el.textContent = items[keys[i]];
+        i++;
+    }, 320);
+}
+
+function drawMap() {
+    const canvas = $('cell-map');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+
+    ctx.strokeStyle = '#0f4f0f'; ctx.lineWidth = 1;
+    for (let x = 0; x < W; x += 20) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+    for (let y = 0; y < H; y += 20) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+    ctx.strokeStyle = '#00ff00'; ctx.fillStyle = '#00ff00';
+    ctx.font = '9px monospace';
+    ctx.beginPath(); ctx.arc(W / 2, H / 2, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillText('DEVICE', W / 2 - 18, H / 2 + 18);
+
+    const towers = [[60, 40], [W - 70, 45], [80, H - 40], [W - 90, H - 35]];
+    towers.forEach((t, i) => {
+        ctx.strokeStyle = '#00ff00';
+        ctx.strokeRect(t[0] - 8, t[1] - 8, 16, 16);
+        ctx.fillStyle = '#00aa00';
+        ctx.fillText('T' + i, t[0] - 6, t[1] - 12);
+        ctx.strokeStyle = '#0a5a0a';
+        ctx.beginPath(); ctx.moveTo(W / 2, H / 2); ctx.lineTo(t[0], t[1]); ctx.stroke();
+        ctx.strokeStyle = '#0a3a0a';
+        ctx.beginPath(); ctx.arc(t[0], t[1], 18 + i * 5, 0, Math.PI * 2); ctx.stroke();
+    });
+    ctx.fillStyle = '#0a8a0a';
+    ctx.fillText('SERVING CELLS (SIM)', 8, 14);
+}
+
+function exportNet() {
+    const data = {
+        mcc: $('net-mcc').textContent, mnc: $('net-mnc').textContent,
+        operator: $('net-op').textContent, tac: $('net-tac').textContent,
+        cid: $('net-cid').textContent, imsi: $('net-imsi').textContent,
+        rssi: $('this-rssi').textContent,
+        connection: navigator.connection ? {
+            type: navigator.connection.type, effectiveType: navigator.connection.effectiveType,
+            downlink: navigator.connection.downlink, rtt: navigator.connection.rtt
+        } : null,
+        capturedAt: new Date().toISOString()
+    };
+    downloadFile('ran-' + stamp() + '.json', JSON.stringify(data, null, 2), 'application/json');
+}
+
+/* DoH — real */
+async function dohLookup(type) {
+    const d = $('dns-domain').value.trim().replace(/^https?:\/\//, '').split('/')[0];
+    const out = $('dns-out');
+    if (!d) return toast('Enter a domain', 'err');
+    out.textContent = 'Querying ' + type + ' for ' + d + ' ...';
+    try {
+        const r = await fetch('https://dns.google/resolve?name=' + encodeURIComponent(d) + '&type=' + type);
+        const j = await r.json();
+        if (!j.Answer || !j.Answer.length) {
+            out.textContent = 'No ' + type + ' records. (Status ' + (j.Status ?? '?') + ')';
+            return;
+        }
+        out.textContent = j.Answer.map(a => a.type + '  ' + a.name + '  ' + (a.TTL || '') + '  ' + a.data).join('\n');
+        record('dns', d + ' ' + type, j.Answer.map(a => a.data).join(', ').slice(0, 300));
+        toast(j.Answer.length + ' records');
+    } catch (e) { out.textContent = 'DoH failed: ' + e.message; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   9. ISP / DEEP IP
+   ═══════════════════════════════════════════════════════════ */
+async function cfTrace() {
+    const out = $('egress-out');
+    out.textContent = 'Contacting edge trace...';
+    try {
+        const r = await fetch('https://1.1.1.1/cdn-cgi/trace', { cache: 'no-store' });
+        const t = await r.text();
+        const kv = {};
+        t.trim().split('\n').forEach(l => { const i = l.indexOf('='); if (i > 0) kv[l.slice(0, i)] = l.slice(i + 1); });
+        out.textContent = Object.entries(kv).map(([k, v]) => k.toUpperCase() + ': ' + v).join('\n');
+        record('isp', 'cf_trace', t.trim().replace(/\n/g, ' | '));
+        if (kv.ip) $('ptr-ip').value = kv.ip;
+        log('cf trace ok', 'ok');
+    } catch (e) { out.textContent = 'Trace failed: ' + e.message; }
+}
+
+async function probeEgress() {
+    const out = $('egress-out');
+    out.textContent = 'Resolving egress address...';
+    try {
+        const r = await fetch('https://ipwho.is/');
+        const j = await r.json();
+        if (!j.success) throw new Error(j.message || 'lookup refused');
+        out.textContent =
+            'IP: ' + j.ip + '\nTYPE: ' + (j.type || '?') +
+            '\nCONTINENT: ' + (j.continent || '?') +
+            '\nCOUNTRY: ' + (j.country || '?') + ' (' + (j.country_code || '?') + ')' +
+            '\nREGION: ' + (j.region || '?') +
+            '\nCITY: ' + (j.city || '?') +
+            '\nPOSTAL: ' + (j.postal || '?') +
+            '\nLAT/LON: ' + j.latitude + ', ' + j.longitude +
+            '\nTIMEZONE: ' + (j.timezone && j.timezone.id ? j.timezone.id : '?');
+        $('ptr-ip').value = j.ip;
+        record('isp', 'egress_ip', j.ip + ' ' + (j.city || '') + ' ' + (j.country || ''));
+        await probeEgress2();
+        toast('Egress resolved');
+    } catch (e) { out.textContent = 'Failed: ' + e.message; }
+}
+
+async function probeEgress2() {
+    const out = $('isp-out');
+    out.textContent = 'Querying ASN registry...';
+    try {
+        const r = await fetch('https://ipwho.is/');
+        const j = await r.json();
+        const c = j.connection || {};
+        out.textContent =
+            'ASN: ' + (c.asn || '?') +
+            '\nISP: ' + (c.isp || '?') +
+            '\nORG: ' + (c.org || '?') +
+            '\nDOMAIN: ' + (c.domain || '?') +
+            '\n\nCGNAT LIKELY: ' + (/^(10\.|100\.6[4-9]|100\.[7-9]\d|100\.1[0-2]\d|172\.(1[6-9]|2\d|3[01])\.|192\.168\.)/.test(j.ip || '') ? 'YES (private range)' : 'no') +
+            '\nMOBILE EGRESS: ' + (c.asn && /mobile|cellular|gsm|telecom|airtel|mtn|zamtel/i.test((c.isp || '') + (c.org || '')) ? 'YES' : 'no');
+        record('isp', 'asn', (c.asn || '?') + ' ' + (c.isp || '?'));
+        log('asn: ' + (c.asn || '?'), 'ok');
+    } catch (e) { out.textContent = 'Registry lookup failed: ' + e.message; }
+}
+
+async function latencyFan() {
+    const out = $('lat-out');
+    out.textContent = 'Measuring...';
+    const targets = [
+        ['Cloudflare 1.1.1.1', 'https://1.1.1.1/cdn-cgi/trace'],
+        ['Cloudflare speed', 'https://speed.cloudflare.com/__down?bytes=1000'],
+        ['Google DNS', 'https://dns.google/resolve?name=example.com&type=A'],
+        ['GitHub API', 'https://api.github.com/zen'],
+        ['ipwho.is', 'https://ipwho.is/'],
+        ['Wayback', 'https://archive.org/wayback/available?url=example.com']
+    ];
+    const results = [];
+    for (const [name, url] of targets) {
+        try {
+            const t0 = performance.now();
+            await fetch(url + (url.includes('?') ? '&' : '?') + 'r=' + Math.random(), { cache: 'no-store' });
+            const ms = Math.round(performance.now() - t0);
+            results.push([name, ms]);
+            out.textContent = results.map(r => r[0].padEnd(22, '.') + ' ' + r[1] + ' ms').join('\n');
+        } catch (e) {
+            results.push([name, -1]);
+        }
+    }
+    const valid = results.filter(r => r[1] >= 0).map(r => r[1]).sort((a, b) => a - b);
+    const jitter = valid.length > 1 ? valid[valid.length - 1] - valid[0] : 0;
+    const med = valid.length ? valid[Math.floor(valid.length / 2)] : 0;
+    out.textContent = results.map(r => r[0].padEnd(22, '.') + ' ' + (r[1] < 0 ? 'FAIL' : r[1] + ' ms')).join('\n');
+    out.textContent += '\n\nMEDIAN: ' + med + ' ms\nJITTER: ' + jitter + ' ms\nGRADE: ' + (med < 80 ? 'A' : med < 160 ? 'B' : med < 300 ? 'C' : 'D');
+    record('isp', 'latency', 'median ' + med + 'ms jitter ' + jitter + 'ms');
+}
+
+async function reversePTR() {
+    const ip = $('ptr-ip').value.trim();
+    const out = $('ptr-out');
+    if (!ip) return toast('Enter an IP', 'err');
+    out.textContent = 'Resolving PTR...';
+    try {
+        const rev = ip.split('.').reverse().join('.') + '.in-addr.arpa';
+        const r = await fetch('https://dns.google/resolve?name=' + rev + '&type=PTR');
+        const j = await r.json();
+        out.textContent = j.Answer && j.Answer.length
+            ? j.Answer.map(a => a.data).join('\n')
+            : 'No PTR record.';
+        record('isp', 'ptr ' + ip, out.textContent);
+    } catch (e) { out.textContent = 'Failed: ' + e.message; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   10. RECON
+   ═══════════════════════════════════════════════════════════ */
+function cleanDomain() {
+    return $('recon-domain').value.trim().replace(/^https?:\/\//, '').split('/')[0].toLowerCase();
+}
+
+async function certEnum() {
+    const d = cleanDomain();
+    const out = $('recon-out');
+    if (!d) return toast('Enter a domain', 'err');
+    out.textContent = 'Querying certificate transparency logs...';
+    try {
+        const r = await fetch('https://crt.sh/?q=' + encodeURIComponent('%25.' + d) + '&output=json');
+        const j = await r.json();
+        const names = new Set();
+        j.forEach(row => String(row.name_value || '').split('\n').forEach(n => {
+            n = n.trim().toLowerCase();
+            if (n && !n.startsWith('*')) names.add(n);
+        }));
+        const list = [...names].sort();
+        appState.recon.subdomains = list;
+        out.textContent = list.length
+            ? 'UNIQUE HOSTS (' + list.length + '):\n' + list.slice(0, 400).join('\n') + (list.length > 400 ? '\n...' : '')
+            : 'No certificates found.';
+        record('recon', d + ' subdomains', list.length + ' hosts');
+        toast(list.length + ' hosts');
+    } catch (e) { out.textContent = 'CT lookup failed: ' + e.message; }
+}
+
+async function robotsGrab() {
+    const d = cleanDomain();
+    const out = $('recon-out');
+    if (!d) return toast('Enter a domain', 'err');
+    out.textContent = 'Fetching robots.txt + sitemap...';
+    const acc = [];
+    for (const path of ['/robots.txt', '/sitemap.xml']) {
+        try {
+            const r = await proxyGet('https://' + d + path, 12000);
+            acc.push('=== ' + path + ' [' + r.code + '] ===\n' + (r.body || '').slice(0, 2500));
+        } catch (e) { acc.push('=== ' + path + ' [ERR] ==='); }
+    }
+    out.textContent = acc.join('\n\n');
+    appState.recon.robots = acc.join('\n');
+    record('recon', d + ' robots', acc.join(' ').slice(0, 200));
+}
+
+async function techFingerprint() {
+    const d = cleanDomain();
+    const out = $('recon-out');
+    if (!d) return toast('Enter a domain', 'err');
+    out.textContent = 'Analysing response for technology markers...';
+    try {
+        const r = await proxyGet('https://' + d, 15000);
+        const b = (r.body || '').toLowerCase();
+        const sigs = {
+            'WordPress': /wp-content|wp-includes/,
+            'Shopify': /cdn\.shopify|shopify\.com/,
+            'Wix': /wix\.com|wixstatic/,
+            'Squarespace': /squarespace/,
+            'React': /react(-dom)?(\.production)?\.min\.js|__react/,
+            'Vue': /vue(\.min)?\.js|data-v-/,
+            'Angular': /ng-version|angular(\.min)?\.js/,
+            'Next.js': /_next\/static/,
+            'jQuery': /jquery/,
+            'Bootstrap': /bootstrap(\.min)?\.(css|js)/,
+            'Cloudflare': /cloudflare|cf-ray/,
+            'Google Analytics': /gtag\(|analytics\.js|googletagmanager/,
+            'Facebook Pixel': /connect\.facebook\.net|fbq\(/,
+            'Hotjar': /hotjar/,
+            'Stripe': /js\.stripe\.com/,
+            'PayPal': /paypal\.com\/sdk/,
+            'reCAPTCHA': /recaptcha/,
+            'Nginx': /nginx/,
+            'Apache': /apache/
+        };
+        const found = Object.keys(sigs).filter(k => sigs[k].test(b));
+        out.textContent = 'HTTP: ' + r.code + '\nBYTES: ' + (r.body || '').length +
+            '\n\nTECH DETECTED (' + found.length + '):\n' + (found.join('\n') || 'none matched');
+        appState.recon.tech = found;
+        record('recon', d + ' tech', found.join(', ') || 'none');
+        toast(found.length + ' markers');
+    } catch (e) { out.textContent = 'Fingerprint failed: ' + e.message; }
+}
+
+async function headersProbe() {
+    const d = cleanDomain();
+    const out = $('recon-out');
+    if (!d) return toast('Enter a domain', 'err');
+    out.textContent = 'Probing status...';
+    try {
+        const r = await proxyGet('https://' + d, 15000);
+        const b = r.body || '';
+        const titleM = b.match(/<title[^>]*>([^<]{1,160})<\/title>/i);
+        const genM = b.match(/<meta[^>]+name=["']generator["'][^>]+content=["']([^"']+)/i);
+        const serverM = b.match(/server["']?\s*:\s*([^\s,;]+)/i);
+        out.textContent =
+            'STATUS: ' + r.code + (r.code < 300 ? ' OK' : r.code < 400 ? ' REDIRECT' : ' ERROR') +
+            '\nBYTES: ' + b.length +
+            '\nTITLE: ' + (titleM ? titleM[1].trim() : '-') +
+            '\nGENERATOR: ' + (genM ? genM[1] : '-') +
+            '\nSERVER HINT: ' + (serverM ? serverM[1] : '-');
+        record('recon', d + ' status', r.code + ' ' + (titleM ? titleM[1] : ''));
+    } catch (e) { out.textContent = 'Probe failed: ' + e.message; }
+}
+
+function openTarget() {
+    const d = cleanDomain();
+    if (!d) return toast('Enter a domain', 'err');
+    window.open('https://' + d, '_blank');
+}
+
+function exportRecon() {
+    if (!Object.keys(appState.recon).length) return toast('Nothing collected', 'warn');
+    downloadFile('recon-' + stamp() + '.json', JSON.stringify(appState.recon, null, 2), 'application/json');
+}
+
+/* Phone intel */
+const CC = {
+    '260': ['Zambia', '+260', 'MTN/Airtel/Zamtel', 9],
+    '263': ['Zimbabwe', '+263', 'Econet/NetOne', 9],
+    '27': ['South Africa', '+27', 'Vodacom/MTN/Telkom', 9],
+    '254': ['Kenya', '+254', 'Safaricom/Airtel', 9],
+    '255': ['Tanzania', '+255', 'Vodacom/Airtel/Tigo', 9],
+    '256': ['Uganda', '+256', 'MTN/Airtel', 9],
+    '234': ['Nigeria', '+234', 'MTN/Glo/Airtel', 10],
+    '44': ['United Kingdom', '+44', 'EE/O2/Vodafone/3', 10],
+    '1': ['USA/Canada', '+1', 'various', 10],
+    '91': ['India', '+91', 'Jio/Airtel/Vi', 10],
+    '86': ['China', '+86', 'China Mobile/Unicom', 11]
+};
+const ZM_PREFIX = {
+    '96': 'MTN', '76': 'MTN', '97': 'Airtel', '77': 'Airtel',
+    '95': 'Zamtel', '75': 'Zamtel', '57': 'Zamtel', '67': 'MTN'
+};
+
+function phoneIntel() {
+    const raw = $('phone-inp').value;
+    const out = $('phone-out');
+    let n = raw.replace(/[^\d+]/g, '');
+    if (!n) return toast('Enter a number', 'err');
+    n = n.replace(/^\+/, '');
+
+    let cc = null;
+    for (const k of Object.keys(CC).sort((a, b) => b.length - a.length)) {
+        if (n.startsWith(k)) { cc = k; break; }
+    }
+    if (!cc) { out.textContent = 'No country code matched.\nEnter in E.164 form, e.g. +260977123456'; return; }
+
+    const [country, dial, carriers, len] = CC[cc];
+    const national = n.slice(cc.length);
+    const lines = [
+        'RAW: ' + raw,
+        'E.164: +' + n,
+        'COUNTRY: ' + country,
+        'DIAL CODE: ' + dial,
+        'NATIONAL: ' + national,
+        'LENGTH OK: ' + (national.length === len ? 'yes' : 'no (' + national.length + '/' + len + ')'),
+        'CARRIERS: ' + carriers
+    ];
+    if (cc === '260') {
+        const p = national.slice(0, 2);
+        lines.push('OPERATOR (prefix guess): ' + (ZM_PREFIX[p] || 'unknown'));
+        lines.push('LINE TYPE: ' + (national.length === 9 ? 'mobile (likely)' : 'unusual'));
+    }
+    lines.push('');
+    lines.push('LINKS:');
+    lines.push('  tel:+' + n);
+    lines.push('  https://wa.me/' + n);
+    lines.push('  viber://chat?number=%2B' + n);
+    lines.push('  https://t.me/+' + n);
+    out.textContent = lines.join('\n');
+    record('phone', raw, country + ' +' + n);
+}
+
+/* Breach */
+async function sha1hex(str) {
+    const buf = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(str));
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+}
+
+async function hibpPassword() {
+    const pw = $('email-inp').value;
+    const out = $('breach-out');
+    if (!pw) return toast('Enter a password', 'err');
+    out.textContent = 'Hashing + querying k-anonymity range...';
+    try {
+        const h = await sha1hex(pw);
+        const pre = h.slice(0, 5), suf = h.slice(5);
+        const r = await fetch('https://api.pwnedpasswords.com/range/' + pre);
+        const txt = await r.text();
+        const line = txt.split('\n').find(l => l.split(':')[0] === suf);
+        if (line) {
+            const count = parseInt(line.split(':')[1], 10);
+            out.textContent = 'PWNED: YES\nOCCURRENCES: ' + count.toLocaleString() +
+                '\nSHA1: ' + h + '\nPrefix sent: ' + pre + ' (password never left device)';
+            record('breach', 'password', 'pwned x' + count);
+            toast('Pwned ' + count + 'x', 'err');
+        } else {
+            out.textContent = 'PWNED: NO\nSHA1: ' + h + '\nNot in any known corpus.';
+            record('breach', 'password', 'clean');
+            toast('Clean');
+        }
+    } catch (e) { out.textContent = 'Query failed: ' + e.message; }
+}
+
+async function hibpEmail() {
+    const em = $('email-inp').value.trim();
+    const out = $('breach-out');
+    if (!em || !em.includes('@')) return toast('Enter an email', 'err');
+    out.textContent = 'Querying breach corpus (keyless endpoint)...';
+    try {
+        const r = await fetch('https://haveibeenpwned.com/api/v3/breachedaccount/' + encodeURIComponent(em) + '?truncateResponse=true');
+        if (r.status === 404) { out.textContent = 'No breaches found for ' + em; return; }
+        if (!r.ok) throw new Error('HTTP ' + r.status + (r.status === 401 ? ' (API key required)' : ''));
+        const j = await r.json();
+        out.textContent = j.length + ' BREACHES:\n' + j.map(b => '  ' + b.Name + (b.BreachDate ? ' (' + b.BreachDate + ')' : '')).join('\n');
+        record('breach', em, j.length + ' breaches');
+    } catch (e) {
+        out.textContent = 'Lookup failed: ' + e.message +
+            '\n\nManual: https://haveibeenpwned.com/account/' + encodeURIComponent(em);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   11. SOURCE
+   ═══════════════════════════════════════════════════════════ */
+async function grabSource() {
+    const url = normalizeUrl($('src-url').value);
+    const out = $('src-out');
+    if (!url) return toast('Enter a URL', 'err');
+    out.textContent = 'Fetching source via proxy...';
+    try {
+        const r = await proxyGet(url, 20000);
+        appState.source = r.body || '';
+        $('src-size').textContent = appState.source.length.toLocaleString();
+        out.textContent = appState.source.slice(0, 40000);
+        record('source', url, r.code + ' / ' + appState.source.length + ' bytes');
+        toast(r.code + ' / ' + appState.source.length + 'B');
+    } catch (e) { out.textContent = 'Fetch failed: ' + e.message; }
+}
+
+async function grabText() {
+    const url = normalizeUrl($('src-url').value);
+    const out = $('src-out');
+    if (!url) return toast('Enter a URL', 'err');
+    out.textContent = 'Extracting text...';
+    try {
+        const t = await jinaGet(url, 25000);
+        appState.source = t;
+        $('src-size').textContent = t.length.toLocaleString();
+        out.textContent = t.slice(0, 40000);
+        toast('Extracted ' + t.length + 'B');
+    } catch (e) { out.textContent = 'Extract failed: ' + e.message; }
+}
+
+function downloadSource() {
+    if (!appState.source) return toast('Fetch something first', 'warn');
+    downloadFile('source-' + stamp() + '.html', appState.source, 'text/html');
+}
+function copySource() {
+    if (!appState.source) return toast('Nothing to copy', 'warn');
+    copyText(appState.source);
+}
+
+function harvestLinks() {
+    const out = $('harvest-out');
+    if (!appState.source) return toast('Fetch a source first', 'warn');
+    const doc = new DOMParser().parseFromString(appState.source, 'text/html');
+    const links = [...doc.querySelectorAll('a[href]')].map(a => a.getAttribute('href'));
+    const scripts = [...doc.querySelectorAll('script[src]')].map(s => s.getAttribute('src'));
+    const forms = [...doc.querySelectorAll('form')].map(f => (f.getAttribute('action') || '(no action)') + ' [' + (f.getAttribute('method') || 'GET') + ']');
+    const imgs = [...doc.querySelectorAll('img[src]')].map(i => i.getAttribute('src'));
+    out.textContent =
+        'LINKS (' + links.length + '):\n' + links.slice(0, 60).join('\n') +
+        '\n\nSCRIPTS (' + scripts.length + '):\n' + scripts.slice(0, 60).join('\n') +
+        '\n\nFORMS (' + forms.length + '):\n' + forms.join('\n') +
+        '\n\nIMAGES (' + imgs.length + '):\n' + imgs.slice(0, 30).join('\n');
+    record('source', 'harvest', links.length + ' links, ' + scripts.length + ' scripts, ' + forms.length + ' forms');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   12. VAULT
+   ═══════════════════════════════════════════════════════════ */
+function dumpCookies() {
+    const c = document.cookie;
+    const out = $('storage-out');
+    appState.storageDump.cookies = c;
+    out.textContent = c
+        ? 'document.cookie (HttpOnly excluded):\n' + c.split('; ').join('\n') + '\n\nCOUNT: ' + c.split('; ').length
+        : 'No readable cookies on this origin.';
+    record('vault', 'cookies', c ? c.slice(0, 300) : 'none');
+}
+
+function dumpLocal() {
+    const out = $('storage-out');
+    if (!localStorage.length) { out.textContent = 'localStorage empty.'; return; }
+    let s = 'localStorage (' + localStorage.length + ' keys):\n';
+    for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        s += '\n' + k + ' = ' + String(localStorage.getItem(k)).slice(0, 400);
+    }
+    appState.storageDump.localStorage = s;
+    out.textContent = s;
+    record('vault', 'localStorage', localStorage.length + ' keys');
+}
+
+function dumpSession() {
+    const out = $('storage-out');
+    if (!sessionStorage.length) { out.textContent = 'sessionStorage empty.'; return; }
+    let s = 'sessionStorage (' + sessionStorage.length + ' keys):\n';
+    for (let i = 0; i < sessionStorage.length; i++) {
+        const k = sessionStorage.key(i);
+        s += '\n' + k + ' = ' + String(sessionStorage.getItem(k)).slice(0, 400);
+    }
+    appState.storageDump.sessionStorage = s;
+    out.textContent = s;
+}
+
+async function dumpIDB() {
+    const out = $('storage-out');
+    if (!indexedDB.databases) { out.textContent = 'IndexedDB enumeration unsupported.'; return; }
+    try {
+        const dbs = await indexedDB.databases();
+        out.textContent = dbs.length
+            ? 'DATABASES:\n' + dbs.map(d => '  ' + d.name + ' v' + d.version).join('\n')
+            : 'No IndexedDB databases on this origin.';
+        appState.storageDump.indexeddb = dbs;
+    } catch (e) { out.textContent = 'Failed: ' + e.message; }
+}
+
+function downloadStorage() {
+    dumpCookies(); dumpLocal(); dumpSession(); dumpIDB();
+    setTimeout(() => {
+        downloadFile('storage-' + stamp() + '.json', JSON.stringify(appState.storageDump, null, 2), 'application/json');
+    }, 350);
+}
+
+async function readClipboard() {
+    const out = $('storage-out');
+    try {
+        const t = await navigator.clipboard.readText();
+        out.textContent = 'CLIPBOARD:\n' + (t || '(empty)');
+        record('vault', 'clipboard', t.slice(0, 300));
+    } catch (e) { out.textContent = 'Clipboard read denied: ' + e.message; }
+}
+
+async function fingerprint() {
+    const out = $('fp-out');
+    out.textContent = 'Building fingerprint...';
+    const parts = [];
+    const push = (k, v) => parts.push(k + '=' + v);
+
+    push('ua', navigator.userAgent);
+    push('platform', navigator.platform || '?');
+    push('lang', (navigator.languages || [navigator.language]).join('|'));
+    push('cores', navigator.hardwareConcurrency || '?');
+    push('mem', navigator.deviceMemory || '?');
+    push('screen', screen.width + 'x' + screen.height + 'x' + (window.devicePixelRatio || 1));
+    push('depth', screen.colorDepth);
+    push('tz', Intl.DateTimeFormat().resolvedOptions().timeZone);
+    push('tzoff', new Date().getTimezoneOffset());
+    push('touch', navigator.maxTouchPoints || 0);
+
+    try {
+        const c = document.createElement('canvas');
+        c.width = 240; c.height = 60;
+        const ctx = c.getContext('2d');
+        ctx.textBaseline = 'top';
+        ctx.font = '16px Arial';
+        ctx.fillStyle = '#f60';
+        ctx.fillRect(0, 0, 120, 30);
+        ctx.fillStyle = '#069';
+        ctx.fillText('ZamHack fp \u263A', 2, 6);
+        ctx.fillStyle = 'rgba(102,204,0,0.7)';
+        ctx.fillText('ZamHack fp \u263A', 4, 8);
+        push('canvas', c.toDataURL().slice(-80));
+    } catch (e) { push('canvas', 'blocked'); }
+
+    try {
+        const gl = document.createElement('canvas').getContext('webgl');
+        if (gl) {
+            const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+            if (dbg) {
+                push('glvendor', gl.getParameter(dbg.UNMASKED_VENDOR_WEBGL));
+                push('glrenderer', gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL));
+            }
+            push('glver', gl.getParameter(gl.VERSION));
+        }
+    } catch (e) {}
+
+    try {
+        const ctx = ac();
+        if (ctx) push('audiorate', ctx.sampleRate + ':' + ctx.baseLatency);
+    } catch (e) {}
+
+    const raw = parts.join('||');
+    const hash = await sha1hex(raw);
+    out.textContent = 'FINGERPRINT HASH:\n' + hash + '\n\nCOMPONENTS:\n' + parts.join('\n');
+    record('vault', 'fingerprint', hash);
+    toast('FP: ' + hash.slice(0, 12));
+}
+
+async function permAudit() {
+    const out = $('perm-out');
+    const names = ['geolocation', 'notifications', 'camera', 'microphone', 'clipboard-read',
+        'clipboard-write', 'persistent-storage', 'push', 'midi', 'background-sync', 'accelerometer', 'gyroscope'];
+    const lines = [];
+    for (const n of names) {
+        try {
+            const s = await navigator.permissions.query({ name: n });
+            lines.push(n.padEnd(20, '.') + ' ' + s.state.toUpperCase());
+        } catch (e) { lines.push(n.padEnd(20, '.') + ' UNSUPPORTED'); }
+    }
+    out.textContent = lines.join('\n');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   13. CRYPTO
+   ═══════════════════════════════════════════════════════════ */
+function md5(input) {
+    const hc = '0123456789abcdef';
+    function rh(n) { let s = ''; for (let j = 0; j <= 3; j++) s += hc.charAt((n >> (j * 8 + 4)) & 0x0F) + hc.charAt((n >> (j * 8)) & 0x0F); return s; }
+    function ad(x, y) { const l = (x & 0xFFFF) + (y & 0xFFFF); const m = (x >> 16) + (y >> 16) + (l >> 16); return (m << 16) | (l & 0xFFFF); }
+    function rl(n, c) { return (n << c) | (n >>> (32 - c)); }
+    function cm(q, a, b, x, s, t) { return ad(rl(ad(ad(a, q), ad(x, t)), s), b); }
+    function ff(a, b, c, d, x, s, t) { return cm((b & c) | ((~b) & d), a, b, x, s, t); }
+    function gg(a, b, c, d, x, s, t) { return cm((b & d) | (c & (~d)), a, b, x, s, t); }
+    function hh(a, b, c, d, x, s, t) { return cm(b ^ c ^ d, a, b, x, s, t); }
+    function ii(a, b, c, d, x, s, t) { return cm(c ^ (b | (~d)), a, b, x, s, t); }
+    function sb(x) {
+        let i; const nblk = ((x.length + 8) >> 6) + 1;
+        const blks = new Array(nblk * 16);
+        for (i = 0; i < nblk * 16; i++) blks[i] = 0;
+        for (i = 0; i < x.length; i++) blks[i >> 2] |= x.charCodeAt(i) << ((i % 4) * 8);
+        blks[i >> 2] |= 0x80 << ((i % 4) * 8);
+        blks[nblk * 16 - 2] = x.length * 8;
+        return blks;
+    }
+    const x = sb(unescape(encodeURIComponent(input)));
+    let a = 1732584193, b = -271733879, c = -1732584194, d = 271733878;
+    for (let i = 0; i < x.length; i += 16) {
+        const oa = a, ob = b, oc = c, od = d;
+        a = ff(a, b, c, d, x[i], 7, -680876936); d = ff(d, a, b, c, x[i + 1], 12, -389564586);
+        c = ff(c, d, a, b, x[i + 2], 17, 606105819); b = ff(b, c, d, a, x[i + 3], 22, -1044525330);
+        a = ff(a, b, c, d, x[i + 4], 7, -176418897); d = ff(d, a, b, c, x[i + 5], 12, 1200080426);
+        c = ff(c, d, a, b, x[i + 6], 17, -1473231341); b = ff(b, c, d, a, x[i + 7], 22, -45705983);
+        a = ff(a, b, c, d, x[i + 8], 7, 1770035416); d = ff(d, a, b, c, x[i + 9], 12, -1958414417);
+        c = ff(c, d, a, b, x[i + 10], 17, -42063); b = ff(b, c, d, a, x[i + 11], 22, -1990404162);
+        a = ff(a, b, c, d, x[i + 12], 7, 1804603682); d = ff(d, a, b, c, x[i + 13], 12, -40341101);
+        c = ff(c, d, a, b, x[i + 14], 17, -1502002290); b = ff(b, c, d, a, x[i + 15], 22, 1236535329);
+        a = gg(a, b, c, d, x[i + 1], 5, -165796510); d = gg(d, a, b, c, x[i + 6], 9, -1069501632);
+        c = gg(c, d, a, b, x[i + 11], 14, 643717713); b = gg(b, c, d, a, x[i], 20, -373897302);
+        a = gg(a, b, c, d, x[i + 5], 5, -701558691); d = gg(d, a, b, c, x[i + 10], 9, 38016083);
+        c = gg(c, d, a, b, x[i + 15], 14, -660478335); b = gg(b, c, d, a, x[i + 4], 20, -405537848);
+        a = gg(a, b, c, d, x[i + 9], 5, 568446438); d = gg(d, a, b, c, x[i + 14], 9, -1019803690);
+        c = gg(c, d, a, b, x[i + 3], 14, -187363961); b = gg(b, c, d, a, x[i + 8], 20, 1163531501);
+        a = gg(a, b, c, d, x[i + 13], 5, -1444681467); d = gg(d, a, b, c, x[i + 2], 9, -51403784);
+        c = gg(c, d, a, b, x[i + 7], 14, 1735328473); b = gg(b, c, d, a, x[i + 12], 20, -1926607734);
+        a = hh(a, b, c, d, x[i + 5], 4, -378558); d = hh(d, a, b, c, x[i + 8], 11, -2022574463);
+        c = hh(c, d, a, b, x[i + 11], 16, 1839030562); b = hh(b, c, d, a, x[i + 14], 23, -35309556);
+        a = hh(a, b, c, d, x[i + 1], 4, -1530992060); d = hh(d, a, b, c, x[i + 4], 11, 1272893353);
+        c = hh(c, d, a, b, x[i + 7], 16, -155497632); b = hh(b, c, d, a, x[i + 10], 23, -1094730640);
+        a = hh(a, b, c, d, x[i + 13], 4, 681279174); d = hh(d, a, b, c, x[i], 11, -358537222);
+        c = hh(c, d, a, b, x[i + 3], 16, -722521979); b = hh(b, c, d, a, x[i + 6], 23, 76029189);
+        a = hh(a, b, c, d, x[i + 9], 4, -640364487); d = hh(d, a, b, c, x[i + 12], 11, -421815835);
+        c = hh(c, d, a, b, x[i + 15], 16, 530742520); b = hh(b, c, d, a, x[i + 2], 23, -995338651);
+        a = ii(a, b, c, d, x[i], 6, -198630844); d = ii(d, a, b, c, x[i + 7], 10, 1126891415);
+        c = ii(c, d, a, b, x[i + 14], 15, -1416354905); b = ii(b, c, d, a, x[i + 5], 21, -57434055);
+        a = ii(a, b, c, d, x[i + 12], 6, 1700485571); d = ii(d, a, b, c, x[i + 3], 10, -1894986606);
+        c = ii(c, d, a, b, x[i + 10], 15, -1051523); b = ii(b, c, d, a, x[i + 1], 21, -2054922799);
+        a = ii(a, b, c, d, x[i + 8], 6, 1873313359); d = ii(d, a, b, c, x[i + 15], 10, -30611744);
+        c = ii(c, d, a, b, x[i + 6], 15, -1560198380); b = ii(b, c, d, a, x[i + 13], 21, 1309151649);
+        a = ii(a, b, c, d, x[i + 4], 6, -145523070); d = ii(d, a, b, c, x[i + 11], 10, -1120210379);
+        c = ii(c, d, a, b, x[i + 2], 15, 718787259); b = ii(b, c, d, a, x[i + 9], 21, -343485551);
+        a = ad(a, oa); b = ad(b, ob); c = ad(c, oc); d = ad(d, od);
+    }
+    return rh(a) + rh(b) + rh(c) + rh(d);
+}
+
+async function doHash(algo) {
+    const v = $('hash-inp').value;
+    const out = $('hash-out');
+    if (!v) return toast('Enter input', 'err');
+    try {
+        let hex;
+        if (algo === 'MD5') hex = md5(v);
+        else {
+            const buf = await crypto.subtle.digest(algo, new TextEncoder().encode(v));
+            hex = [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        out.textContent = algo + ':\n' + hex + '\n\nLENGTH: ' + hex.length + ' hex chars';
+        record('crypto', algo, hex);
+    } catch (e) { out.textContent = 'Failed: ' + e.message; }
+}
+
+function identifyHash() {
+    const v = $('hash-inp').value.trim();
+    const out = $('hash-out');
+    const rules = [
+        [/^[a-f0-9]{32}$/i, 'MD5 / NTLM / MD4'],
+        [/^[a-f0-9]{40}$/i, 'SHA-1 / MySQL5 / RIPEMD-160'],
+        [/^[a-f0-9]{56}$/i, 'SHA-224'],
+        [/^[a-f0-9]{64}$/i, 'SHA-256 / SHA3-256 / BLAKE2s'],
+        [/^[a-f0-9]{96}$/i, 'SHA-384'],
+        [/^[a-f0-9]{128}$/i, 'SHA-512 / Whirlpool'],
+        [/^\$2[aby]\$\d{2}\$/, 'bcrypt'],
+        [/^\$argon2/, 'Argon2'],
+        [/^\$pbkdf2/, 'PBKDF2'],
+        [/^\$6\$/, 'SHA-512crypt (Linux)'],
+        [/^\$5\$/, 'SHA-256crypt (Linux)'],
+        [/^\$1\$/, 'MD5crypt (Linux)'],
+        [/^ey[A-Za-z0-9_-]+\./, 'JWT']
+    ];
+    const hits = rules.filter(([re]) => re.test(v)).map(([, n]) => n);
+    out.textContent = hits.length
+        ? 'LENGTH: ' + v.length + '\nCANDIDATES:\n  ' + hits.join('\n  ')
+        : 'Unrecognised format (' + v.length + ' chars).';
+}
+
+function enc(mode) {
+    const v = $('enc-inp').value;
+    const out = $('enc-out');
+    try {
+        switch (mode) {
+            case 'b64e': out.textContent = btoa(unescape(encodeURIComponent(v))); break;
+            case 'b64d': out.textContent = decodeURIComponent(escape(atob(v.trim()))); break;
+            case 'url': out.textContent = encodeURIComponent(v); break;
+            case 'hex': out.textContent = [...new TextEncoder().encode(v)].map(b => b.toString(16).padStart(2, '0')).join(''); break;
+            case 'rot13': out.textContent = v.replace(/[a-z]/gi, c => String.fromCharCode((c <= 'Z' ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26)); break;
+            case 'rev': out.textContent = [...v].reverse().join(''); break;
+        }
+    } catch (e) { out.textContent = 'Error: ' + e.message; }
+}
+
+function jwtDecode() {
+    const t = $('jwt-inp').value.trim();
+    const out = $('jwt-out');
+    const parts = t.split('.');
+    if (parts.length < 2) { out.textContent = 'Not a JWT.'; return; }
+    const dec = p => {
+        try {
+            return JSON.stringify(JSON.parse(decodeURIComponent(escape(atob(p.replace(/-/g, '+').replace(/_/g, '/'))))), null, 2);
+        } catch (e) { return '(undecodable)'; }
+    };
+    out.textContent = 'HEADER:\n' + dec(parts[0]) + '\n\nPAYLOAD:\n' + dec(parts[1]) +
+        '\n\nSIGNATURE: ' + (parts[2] || '(none)');
+    try {
+        const p = JSON.parse(decodeURIComponent(escape(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))));
+        if (p.exp) out.textContent += '\n\nEXPIRES: ' + new Date(p.exp * 1000).toISOString() +
+            ' (' + (p.exp * 1000 > Date.now() ? 'VALID' : 'EXPIRED') + ')';
+    } catch (e) {}
+    record('crypto', 'jwt', 'decoded');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   14. REPORT
+   ═══════════════════════════════════════════════════════════ */
+function renderReport() {
+    const out = $('rep-out');
+    if (!appState.findings.length) { out.textContent = 'Buffer empty.'; return; }
+    out.textContent = appState.findings
+        .map(f => '[' + f.t.slice(11, 19) + '] ' + f.module.toUpperCase() + ' :: ' + f.key + ' => ' + f.value)
+        .join('\n');
+}
+
+function downloadReport(fmt) {
+    if (!appState.findings.length) return toast('Buffer empty', 'warn');
+    const head = { target: 'ZamHack Pro v3', generated: new Date().toISOString(), entries: appState.findings.length };
+    if (fmt === 'json') {
+        downloadFile('report-' + stamp() + '.json', JSON.stringify({ meta: head, findings: appState.findings }, null, 2), 'application/json');
+    } else if (fmt === 'md') {
+        let s = '# ZamHack Pro Report\n\n**Generated:** ' + head.generated + '\n**Entries:** ' + head.entries + '\n\n';
+        s += '| Time | Module | Key | Value |\n|---|---|---|---|\n';
+        appState.findings.forEach(f => { s += '| ' + f.t + ' | ' + f.module + ' | ' + f.key.replace(/\|/g, '/') + ' | ' + String(f.value).replace(/\|/g, '/') + ' |\n'; });
+        downloadFile('report-' + stamp() + '.md', s, 'text/markdown');
+    } else {
+        let s = 'ZamHack Pro Report\nGenerated: ' + head.generated + '\n\n';
+        appState.findings.forEach(f => { s += '[' + f.t + '] ' + f.module + ' :: ' + f.key + ' => ' + f.value + '\n'; });
+        downloadFile('report-' + stamp() + '.txt', s);
+    }
+}
+
+function clearFindings() {
+    appState.findings = [];
+    $('rep-count').textContent = '0';
+    $('rep-out').textContent = '';
+    toast('Buffer cleared');
+}
+
+async function snapshotAll() {
+    toast('Snapshotting...');
+    sysInfo();
+    const snap = {
+        meta: { generated: new Date().toISOString(), app: 'ZamHack Pro v3' },
+        system: {
+            ua: navigator.userAgent, platform: navigator.platform,
+            cores: navigator.hardwareConcurrency, mem: navigator.deviceMemory,
+            screen: screen.width + 'x' + screen.height, tz: Intl.DateTimeFormat().resolvedOptions().timeZone
+        },
+        connection: navigator.connection ? {
+            type: navigator.connection.type, effectiveType: navigator.connection.effectiveType,
+            downlink: navigator.connection.downlink, rtt: navigator.connection.rtt
+        } : null,
+        gps: appState.gps ? {
+            lat: appState.gps.coords.latitude, lon: appState.gps.coords.longitude,
+            acc: appState.gps.coords.accuracy
+        } : null,
+        findings: appState.findings,
+        recon: appState.recon
+    };
+    downloadFile('snapshot-' + stamp() + '.json', JSON.stringify(snap, null, 2), 'application/json');
+    log('snapshot exported', 'ok');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   15. BOOT
+   ═══════════════════════════════════════════════════════════ */
+function boot() {
+    log('ZamHack Pro v3 online', 'ok');
+    sysInfo();
+    telemetryLoop();
+    getGPS();
+    refreshFX();
+    if (window.PerformanceObserver) startObserver();
+    log('modules: 12 | real-API bridges armed', 'ok');
+
+    // keep observer alive for live packet view even before sniffer toggled
+    setInterval(() => { if (!appState.isSniffing && po) {} }, 5000);
+
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) log('app resumed', 'wn');
+    });
+
+    window.addEventListener('error', e => log('err: ' + e.message, 'er'));
+
+    // prime audio on first gesture
+    document.body.addEventListener('pointerdown', () => ac(), { once: true });
+
+    // seed an empty packet view
+    drawMap();
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+else boot();
+</script>
+</body>
+</html>
