@@ -1,4 +1,101 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="theme-color" content="#05070a">
+<title>ZMT/Huck Pro — Full</title>
+<style>
+:root{
+  --bg:#05070a; --panel:#0a0f14; --panel2:#0e151c; --line:#16323f;
+  --green:#00ff9c; --blue:#22d3ee; --dim:#4b7a8a; --warn:#ffb020;
+  --bad:#ff3b5c; --txt:#b9f2e2; --mono:'SF Mono',Menlo,Consolas,'Courier New',monospace; --r:3px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:var(--bg);color:var(--txt);font-family:var(--mono);font-size:12.5px;line-height:1.45;overflow:hidden;display:flex;flex-direction:column}
+#top{display:flex;align-items:center;gap:8px;padding:6px 10px;flex-shrink:0;background:linear-gradient(180deg,#0b1319,#070b0f);border-bottom:1px solid var(--line);font-size:10px;flex-wrap:wrap}
+.logo{color:var(--green);font-weight:700;font-size:13px;letter-spacing:1px;text-shadow:0 0 8px #00ff9c66}
+.logo b{color:var(--blue)}
+#status{display:flex;gap:9px;margin-left:auto;flex-wrap:wrap;font-size:9px}
+#status span{color:var(--dim)}
+#status b{color:var(--green);font-weight:600}
+#status b.bad{color:var(--bad)} #status b.warn{color:var(--warn)}
+#tabs{display:flex;gap:1px;background:var(--line);padding:1px;flex-shrink:0;overflow-x:auto}
+#tabs::-webkit-scrollbar{height:0}
+.tab{flex:0 0 auto;min-width:64px;background:var(--panel);color:var(--dim);border:0;padding:7px 6px;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;cursor:pointer}
+.tab:hover{color:var(--txt);background:var(--panel2)}
+.tab.on{background:var(--green);color:#03110b;box-shadow:0 0 12px #00ff9c55}
+#panels{flex:1;overflow-y:auto;padding:10px;min-height:0}
+.panel{display:none}
+.panel.on{display:block}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:10px;margin-bottom:9px}
+.card>h3{font-size:10px;letter-spacing:.7px;color:var(--blue);text-transform:uppercase;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap}
+.card>h3 em{font-style:normal;color:var(--dim);font-size:8.5px;letter-spacing:0}
+.row{display:flex;gap:6px;flex-wrap:wrap} .row>*{flex:1;min-width:88px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+input,textarea,select{width:100%;background:#03080c;color:var(--green);border:1px solid var(--line);border-radius:var(--r);padding:7px 8px;font-family:var(--mono);font-size:11.5px;margin-bottom:6px}
+input:focus,textarea:focus,select:focus{outline:0;border-color:var(--green);box-shadow:0 0 0 2px #00ff9c22}
+input::placeholder,textarea::placeholder{color:#2b4c58}
+textarea{resize:vertical;min-height:60px}
+select{cursor:pointer}
+label.chk{display:flex;align-items:center;gap:7px;font-size:10.5px;color:var(--dim);margin-bottom:6px;cursor:pointer}
+label.chk input{width:auto;margin:0;accent-color:var(--green)}
+button{background:#03110b;color:var(--green);border:1px solid var(--green);border-radius:var(--r);padding:8px 10px;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;cursor:pointer;width:100%;transition:.12s}
+button:hover{background:var(--green);color:#03110b}
+button:active{transform:scale(.98)}
+button.alt{color:var(--blue);border-color:var(--blue)} button.alt:hover{background:var(--blue);color:#03110b}
+button.ghost{color:var(--dim);border-color:var(--line)} button.ghost:hover{background:var(--panel2);color:var(--txt)}
+button.sm{padding:5px 7px;font-size:9px}
+button:disabled{opacity:.4}
+.kv{display:flex;justify-content:space-between;gap:8px;font-size:10.5px;padding:3px 0;border-bottom:1px dotted #12262f}
+.kv:last-child{border:0}
+.kv i{font-style:normal;color:var(--dim);flex-shrink:0}
+.kv b{color:var(--green);text-align:right;word-break:break-all;font-weight:600}
+.kv b.warn{color:var(--warn)} .kv b.bad{color:var(--bad)}
+pre.out{background:#03080c;border-left:2px solid var(--line);border-radius:var(--r);padding:7px;font-size:10px;white-space:pre-wrap;word-break:break-word;max-height:290px;overflow:auto;line-height:1.5}
+pre.out:empty{display:none}
+pre.out.ok{border-left-color:var(--green)} pre.out.bad{border-left-color:var(--bad)} pre.out.warn{border-left-color:var(--warn)}
+.badge{font-size:8px;border:1px solid currentColor;border-radius:2px;padding:1px 4px}
+.b-real{color:var(--green)} .b-sim{color:var(--warn)} .b-note{color:var(--blue)} .b-off{color:#7a5cff}
+.hint{font-size:9.5px;color:var(--dim);line-height:1.5;margin-top:5px}
+#termwrap{flex-shrink:0;border-top:1px solid var(--line);background:#03080c;display:flex;flex-direction:column}
+#termhead{display:flex;align-items:center;gap:8px;padding:4px 8px;background:var(--panel);font-size:9px;color:var(--dim);cursor:pointer;user-select:none}
+#termhead b{color:var(--green)} #termhead .sp{margin-left:auto}
+#term{height:168px;overflow-y:auto;padding:6px 8px;font-size:10.5px;line-height:1.5}
+#term.collapsed{height:0;padding:0 8px;overflow:hidden}
+#term div{white-space:pre-wrap;word-break:break-word;margin-bottom:1px}
+#term .in{color:var(--blue)} #term .ok{color:var(--green)} #term .er{color:var(--bad)}
+#term .wn{color:var(--warn)} #term .dm{color:var(--dim)}
+#term .hd{color:var(--blue);font-weight:700;border-bottom:1px solid var(--line);margin:6px 0 4px}
+#cmdbar{display:flex;gap:1px;background:var(--line);padding:1px}
+#cmdbar .pre{padding:8px 9px;background:var(--panel);color:var(--green);font-size:12px;font-weight:700}
+#cmd{flex:1;border:0;border-radius:0;margin:0;background:#03080c;padding:8px}
+#cmd:focus{box-shadow:none}
+#send{border:0;border-radius:0;width:70px;flex:0 0 70px}
+#toast{position:fixed;left:50%;bottom:70px;transform:translateX(-50%);background:var(--green);color:#03110b;font-weight:700;font-size:11px;padding:8px 14px;border-radius:var(--r);display:none;z-index:999;max-width:88vw;text-align:center}
+#toast.bad{background:var(--bad);color:#fff} #toast.warn{background:var(--warn)}
+iframe.embed{width:100%;height:300px;border:1px solid var(--line);border-radius:var(--r);background:#fff}
+table{width:100%;border-collapse:collapse;font-size:8.5px;margin-top:6px}
+th,td{border:1px solid #0f2a35;padding:3px;text-align:left;word-break:break-all}
+th{background:#0d2029}
+.chip{display:inline-block;font-size:8.5px;border:1px solid #175a4a;color:var(--dim);padding:2px 5px;margin:0 3px 3px 0;border-radius:2px}
+.chip.hit{border-color:var(--green);background:var(--green);color:#03110b}
+.chip.miss{border-color:#4a1c26;color:#8a4552}
+.chip.busy{border-color:var(--warn);color:var(--warn)}
+.pkt-box{height:110px;border:1px solid var(--line);position:relative;margin-bottom:8px;background:#03080c;overflow:hidden}
+.pkt{position:absolute;background:var(--green);color:#03110b;font-size:7px;padding:1px 3px;border-radius:2px;white-space:nowrap}
+canvas{display:block;width:100%;background:#03080c;border:1px solid var(--line)}
+.progress-bg{background:var(--panel2);height:8px;border:1px solid var(--line);margin:5px 0;border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:var(--green);width:0;transition:width .2s}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:#03080c}
+::-webkit-scrollbar-thumb{background:#16323f;border-radius:4px}
+@media(max-width:520px){.g2,.g3{grid-template-columns:1fr}#term{height:128px}}
+</style>
+</head>
+<body>
 
 <div id="top">
   <div class="logo">ZMT<b>/</b>HUCK</div>
@@ -35,7 +132,7 @@
 
 <div id="panels">
 
-
+<!-- SHELL -->
 <div class="panel on" id="p-shell">
   <div class="card">
     <h3>Command Deck <em>bar below</em></h3>
@@ -54,15 +151,13 @@
   </div>
   <div class="card">
     <h3>RUN Block</h3>
-    <textarea id="runblock" placeholder="DASH
-RECON https://example.com
-SAVE_OUTPUT recon"></textarea>
-    <button class="alt">EXECUTE BLOCK</button>
+    <textarea id="runblock" placeholder="DASH&#10;RECON https://example.com&#10;SAVE_OUTPUT recon"></textarea>
+    <button class="alt" onclick="runBlock()">EXECUTE BLOCK</button>
   </div>
   <div class="card"><h3>Output</h3><pre class="out" id="lastout"></pre></div>
 </div>
 
-
+<!-- DASH -->
 <div class="panel" id="p-dash">
   <div class="card">
     <h3>Device <span class="badge b-real">LOCAL</span></h3>
@@ -72,7 +167,7 @@ SAVE_OUTPUT recon"></textarea>
     <div class="kv"><i>TZ</i><b id="d-tz">---</b></div>
     <div class="kv"><i>DEVICE ID</i><b id="d-id">---</b></div>
     <div class="kv"><i>UPTIME</i><b id="d-up">00:00:00</b></div>
-    <button class="sm">FULL INTEL</button>
+    <button class="sm" onclick="ui('PHONE_INTEL')">FULL INTEL</button>
   </div>
   <div class="card">
     <h3>Link <span class="badge b-real">LOCAL</span></h3>
@@ -81,11 +176,11 @@ SAVE_OUTPUT recon"></textarea>
     <div class="kv"><i>RTT</i><b id="l-rtt">---</b></div>
     <div class="kv"><i>SSID</i><b id="l-ssid">---</b></div>
     <div class="kv"><i>LOCAL IP</i><b id="l-ip">---</b></div>
-    <button class="sm">READ WIFI</button>
+    <button class="sm" onclick="ui('WIFI')">READ WIFI</button>
   </div>
   <div class="card">
     <h3>Interfaces <span class="badge b-real">LOCAL</span></h3>
-    <button class="sm">ENUMERATE</button>
+    <button class="sm" onclick="ui('IFACES')">ENUMERATE</button>
     <pre class="out" id="if-out"></pre>
   </div>
   <div class="card">
@@ -93,7 +188,7 @@ SAVE_OUTPUT recon"></textarea>
     <div class="kv"><i>LAT</i><b id="g-lat">---</b></div>
     <div class="kv"><i>LON</i><b id="g-lon">---</b></div>
     <div class="kv"><i>ACC</i><b id="g-acc">---</b></div>
-    <button class="sm">ACQUIRE</button>
+    <button class="sm" onclick="ui('GPS')">ACQUIRE</button>
   </div>
   <div class="card">
     <h3>Battery <span class="badge b-real">LOCAL</span></h3>
@@ -103,72 +198,72 @@ SAVE_OUTPUT recon"></textarea>
   <div class="card"><h3>Event Log</h3><div id="evlog" class="hint"></div></div>
 </div>
 
-
+<!-- USSD -->
 <div class="panel" id="p-ussd">
   <div class="card">
     <h3>Dial <span class="badge b-real">REAL</span></h3>
-    <div class="row"><input type="tel" id="ussd-code" value="*185#"><button class="sm" style="flex:0 0 76px">SEND</button></div>
+    <div class="row"><input type="tel" id="ussd-code" value="*185#"><button class="sm" style="flex:0 0 76px" onclick="ui('USSD '+v('ussd-code'))">SEND</button></div>
     <pre class="out" id="ussd-out"></pre>
     <p class="hint">Parses balance / data / loan fields. On mobile the code is also handed to the native dialer.</p>
   </div>
   <div class="card">
     <h3>MTN</h3>
     <div class="g2">
-      <button>BALANCE</button><button>DATA</button>
-      <button class="sm">MOMO</button><button class="sm">ME2U</button>
+      <button onclick="qU('*185#')">BALANCE</button><button onclick="qU('*334#')">DATA</button>
+      <button class="sm" onclick="qU('*303#')">MOMO</button><button class="sm" onclick="qU('*156#')">ME2U</button>
     </div>
   </div>
   <div class="card">
     <h3>AIRTEL</h3>
     <div class="g2">
-      <button>MENU</button><button>LOAN</button>
-      <button class="sm">BALANCE</button><button class="sm">MONEY</button>
+      <button onclick="qU('*111#')">MENU</button><button onclick="qU('*791#')">LOAN</button>
+      <button class="sm" onclick="qU('*778#')">BALANCE</button><button class="sm" onclick="qU('*140#')">MONEY</button>
     </div>
   </div>
   <div class="card">
     <h3>ZAMTEL</h3>
     <div class="g2">
-      <button>TOP UP</button><button>SOS</button>
-      <button class="sm">BALANCE</button><button class="sm">KWACHA</button>
+      <button onclick="qU('*123#')">TOP UP</button><button onclick="qU('*321#')">SOS</button>
+      <button class="sm" onclick="qU('*333#')">BALANCE</button><button class="sm" onclick="qU('*200#')">KWACHA</button>
     </div>
   </div>
   <div class="card">
     <h3>History <span class="badge b-off">OFFLINE</span></h3>
     <pre class="out" id="ussd-log"></pre>
-    <div class="g2"><button class="sm">SHOW</button><button class="sm">CLEAR</button></div>
+    <div class="g2"><button class="sm" onclick="ui('USSD HIST')">SHOW</button><button class="sm" onclick="ui('USSD CLEAR')">CLEAR</button></div>
   </div>
 </div>
 
-
+<!-- PKT -->
 <div class="panel" id="p-pkt">
   <div class="card">
     <h3>Traffic <span class="badge b-real">OBSERVER</span></h3>
     <div class="pkt-box" id="viz"></div>
-    <div class="g2"><button id="sniff-btn">START</button><button>CLEAR</button></div>
+    <div class="g2"><button id="sniff-btn" onclick="toggleSniff()">START</button><button onclick="clearPkts()">CLEAR</button></div>
     <div class="kv"><i>COUNT</i><b id="p-count">0</b></div>
     <div class="kv"><i>BYTES</i><b id="p-bytes">0</b></div>
     <table><thead><tr><th>T</th><th>Host</th><th>Type</th><th>Len</th><th>ms</th></tr></thead><tbody id="p-body"></tbody></table>
-    <button class="sm" style="margin-top:6px">EXPORT CSV</button>
+    <button class="sm" style="margin-top:6px" onclick="ui('SNIFF EXPORT')">EXPORT CSV</button>
   </div>
   <div class="card">
     <h3>Header Injection <span class="badge b-real">REAL</span></h3>
     <input id="pkt-h" placeholder="X-Premium"><input id="pkt-v" placeholder="true">
-    <div class="g2"><button>SET</button><button class="ghost">SHOW</button></div>
+    <div class="g2"><button onclick="ui('PKT SET '+v('pkt-h')+' '+v('pkt-v'))">SET</button><button class="ghost" onclick="ui('PKT SHOW')">SHOW</button></div>
     <div id="pkt-list" style="margin-top:6px"></div>
   </div>
   <div class="card">
     <h3>WebRTC Leak <span class="badge b-real">LOCAL</span></h3>
-    <button>PROBE ICE</button>
+    <button onclick="ui('RTC')">PROBE ICE</button>
     <pre class="out" id="rtc-out"></pre>
   </div>
 </div>
 
-
+<!-- SOCIAL -->
 <div class="panel" id="p-social">
   <div class="card">
     <h3>Handle Sweep <span class="badge b-real">ONLINE</span></h3>
     <input id="handle" placeholder="username">
-    <div class="g2"><button>SWEEP 16</button><button>ABORT</button></div>
+    <div class="g2"><button onclick="ui('SWEEP '+v('handle'))">SWEEP 16</button><button onclick="stopSweep=true">ABORT</button></div>
     <div class="progress-bg"><div id="sw-prog" class="progress-fill"></div></div>
     <div id="sw-grid" style="margin-top:6px"></div>
     <pre class="out" id="sw-out"></pre>
@@ -176,35 +271,35 @@ SAVE_OUTPUT recon"></textarea>
   <div class="card" style="border-color:#1877F2">
     <h3 style="color:#1877F2">Facebook</h3>
     <input id="fb-in" placeholder="username or ID">
-    <div class="g2"><button style="color:#1877F2;border-color:#1877F2">SCRAPE</button><button class="ghost">OPEN</button></div>
+    <div class="g2"><button style="color:#1877F2;border-color:#1877F2" onclick="ui('FB '+v('fb-in'))">SCRAPE</button><button class="ghost" onclick="window.open('https://facebook.com/'+v('fb-in'),'_blank')">OPEN</button></div>
     <pre class="out" id="fb-out"></pre>
   </div>
   <div class="card" style="border-color:#25D366">
     <h3 style="color:#25D366">WhatsApp</h3>
     <input type="tel" id="wa-in" placeholder="+260...">
-    <div class="g2"><button style="color:#25D366;border-color:#25D366">SESSION</button><button class="ghost">PRESENCE</button></div>
+    <div class="g2"><button style="color:#25D366;border-color:#25D366" onclick="ui('WA '+v('wa-in'))">SESSION</button><button class="ghost" onclick="ui('WA '+v('wa-in')+' presence')">PRESENCE</button></div>
     <pre class="out" id="wa-out"></pre>
   </div>
   <div class="card" style="border-color:#f09433">
     <h3 style="color:#f09433">Instagram</h3>
     <input id="ig-in" placeholder="handle">
-    <div class="g2"><button style="color:#f09433;border-color:#f09433">SCRAPE</button><button class="ghost">OPEN</button></div>
+    <div class="g2"><button style="color:#f09433;border-color:#f09433" onclick="ui('IG '+v('ig-in'))">SCRAPE</button><button class="ghost" onclick="window.open('https://instagram.com/'+v('ig-in'),'_blank')">OPEN</button></div>
     <pre class="out" id="ig-out"></pre>
   </div>
   <div class="card" style="border-color:#25f4ee">
     <h3 style="color:#25f4ee">TikTok</h3>
     <input id="tt-in" placeholder="handle">
-    <button style="color:#25f4ee;border-color:#25f4ee">OEMBED</button>
+    <button style="color:#25f4ee;border-color:#25f4ee" onclick="ui('TT '+v('tt-in'))">OEMBED</button>
     <pre class="out" id="tt-out"></pre>
   </div>
   <div class="card">
     <h3>X / TG / REDDIT / GH</h3>
     <input id="misc-in" placeholder="handle">
     <div class="g2">
-      <button class="sm">X</button>
-      <button class="sm">TELEGRAM</button>
-      <button class="sm">REDDIT</button>
-      <button class="sm">GITHUB</button>
+      <button class="sm" onclick="ui('XPROBE '+v('misc-in'))">X</button>
+      <button class="sm" onclick="ui('TG '+v('misc-in'))">TELEGRAM</button>
+      <button class="sm" onclick="ui('REDDIT '+v('misc-in'))">REDDIT</button>
+      <button class="sm" onclick="ui('GITHUB '+v('misc-in'))">GITHUB</button>
     </div>
     <pre class="out" id="misc-out"></pre>
   </div>
@@ -216,50 +311,50 @@ SAVE_OUTPUT recon"></textarea>
       <option value="whatsapp.com">WhatsApp</option><option value="linkedin.com">LinkedIn</option>
     </select>
     <textarea id="soc-cookie" placeholder="c_user=...; xs=...; datr=..."></textarea>
-    <div class="g2"><button>STORE</button><button class="ghost">LIST</button></div>
+    <div class="g2"><button onclick="saveCookie()">STORE</button><button class="ghost" onclick="ui('VAULT COOKIES')">LIST</button></div>
     <p class="hint">Cookies attach automatically to any matching host in RECON / SRC / ANALYSE / FB / IG.</p>
   </div>
   <div class="card">
     <h3>Evasion <span class="badge b-real">REAL</span></h3>
-    <label class="chk"><input type="checkbox" id="cfg-jitter"> Randomised delay</label>
-    <label class="chk"><input type="checkbox" id="cfg-uarot"> Rotate User-Agent</label>
+    <label class="chk"><input type="checkbox" id="cfg-jitter" onchange="setCfg('jitter',this.checked)"> Randomised delay</label>
+    <label class="chk"><input type="checkbox" id="cfg-uarot" onchange="setCfg('uaRotate',this.checked)"> Rotate User-Agent</label>
     <div class="kv"><i>UA</i><b id="ua-show">---</b></div>
-    <button class="ghost sm">ROLL UA</button>
+    <button class="ghost sm" onclick="rollUA()">ROLL UA</button>
   </div>
   <div class="card">
     <h3>Auth Bypass <span class="badge b-note">VECTORS</span></h3>
-    <label class="chk"><input type="checkbox" id="cfg-hdr"> Header spoof (X-Premium / Auth / X-Device-ID)</label>
-    <label class="chk"><input type="checkbox" id="cfg-token"> Token replay on 401/403</label>
-    <label class="chk"><input type="checkbox" id="cfg-incap"> Incapsula cookie handler</label>
-    <button class="alt sm">COPY JS INJECTOR</button>
+    <label class="chk"><input type="checkbox" id="cfg-hdr" onchange="setCfg('spoofHeaders',this.checked)"> Header spoof (X-Premium / Auth / X-Device-ID)</label>
+    <label class="chk"><input type="checkbox" id="cfg-token" onchange="setCfg('tokenReplay',this.checked)"> Token replay on 401/403</label>
+    <label class="chk"><input type="checkbox" id="cfg-incap" onchange="setCfg('incapsula',this.checked)"> Incapsula cookie handler</label>
+    <button class="alt sm" onclick="injectBookmarklet()">COPY JS INJECTOR</button>
     <div id="soc-log" class="hint"></div>
   </div>
 </div>
 
-
+<!-- PAYWALL -->
 <div class="panel" id="p-paywall">
   <div class="card">
     <h3>Purge <span class="badge b-real">ONLINE</span></h3>
     <input id="pw-url" placeholder="https://target/article">
-    <button>ENACT</button>
-    <div class="g2"><button class="sm">ARCHIVE</button><button class="sm">TEXT EXTRACT</button></div>
+    <button onclick="ui('PAYWALL '+v('pw-url'))">ENACT</button>
+    <div class="g2"><button class="sm" onclick="ui('ARCHIVE '+v('pw-url'))">ARCHIVE</button><button class="sm" onclick="ui('JINA '+v('pw-url'))">TEXT EXTRACT</button></div>
     <pre class="out" id="pw-out"></pre>
   </div>
   <div class="card">
     <h3>Overlay Killer <span class="badge b-off">OFFLINE</span></h3>
-    <button>COPY BOOKMARKLET</button>
-    <textarea id="bm" readonly="" style="font-size:8.5px;margin-top:6px"></textarea>
-    <div class="g2"><button class="ghost sm">OPEN URL</button><button class="ghost sm">ARCHIVE.PH</button></div>
+    <button onclick="injectBookmarklet()">COPY BOOKMARKLET</button>
+    <textarea id="bm" readonly style="font-size:8.5px;margin-top:6px"></textarea>
+    <div class="g2"><button class="ghost sm" onclick="ui('OPEN '+v('pw-url'))">OPEN URL</button><button class="ghost sm" onclick="window.open('https://archive.ph/newest/'+v('pw-url'),'_blank')">ARCHIVE.PH</button></div>
   </div>
   <div class="card">
     <h3>Embed</h3>
     <input id="embed-url" placeholder="https://target">
-    <button class="ghost">LOAD FRAME</button>
+    <button class="ghost" onclick="ui('OPEN '+v('embed-url')+' embed')">LOAD FRAME</button>
     <div id="embed-box"></div>
   </div>
 </div>
 
-
+<!-- NET -->
 <div class="panel" id="p-net">
   <div class="card">
     <h3>Carrier Read <span class="badge b-real">LOCAL</span></h3>
@@ -269,164 +364,164 @@ SAVE_OUTPUT recon"></textarea>
     <div class="kv"><i>ROAMING</i><b id="n-roam">---</b></div>
     <div class="kv"><i>NET TYPE</i><b id="n-type">---</b></div>
     <div class="kv"><i>SIGNAL</i><b id="n-dbm">---</b></div>
-    <button>DEEP SCAN RAN</button>
+    <button onclick="ui('RAN')">DEEP SCAN RAN</button>
     <canvas id="map" width="440" height="140"></canvas>
-    <button class="ghost sm" style="margin-top:6px">REDRAW</button>
+    <button class="ghost sm" style="margin-top:6px" onclick="drawMap()">REDRAW</button>
   </div>
   <div class="card">
     <h3>Cells <span class="badge b-sim">SIM</span></h3>
-    <button class="sm">ENUMERATE</button>
+    <button class="sm" onclick="ui('CELLS')">ENUMERATE</button>
     <pre class="out" id="cell-out"></pre>
   </div>
   <div class="card">
     <h3>DNS <span class="badge b-real">ONLINE</span></h3>
     <input id="dns-d" placeholder="example.com">
     <div class="g3">
-      <button class="sm">A</button>
-      <button class="sm">MX</button>
-      <button class="sm">TXT</button>
-      <button class="sm">NS</button>
-      <button class="sm">AAAA</button>
-      <button class="sm">CNAME</button>
+      <button class="sm" onclick="ui('DNS A '+v('dns-d'))">A</button>
+      <button class="sm" onclick="ui('DNS MX '+v('dns-d'))">MX</button>
+      <button class="sm" onclick="ui('DNS TXT '+v('dns-d'))">TXT</button>
+      <button class="sm" onclick="ui('DNS NS '+v('dns-d'))">NS</button>
+      <button class="sm" onclick="ui('DNS AAAA '+v('dns-d'))">AAAA</button>
+      <button class="sm" onclick="ui('DNS CNAME '+v('dns-d'))">CNAME</button>
     </div>
     <pre class="out" id="dns-out"></pre>
   </div>
 </div>
 
-
+<!-- ISP -->
 <div class="panel" id="p-isp">
   <div class="card">
     <h3>Egress <span class="badge b-real">ONLINE</span></h3>
-    <button>PROBE</button>
-    <div class="g2"><button class="sm">CF TRACE</button><button class="sm">ASN</button></div>
+    <button onclick="ui('IP_ADDR')">PROBE</button>
+    <div class="g2"><button class="sm" onclick="ui('COMMAND cf')">CF TRACE</button><button class="sm" onclick="ui('COMMAND asn')">ASN</button></div>
     <pre class="out" id="eg-out"></pre>
   </div>
   <div class="card">
     <h3>Latency <span class="badge b-real">ONLINE</span></h3>
-    <button>MEASURE</button>
+    <button onclick="ui('LATENCY')">MEASURE</button>
     <pre class="out" id="lat-out"></pre>
   </div>
   <div class="card">
     <h3>Reverse PTR <span class="badge b-real">ONLINE</span></h3>
     <input id="ptr-ip" placeholder="8.8.8.8">
-    <button class="sm">RESOLVE</button>
+    <button class="sm" onclick="ui('PTR '+v('ptr-ip'))">RESOLVE</button>
     <pre class="out" id="ptr-out"></pre>
   </div>
 </div>
 
-
+<!-- RECON -->
 <div class="panel" id="p-recon">
   <div class="card">
     <h3>Domain <span class="badge b-real">ONLINE</span></h3>
     <input id="rc-d" placeholder="target.com">
     <div class="g2">
-      <button>CT SUBDOMAINS</button>
-      <button>ROBOTS</button>
-      <button class="sm">FINGERPRINT</button>
-      <button class="sm">HTTP STATUS</button>
+      <button onclick="ui('SCAN '+v('rc-d'))">CT SUBDOMAINS</button>
+      <button onclick="ui('ROBOTS '+v('rc-d'))">ROBOTS</button>
+      <button class="sm" onclick="ui('TECH '+v('rc-d'))">FINGERPRINT</button>
+      <button class="sm" onclick="ui('HDRS '+v('rc-d'))">HTTP STATUS</button>
     </div>
     <pre class="out" id="rc-out"></pre>
     <div class="g2" style="margin-top:6px">
-      <button class="sm">WHOIS/DNS</button>
-      <button class="sm">ANALYSE</button>
+      <button class="sm" onclick="ui('DOMAIN '+v('rc-d'))">WHOIS/DNS</button>
+      <button class="sm" onclick="ui('ANALYSE https://'+v('rc-d'))">ANALYSE</button>
     </div>
   </div>
   <div class="card">
     <h3>Phone Intel <span class="badge b-off">OFFLINE</span></h3>
     <input type="tel" id="ph-in" placeholder="+260977123456">
-    <button>ANALYSE</button>
+    <button onclick="ui('COMMAND phone '+v('ph-in'))">ANALYSE</button>
     <pre class="out" id="ph-out"></pre>
   </div>
   <div class="card">
     <h3>Breach <span class="badge b-real">ONLINE</span></h3>
     <input id="br-in" placeholder="email or password">
-    <div class="g2"><button class="sm">PASSWORD</button><button class="sm">EMAIL</button></div>
+    <div class="g2"><button class="sm" onclick="ui('BREACH pw '+v('br-in'))">PASSWORD</button><button class="sm" onclick="ui('BREACH '+v('br-in'))">EMAIL</button></div>
     <pre class="out" id="br-out"></pre>
   </div>
 </div>
 
-
+<!-- SCAN -->
 <div class="panel" id="p-scan">
   <div class="card">
     <h3>Port Probe <span class="badge b-real">ONLINE</span></h3>
     <input id="sc-host" placeholder="host / IP">
     <input id="sc-ports" value="21,22,23,25,53,80,110,143,443,445,993,995,3306,3389,5432,6379,8080,8443,27017">
-    <button>SCAN</button>
+    <button onclick="ui('COMMAND ports '+v('sc-host')+' '+v('sc-ports'))">SCAN</button>
     <div class="progress-bg"><div id="sc-prog" class="progress-fill"></div></div>
     <pre class="out" id="sc-out"></pre>
   </div>
   <div class="card">
     <h3>TLS Certificate <span class="badge b-real">ONLINE</span></h3>
     <input id="tls-h" placeholder="host">
-    <button>INSPECT</button>
+    <button onclick="ui('COMMAND tls '+v('tls-h'))">INSPECT</button>
     <pre class="out" id="tls-out"></pre>
   </div>
 </div>
 
-
+<!-- SRC -->
 <div class="panel" id="p-src">
   <div class="card">
     <h3>Source <span class="badge b-real">ONLINE</span></h3>
     <input id="src-u" placeholder="https://target">
-    <div class="g2"><button>FETCH</button><button>TEXT ONLY</button></div>
+    <div class="g2"><button onclick="ui('SRC '+v('src-u'))">FETCH</button><button onclick="ui('SRC '+v('src-u')+' text')">TEXT ONLY</button></div>
     <div class="kv"><i>BYTES</i><b id="src-sz">0</b></div>
-    <div class="g2"><button class="sm">DOWNLOAD</button><button class="sm">COPY</button></div>
+    <div class="g2"><button class="sm" onclick="saveSrc()">DOWNLOAD</button><button class="sm" onclick="copy(srcBuf)">COPY</button></div>
     <pre class="out" id="src-out" style="max-height:300px;font-size:8.5px"></pre>
   </div>
   <div class="card">
     <h3>Harvest <span class="badge b-off">OFFLINE</span></h3>
-    <button>LINKS / SCRIPTS / FORMS</button>
+    <button onclick="ui('HARVEST')">LINKS / SCRIPTS / FORMS</button>
     <pre class="out" id="hv-out"></pre>
   </div>
 </div>
 
-
+<!-- VAULT -->
 <div class="panel" id="p-vault">
   <div class="card">
     <h3>Storage <span class="badge b-real">LOCAL</span></h3>
     <div class="g2">
-      <button class="sm">COOKIES</button>
-      <button class="sm">LOCALSTORAGE</button>
-      <button class="sm">SESSION</button>
-      <button class="sm">INDEXEDDB</button>
+      <button class="sm" onclick="ui('COOKIES')">COOKIES</button>
+      <button class="sm" onclick="ui('LS')">LOCALSTORAGE</button>
+      <button class="sm" onclick="ui('SS')">SESSION</button>
+      <button class="sm" onclick="ui('IDB')">INDEXEDDB</button>
     </div>
     <pre class="out" id="st-out" style="max-height:260px"></pre>
-    <div class="g2" style="margin-top:6px"><button class="sm">EXPORT</button><button class="sm">CLIPBOARD</button></div>
+    <div class="g2" style="margin-top:6px"><button class="sm" onclick="ui('COMMAND exportstore')">EXPORT</button><button class="sm" onclick="ui('NATIVE clip')">CLIPBOARD</button></div>
   </div>
   <div class="card">
     <h3>Fingerprint <span class="badge b-real">LOCAL</span></h3>
-    <button>GENERATE</button>
+    <button onclick="ui('FINGERPRINT')">GENERATE</button>
     <pre class="out" id="fp-out"></pre>
   </div>
   <div class="card">
     <h3>Permissions <span class="badge b-real">LOCAL</span></h3>
-    <button class="sm">AUDIT</button>
+    <button class="sm" onclick="ui('PERMS')">AUDIT</button>
     <pre class="out" id="perm-out"></pre>
   </div>
   <div class="card">
     <h3>SMS <span class="badge b-sim">SIM</span></h3>
-    <button class="sm">READ 25</button>
+    <button class="sm" onclick="ui('SMS')">READ 25</button>
     <pre class="out" id="sms-out"></pre>
   </div>
   <div class="card">
     <h3>Vault Keys <span class="badge b-real">LOCAL</span></h3>
     <input id="v-k" placeholder="key"><input id="v-v" placeholder="value">
-    <div class="g2"><button class="sm">SET</button><button class="sm">LIST</button></div>
+    <div class="g2"><button class="sm" onclick="ui('VAULT SET '+v('v-k')+' '+v('v-v'))">SET</button><button class="sm" onclick="ui('VAULT LIST')">LIST</button></div>
   </div>
 </div>
 
-
+<!-- CRYPTO -->
 <div class="panel" id="p-crypto">
   <div class="card">
     <h3>Hash <span class="badge b-off">OFFLINE</span></h3>
     <textarea id="h-in" placeholder="input"></textarea>
     <div class="g3">
-      <button class="sm">MD5</button>
-      <button class="sm">SHA1</button>
-      <button class="sm">SHA256</button>
-      <button class="sm">SHA384</button>
-      <button class="sm">SHA512</button>
-      <button class="sm">IDENTIFY</button>
+      <button class="sm" onclick="ui('CRYPTO HASH MD5 '+v('h-in'))">MD5</button>
+      <button class="sm" onclick="ui('CRYPTO HASH SHA-1 '+v('h-in'))">SHA1</button>
+      <button class="sm" onclick="ui('CRYPTO HASH SHA-256 '+v('h-in'))">SHA256</button>
+      <button class="sm" onclick="ui('CRYPTO HASH SHA-384 '+v('h-in'))">SHA384</button>
+      <button class="sm" onclick="ui('CRYPTO HASH SHA-512 '+v('h-in'))">SHA512</button>
+      <button class="sm" onclick="ui('HASHID')">IDENTIFY</button>
     </div>
     <pre class="out" id="h-out"></pre>
   </div>
@@ -434,12 +529,12 @@ SAVE_OUTPUT recon"></textarea>
     <h3>Encode <span class="badge b-off">OFFLINE</span></h3>
     <textarea id="e-in" placeholder="input"></textarea>
     <div class="g3">
-      <button class="sm">B64E</button>
-      <button class="sm">B64D</button>
-      <button class="sm">URL</button>
-      <button class="sm">HEX</button>
-      <button class="sm">ROT13</button>
-      <button class="sm">REV</button>
+      <button class="sm" onclick="ui('B64 enc '+v('e-in'))">B64E</button>
+      <button class="sm" onclick="ui('B64 dec '+v('e-in'))">B64D</button>
+      <button class="sm" onclick="ui('B64 url '+v('e-in'))">URL</button>
+      <button class="sm" onclick="ui('B64 hex '+v('e-in'))">HEX</button>
+      <button class="sm" onclick="ui('B64 rot '+v('e-in'))">ROT13</button>
+      <button class="sm" onclick="ui('B64 rev '+v('e-in'))">REV</button>
     </div>
     <pre class="out" id="e-out"></pre>
   </div>
@@ -447,32 +542,32 @@ SAVE_OUTPUT recon"></textarea>
     <h3>AES / RSA <span class="badge b-off">OFFLINE</span></h3>
     <input id="aes-pass" placeholder="passphrase">
     <input id="aes-text" placeholder="text or base64">
-    <div class="g2"><button class="sm">AES ENC</button><button class="sm">AES DEC</button></div>
-    <div class="g2"><button class="sm">RSA GEN</button><button class="sm">RSA ENC</button></div>
-    <button class="sm">RSA DEC</button>
+    <div class="g2"><button class="sm" onclick="ui('CRYPTO AES ENC '+v('aes-text')+' '+v('aes-pass'))">AES ENC</button><button class="sm" onclick="ui('CRYPTO AES DEC '+v('aes-text')+' '+v('aes-pass'))">AES DEC</button></div>
+    <div class="g2"><button class="sm" onclick="ui('CRYPTO RSA GEN')">RSA GEN</button><button class="sm" onclick="ui('CRYPTO RSA ENC '+v('aes-text'))">RSA ENC</button></div>
+    <button class="sm" onclick="ui('CRYPTO RSA DEC '+v('aes-text'))">RSA DEC</button>
     <pre class="out" id="aes-out"></pre>
   </div>
   <div class="card">
     <h3>JWT <span class="badge b-off">OFFLINE</span></h3>
     <textarea id="j-in" placeholder="eyJ..."></textarea>
-    <button>DECODE</button>
+    <button onclick="ui('JWT '+v('j-in'))">DECODE</button>
     <pre class="out" id="j-out"></pre>
   </div>
   <div class="card">
     <h3>Password / Email <span class="badge b-off">OFFLINE</span></h3>
     <input id="pw-len" placeholder="length (20)" type="number">
-    <button class="sm">GENERATE</button>
+    <button class="sm" onclick="ui('PASSWORD '+v('pw-len'))">GENERATE</button>
     <input id="em-in" placeholder="address@host.tld">
-    <button class="sm">VALIDATE</button>
+    <button class="sm" onclick="ui('EMAIL '+v('em-in'))">VALIDATE</button>
     <pre class="out" id="pe-out"></pre>
   </div>
 </div>
 
-
+<!-- SIM -->
 <div class="panel" id="p-sim">
   <div class="card">
     <h3>Carrier Profile <span class="badge b-sim">SIM</span></h3>
-    <select id="carrier">
+    <select id="carrier" onchange="setCarrier(this.value)">
       <option value="auto">Auto-detect</option><option value="mtn">MTN Zambia</option>
       <option value="airtel">Airtel Zambia</option><option value="zamtel">Zamtel</option>
       <option value="liquid">Liquid Intelligent</option>
@@ -482,7 +577,7 @@ SAVE_OUTPUT recon"></textarea>
   </div>
   <div class="card">
     <h3>APN Swapper <span class="badge b-sim">SIM</span></h3>
-    <select id="apn">
+    <select id="apn" onchange="setApn(this.value)">
       <option value="standard">Standard</option><option value="enterprise">Enterprise</option><option value="zero">Zero-Rated</option>
     </select>
     <div class="kv"><i>PROFILE</i><b id="apn-show">standard</b></div>
@@ -491,82 +586,82 @@ SAVE_OUTPUT recon"></textarea>
   <div class="card">
     <h3>ICU Lookup <span class="badge b-off">OFFLINE DB</span></h3>
     <input id="icu-in" placeholder="0977123456 or 8926012345">
-    <button>RESOLVE</button>
+    <button onclick="ui('COMMAND icu '+v('icu-in'))">RESOLVE</button>
     <pre class="out" id="icu-out"></pre>
   </div>
   <div class="card">
     <h3>AT Console <span class="badge b-off">OFFLINE</span></h3>
     <input id="at-in" placeholder="AT+CSQ">
-    <button>SEND</button>
+    <button onclick="ui('COMMAND at '+v('at-in'))">SEND</button>
     <pre class="out" id="at-out"></pre>
   </div>
   <div class="card">
     <h3>SIM Reads <span class="badge b-sim">SIM</span></h3>
-    <div class="g2"><button class="ghost">CONTACTS</button><button class="ghost">SMS</button></div>
+    <div class="g2"><button class="ghost" onclick="ui('NATIVE contacts')">CONTACTS</button><button class="ghost" onclick="ui('SMS')">SMS</button></div>
   </div>
 </div>
 
-
+<!-- AI -->
 <div class="panel" id="p-ai">
   <div class="card">
     <h3>AI Config <span class="badge b-note">OPTIONAL</span></h3>
-    <label class="chk"><input type="checkbox" id="cfg-ai"> Enable globally</label>
+    <label class="chk"><input type="checkbox" id="cfg-ai" onchange="setCfg('aiEnabled',this.checked)"> Enable globally</label>
     <input id="ai-base" placeholder="https://api.openai.com/v1">
     <input id="ai-key" type="password" placeholder="API key">
     <input id="ai-model" placeholder="gpt-4o-mini">
-    <button>SAVE</button>
+    <button onclick="saveAI()">SAVE</button>
     <p class="hint">OpenAI-compatible. RECON / SRC / ANALYSE add an Ask AI button forwarding the payload with a bypass-hunting prompt.</p>
   </div>
   <div class="card">
     <h3>Prompt</h3>
     <textarea id="ai-prompt" placeholder="Paste snippet or question..."></textarea>
-    <button class="alt">ASK</button>
+    <button class="alt" onclick="askAI(v('ai-prompt'))">ASK</button>
     <pre class="out" id="ai-out"></pre>
   </div>
 </div>
 
-
+<!-- APPS -->
 <div class="panel" id="p-apps">
   <div class="card">
     <h3>Network Catalogue <span class="badge b-off">OFFLINE</span></h3>
-    <button>LIST</button>
+    <button onclick="ui('APPS')">LIST</button>
     <pre class="out" id="apps-out"></pre>
   </div>
   <div class="card">
     <h3>Installed Packages <span class="badge b-sim">SIM</span></h3>
     <input id="app-f" placeholder="filter">
-    <button>ENUMERATE</button>
+    <button onclick="ui('COMMAND pkgs '+v('app-f'))">ENUMERATE</button>
     <div class="kv"><i>TOTAL</i><b id="app-n">0</b></div>
     <pre class="out" id="pkg-out" style="max-height:360px"></pre>
   </div>
 </div>
 
-
+<!-- REPORT -->
 <div class="panel" id="p-report">
   <div class="card">
     <h3>Findings</h3>
     <div class="kv"><i>ENTRIES</i><b id="r-n">0</b></div>
-    <button>GENERATE</button>
+    <button onclick="ui('RPT')">GENERATE</button>
     <div class="g2">
-      <button class="sm">.MD</button>
-      <button class="sm">.JSON</button>
-      <button class="sm">.TXT</button>
-      <button class="sm">CLEAR</button>
+      <button class="sm" onclick="dlReport('md')">.MD</button>
+      <button class="sm" onclick="dlReport('json')">.JSON</button>
+      <button class="sm" onclick="dlReport('txt')">.TXT</button>
+      <button class="sm" onclick="FINDINGS=[];$('r-n').textContent=0;$('r-out').textContent=''">CLEAR</button>
     </div>
     <pre class="out" id="r-out" style="max-height:380px"></pre>
   </div>
   <div class="card">
     <h3>Snapshot</h3>
-    <button>FULL SNAPSHOT</button>
+    <button onclick="ui('COMMAND snapshot')">FULL SNAPSHOT</button>
     <p class="hint">Works offline — captures device, vault counts, findings and cache index.</p>
   </div>
 </div>
 
-
+<!-- SETTINGS -->
 <div class="panel" id="p-settings">
   <div class="card">
     <h3>JA3 Cloning <span class="badge b-sim">EMULATED</span></h3>
-    <select id="ja3-sel">
+    <select id="ja3-sel" onchange="setJa3(this.value)">
       <option value="chrome_ios15">Chrome iOS 15</option><option value="chrome_120">Chrome 120</option>
       <option value="safari_17">Safari 17</option><option value="firefox_121">Firefox 121</option>
       <option value="android_14">Chrome Android 14</option><option value="off">Off</option>
@@ -578,34 +673,1560 @@ SAVE_OUTPUT recon"></textarea>
   <div class="card">
     <h3>Offline Cache <span class="badge b-off">LOCAL</span></h3>
     <div class="kv"><i>ENTRIES</i><b id="cache-n">0</b></div>
-    <div class="g2"><button class="sm">LIST</button><button class="sm">CLEAR</button></div>
+    <div class="g2"><button class="sm" onclick="ui('CACHE LIST')">LIST</button><button class="sm" onclick="ui('CACHE CLEAR')">CLEAR</button></div>
     <p class="hint">Every RECON / SRC / DOMAIN result is cached. Re-run those commands offline to read the stored copy.</p>
   </div>
   <div class="card">
     <h3>Persistence</h3>
     <div class="kv"><i>KEY</i><b>zmt_pro_config</b></div>
     <div class="kv"><i>SIZE</i><b id="cfg-size">0 B</b></div>
-    <div class="g2"><button class="ghost">DUMP</button><button class="ghost">WIPE</button></div>
+    <div class="g2"><button class="ghost" onclick="exportCfg()">DUMP</button><button class="ghost" onclick="wipeCfg()">WIPE</button></div>
   </div>
   <div class="card">
     <h3>Session</h3>
     <div class="kv"><i>COMMANDS</i><b id="cfg-runs">0</b></div>
     <div class="kv"><i>REQUESTS</i><b id="cfg-reqs">0</b></div>
-    <button class="ghost">SAVE TERMINAL</button>
+    <button class="ghost" onclick="ui('SAVE_OUTPUT manual')">SAVE TERMINAL</button>
   </div>
 </div>
 </div>
 
 <div id="termwrap">
-  <div id="termhead"><b>TERMINAL</b><span id="term-count">0 lines</span><span class="sp">tap to collapse</span></div>
+  <div id="termhead" onclick="toggleTerm()"><b>TERMINAL</b><span id="term-count">0 lines</span><span class="sp">tap to collapse</span></div>
   <div id="term"></div>
   <div id="cmdbar">
     <div class="pre">&gt;</div>
     <input id="cmd" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="DASH">
-    <button id="send">RUN</button>
+    <button id="send" onclick="submitCmd()">RUN</button>
   </div>
 </div>
 <div id="toast"></div>
 
+<script>
+"use strict";
+/* ═══════════════════════════════════════════════════════════
+   ZMT/HUCK PRO — full build. Online + offline.
+   ═══════════════════════════════════════════════════════════ */
 
+const KEY = 'zmt_pro_config';
 
+function defaults(){
+  return {
+    v:2, headers:{}, vault:{}, cookies:{}, env:{}, cache:{},
+    history:[], cmdHistory:[], netstat:[], ussdHist:[], runs:0, reqs:0,
+    lastCmd:'', lastTab:'shell', carrier:'auto', apn:'standard', ja3:'off',
+    aiEnabled:false, aiBase:'', aiKey:'', aiModel:'gpt-4o-mini',
+    jitter:true, uaRotate:false, spoofHeaders:true, tokenReplay:true, incapsula:true, uaIndex:0
+  };
+}
+let CFG = defaults();
+let FINDINGS = [];
+let srcBuf = '';
+let stopSweep = false;
+let sniffing = false;
+let pkts = [], pbytes = 0, po = null;
+
+/* ── utils ──────────────────────────────────────────────── */
+const $ = id => document.getElementById(id);
+const v = id => { const e = $(id); return e ? String(e.value).trim() : ''; };
+const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+const ts = () => new Date().toISOString();
+const clockStamp = () => { const d=new Date(),p=n=>String(n).padStart(2,'0'); return p(d.getHours())+p(d.getMinutes())+p(d.getSeconds()); };
+const isOnline = () => navigator.onLine !== false;
+
+let toastT;
+function toast(m,k){
+  const t=$('toast'); t.textContent=m; t.className = k==='bad'?'bad':k==='warn'?'warn':'';
+  t.style.display='block'; clearTimeout(toastT); toastT=setTimeout(()=>t.style.display='none',2200);
+}
+
+function saveCfg(){
+  try{
+    localStorage.setItem(KEY, JSON.stringify(CFG));
+    const sz=(localStorage.getItem(KEY)||'').length;
+    const e=$('cfg-size'); if(e) e.textContent = sz>1024?(sz/1024).toFixed(1)+' KB':sz+' B';
+    const c=$('cache-n'); if(c) c.textContent = Object.keys(CFG.cache).length;
+  }catch(e){ toast('Storage full','bad'); }
+}
+function loadCfg(){
+  try{
+    const raw=localStorage.getItem(KEY); if(!raw) return;
+    const p=JSON.parse(raw); if(p&&typeof p==='object') CFG=Object.assign(defaults(),p);
+  }catch(e){}
+}
+function setCfg(k,val){ CFG[k]=val; saveCfg(); paintCfg(); }
+
+function record(mod,k,val){
+  FINDINGS.push({t:ts(),module:mod,key:k,value:String(val)});
+  const n=$('r-n'); if(n) n.textContent=FINDINGS.length;
+}
+
+/* ── terminal ───────────────────────────────────────────── */
+let termLines=0;
+function out(text,cls){
+  const t=$('term'); const d=document.createElement('div');
+  if(cls) d.className=cls; d.textContent=text; t.appendChild(d);
+  termLines++; while(t.childNodes.length>700) t.removeChild(t.firstChild);
+  t.scrollTop=t.scrollHeight; $('term-count').textContent=termLines+' lines';
+}
+const ok=m=>out(m,'ok'), er=m=>out(m,'er'), wn=m=>out(m,'wn'), dm=m=>out(m,'dm'), hd=m=>out('── '+m+' ──','hd');
+function setLast(txt,cls){ const e=$('lastout'); e.className='out '+(cls||''); e.textContent=txt; }
+function toggleTerm(){
+  const t=$('term'); t.classList.toggle('collapsed');
+  $('termhead').querySelector('.sp').textContent = t.classList.contains('collapsed')?'tap to expand':'tap to collapse';
+}
+
+/* ── tabs ───────────────────────────────────────────────── */
+$('tabs').addEventListener('click',e=>{
+  const b=e.target.closest('.tab'); if(!b) return;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); $('p-'+b.dataset.p).classList.add('on');
+  CFG.lastTab=b.dataset.p; saveCfg(); $('panels').scrollTop=0;
+});
+
+/* ── offline cache ──────────────────────────────────────── */
+function cachePut(url,text){
+  CFG.cache[url]={t:Date.now(),body:String(text).slice(0,120000)};
+  const keys=Object.keys(CFG.cache);
+  if(keys.length>60) delete CFG.cache[keys[0]];
+  saveCfg();
+}
+function cacheGet(url){ return CFG.cache[url] || null; }
+
+async function needNet(){
+  if(isOnline()) return true;
+  er('OFFLINE — this command needs a link');
+  dm('cached results: CACHE LIST');
+  return false;
+}
+
+/* ── fetch layer ────────────────────────────────────────── */
+const PROXIES=[
+  u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),
+  u=>'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(u),
+  u=>'https://corsproxy.io/?'+encodeURIComponent(u)
+];
+const UAS=[
+  'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/120.0.6099.119 Mobile/15E148 Safari/604.1',
+  'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15',
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0'
+];
+const JA3_PROFILES={
+  chrome_ios15:{ua:UAS[0],lang:'en-ZM,en;q=0.9',str:'771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-13-18-51-45-43-27-17513,29-23-24,0'},
+  chrome_120:{ua:UAS[3].replace('Firefox/121.0','Chrome/120.0.0.0'),lang:'en-US,en;q=0.9',str:'771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-13-18-51-45-43-27-17513,29-23-24,0'},
+  safari_17:{ua:UAS[2],lang:'en-GB,en;q=0.9',str:'771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49188-49187-49162-49161-49192-49191-49172-49171-157-156-61-60-53-47,0-23-65281-10-11-35-16-5-13-18-51-45-43-27,29-23-24-25,0'},
+  firefox_121:{ua:UAS[3],lang:'en-US,en;q=0.5',str:'771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-34-51-43-13-28,29-23-24-25,0'},
+  android_14:{ua:UAS[1],lang:'en-ZM,en;q=0.9',str:'771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-13-18-51-45-43-27-17513,29-23-24,0'}
+};
+
+function currentUA(){
+  if(CFG.uaRotate) return UAS[CFG.uaIndex % UAS.length];
+  if(CFG.ja3!=='off' && JA3_PROFILES[CFG.ja3]) return JA3_PROFILES[CFG.ja3].ua;
+  return navigator.userAgent;
+}
+function rollUA(){ CFG.uaIndex=(CFG.uaIndex+1)%UAS.length; saveCfg(); paintCfg(); toast('UA rotated'); }
+
+function deviceId(){
+  let d=CFG.vault['deviceId'];
+  if(!d){ d='zmt-'+Math.random().toString(36).slice(2,10); CFG.vault['deviceId']={value:d,t:Date.now()}; saveCfg(); }
+  return d.value;
+}
+
+function baseHeaders(){
+  const h={
+    Accept:'text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8',
+    'Accept-Language':'en-ZM,en;q=0.9',
+    'User-Agent':currentUA()
+  };
+  if(CFG.ja3!=='off'){
+    const p=JA3_PROFILES[CFG.ja3];
+    if(p){ h['Accept-Language']=p.lang; h['X-JA3-Profile']=CFG.ja3; h['X-JA3-Hash']=p.str; }
+  }
+  if(CFG.spoofHeaders){
+    h['X-Premium']='true'; h['X-Device-ID']=deviceId();
+    const tk=CFG.vault['token']; if(tk) h['Authorization']='Bearer '+tk.value;
+    const ap=APN_PROFILES[CFG.apn]; if(ap&&ap.host) h['X-APN-Profile']=ap.host;
+  }
+  Object.assign(h,CFG.headers);
+  return h;
+}
+function hostOf(u){ try{ return new URL(u).hostname.replace(/^www\./,''); }catch(e){ return ''; } }
+function cookieFor(host){
+  for(const k of Object.keys(CFG.cookies)) if(host.endsWith(k)) return CFG.cookies[k];
+  return '';
+}
+
+function netstat(url,method,status,ms,flag,proxied){
+  CFG.netstat.unshift({t:Date.now(),url,method,status,ms,flag,proxied});
+  if(CFG.netstat.length>300) CFG.netstat.length=300;
+  saveCfg();
+}
+function incapHandler(resp,host){
+  const sc=resp.headers.get('set-cookie')||'';
+  if(/incap_ses|visid_incap/i.test(sc)){
+    const cur=CFG.cookies[host]||'';
+    CFG.cookies[host]=(cur?cur+'; ':'')+sc.split(/,(?=\s*\w+=)/).join('; ');
+    saveCfg(); wn('Incapsula cookies captured for '+host);
+  }
+}
+function captureTokens(setCookie,host){
+  if(!/(token|session|jwt|auth)/i.test(setCookie)) return;
+  const first=setCookie.split(';')[0]; const i=first.indexOf('=');
+  if(i>0){ CFG.vault['token']={value:first.slice(i+1),host,t:Date.now()}; saveCfg(); dm('token captured from '+host); }
+}
+
+async function zfetch(url,opts){
+  opts=opts||{};
+  if(!isOnline()) throw new Error('offline');
+  const host=hostOf(url);
+  const headers=baseHeaders();
+  const ck=cookieFor(host); if(ck) headers['Cookie']=ck;
+  if(opts.headers) Object.assign(headers,opts.headers);
+  if(CFG.jitter) await sleep(200+Math.random()*450);
+
+  const t0=Date.now(); let resp=null,err=null,proxied=false;
+  try{ resp=await fetch(url,{method:opts.method||'GET',headers,cache:'no-store',redirect:'follow',body:opts.body}); }
+  catch(e){
+    err=e;
+    for(const p of PROXIES){ try{ resp=await fetch(p(url),{cache:'no-store'}); proxied=true; break; }catch(e2){ err=e2; } }
+  }
+  const ms=Date.now()-t0; CFG.reqs++; saveCfg();
+  if(!resp){ netstat(url,opts.method||'GET',0,ms,'FAIL',proxied); throw err||new Error('request failed'); }
+  netstat(url,opts.method||'GET',resp.status,ms,resp.status<400?'OK':'ERR',proxied);
+
+  if((resp.status===401||resp.status===403)&&CFG.tokenReplay&&CFG.vault['token']){
+    wn('auth '+resp.status+' — replaying with vault token');
+    try{
+      const r2=await fetch(url,{headers:Object.assign({},headers,{Authorization:'Bearer '+CFG.vault['token'].value})});
+      if(r2.ok){ ok('token replay succeeded'); resp=r2; }
+    }catch(e){}
+  }
+  if(CFG.incapsula) incapHandler(resp,host);
+  const sc=resp.headers.get('set-cookie')||''; if(sc) captureTokens(sc,host);
+  return resp;
+}
+
+/* ── static data ────────────────────────────────────────── */
+const CARRIERS={
+  auto:{name:'Auto',mcc:'645',mnc:'??'},
+  mtn:{name:'MTN Zambia',mcc:'645',mnc:'02'},
+  airtel:{name:'Airtel Zambia',mcc:'645',mnc:'01'},
+  zamtel:{name:'Zamtel',mcc:'645',mnc:'03'},
+  liquid:{name:'Liquid Intelligent',mcc:'645',mnc:'04'}
+};
+const APN_PROFILES={ standard:{host:'',label:'standard'}, enterprise:{host:'enterprise.apn.zm',label:'enterprise'}, zero:{host:'zero.free.zm',label:'zero-rated'} };
+const ICU_DB=[
+  {iccid:'892601',msisdn:['097','077'],carrier:'Airtel Zambia',region:'Lusaka / nationwide',plan:'Prepaid voice+data'},
+  {iccid:'892602',msisdn:['096','076'],carrier:'MTN Zambia',region:'Lusaka / Copperbelt',plan:'Prepaid / hybrid'},
+  {iccid:'892603',msisdn:['095','075','055'],carrier:'Zamtel',region:'Nationwide',plan:'Prepaid / fixed-wireless'},
+  {iccid:'892604',msisdn:['067'],carrier:'Liquid Intelligent',region:'Urban fibre / LTE',plan:'Enterprise postpaid'},
+  {iccid:'892600',msisdn:[],carrier:'UZI Mobile',region:'MVNO',plan:'MVNO prepaid'}
+];
+const AT_RESPONSES={
+  'AT':'OK','AT+CSQ':'+CSQ: 21,99\n\nOK','AT+COPS?':'+COPS: 0,0,"MTN ZM",2\n\nOK',
+  'AT+CREG?':'+CREG: 0,1\n\nOK','AT+CGREG?':'+CGREG: 0,1\n\nOK',
+  'AT+CGDCONT?':'+CGDCONT: 1,"IP","internet","0.0.0.0",0,0\n\nOK',
+  'AT+CIMI':'645020000000000\n\nOK','AT+CGSN':'000000000000000\n\nOK',
+  'AT+CPIN?':'+CPIN: READY\n\nOK','AT+CFUN?':'+CFUN: 1\n\nOK'
+};
+const NET_APPS=[
+  ['MTN Play','mtn.zm','Streaming + games','premium'],
+  ['Airtel TV','airtel.co.zm','Video on demand','premium'],
+  ['Zamtel Play','zamtel.zm','Catch-up TV','free'],
+  ['Liquid Cloud','liquid.tech','Enterprise storage','premium'],
+  ['ZamPortal','zamportal.gov.zm','Government services','free'],
+  ['ZRA eServices','eservices.zra.org.zm','Tax portal','free'],
+  ['Momo Wallet','mtn.zm/momo','Mobile money','free'],
+  ['Airtel Money','airtel.co.zm/money','Mobile money','free']
+];
+const USSD_TABLE={
+  '*185#':'MTN Menu\n1 Buy Bundle\n2 Data Balance\n3 MoMo\nBalance: K 42.50\nData: 1024 MB remaining',
+  '*334#':'MTN Bundles\n1GB K15\n5GB K60\n20GB K250',
+  '*303#':'MoMo: 1 Send 2 Withdraw 3 Pay Bill\nBalance: K 42.50',
+  '*156#':'Me2U: enter recipient then amount',
+  '*111#':'Airtel\n1 My Airtel\n2 Data\n3 Voice\nBalance: K 18.20\nData: 512 MB remaining',
+  '*791#':'Airtel Loan\nEligible: K200\nPress 1 to receive',
+  '*778#':'Airtel Balance\nBalance: K 18.20\nData: 512 MB remaining',
+  '*140#':'Airtel Money: 1 Send 2 Withdraw 3 Pay',
+  '*123#':'Zamtel\n1 Top-Up\n2 Bundle\nBalance: K 7.00\nData: 200 MB remaining',
+  '*321#':'Zamtel SOS\nEmergency credit K5 issued',
+  '*333#':'Zamtel Balance\nBalance: K 7.00\nData: 200 MB remaining',
+  '*200#':'Zamtel Kwacha: 1 Send 2 Withdraw'
+};
+const SWEEP_TARGETS=[
+  ['GitHub',h=>'https://api.github.com/users/'+h],
+  ['Reddit',h=>'https://www.reddit.com/user/'+h+'/about.json'],
+  ['X',h=>'https://api.fxtwitter.com/'+h],
+  ['Telegram',h=>'https://t.me/'+h],
+  ['Instagram',h=>'https://www.instagram.com/'+h+'/'],
+  ['Facebook',h=>'https://www.facebook.com/'+h],
+  ['TikTok',h=>'https://www.tiktok.com/@'+h],
+  ['Pinterest',h=>'https://www.pinterest.com/'+h+'/'],
+  ['YouTube',h=>'https://www.youtube.com/@'+h],
+  ['Twitch',h=>'https://www.twitch.tv/'+h],
+  ['SoundCloud',h=>'https://soundcloud.com/'+h],
+  ['Medium',h=>'https://medium.com/@'+h],
+  ['Dev.to',h=>'https://dev.to/'+h],
+  ['Behance',h=>'https://www.behance.net/'+h],
+  ['GitLab',h=>'https://gitlab.com/'+h],
+  ['Keybase',h=>'https://keybase.io/'+h]
+];
+const CC_MAP={'260':['Zambia',9],'263':['Zimbabwe',9],'27':['South Africa',9],'254':['Kenya',9],'255':['Tanzania',9],'256':['Uganda',9],'234':['Nigeria',10],'44':['UK',10],'1':['USA',10],'91':['India',10]};
+const ZM_PREFIX={'96':'MTN','76':'MTN','97':'Airtel','77':'Airtel','95':'Zamtel','75':'Zamtel'};
+
+/* ── crypto helpers ─────────────────────────────────────── */
+async function hashHex(algo,text){
+  if(algo==='MD5') return md5(text);
+  const buf=await crypto.subtle.digest(algo,new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function deriveKey(pass,salt){
+  const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pass),'PBKDF2',false,['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:150000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+}
+async function aesEnc(text,pass){
+  const salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12));
+  const key=await deriveKey(pass,salt);
+  const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(text));
+  const all=new Uint8Array(16+12+ct.byteLength);
+  all.set(salt,0); all.set(iv,16); all.set(new Uint8Array(ct),28);
+  return btoa(String.fromCharCode(...all));
+}
+async function aesDec(b64,pass){
+  const all=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+  const key=await deriveKey(pass,all.slice(0,16));
+  const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:all.slice(16,28)},key,all.slice(28));
+  return new TextDecoder().decode(pt);
+}
+async function rsaGen(){
+  const kp=await crypto.subtle.generateKey({name:'RSA-OAEP',modulusLength:2048,publicExponent:new Uint8Array([1,0,1]),hash:'SHA-256'},true,['encrypt','decrypt']);
+  return {pub:await crypto.subtle.exportKey('jwk',kp.publicKey),priv:await crypto.subtle.exportKey('jwk',kp.privateKey)};
+}
+async function rsaEnc(text,jwk){
+  const k=await crypto.subtle.importKey('jwk',jwk,{name:'RSA-OAEP',hash:'SHA-256'},false,['encrypt']);
+  const ct=await crypto.subtle.encrypt({name:'RSA-OAEP'},k,new TextEncoder().encode(text));
+  return btoa(String.fromCharCode(...new Uint8Array(ct)));
+}
+async function rsaDec(b64,jwk){
+  const k=await crypto.subtle.importKey('jwk',jwk,{name:'RSA-OAEP',hash:'SHA-256'},false,['decrypt']);
+  const pt=await crypto.subtle.decrypt({name:'RSA-OAEP'},k,Uint8Array.from(atob(b64),c=>c.charCodeAt(0)));
+  return new TextDecoder().decode(pt);
+}
+function md5(s){
+  const hc='0123456789abcdef';
+  const rh=n=>{let o='';for(let j=0;j<=3;j++)o+=hc[(n>>(j*8+4))&15]+hc[(n>>(j*8))&15];return o;};
+  const ad=(x,y)=>{const l=(x&0xFFFF)+(y&0xFFFF);return(((x>>16)+(y>>16)+(l>>16))<<16)|(l&0xFFFF);};
+  const rl=(n,c)=>(n<<c)|(n>>>(32-c));
+  const cm=(q,a,b,x,ss,t)=>ad(rl(ad(ad(a,q),ad(x,t)),ss),b);
+  const ff=(a,b,c,d,x,ss,t)=>cm((b&c)|(~b&d),a,b,x,ss,t);
+  const gg=(a,b,c,d,x,ss,t)=>cm((b&d)|(c&~d),a,b,x,ss,t);
+  const hh=(a,b,c,d,x,ss,t)=>cm(b^c^d,a,b,x,ss,t);
+  const ii=(a,b,c,d,x,ss,t)=>cm(c^(b|~d),a,b,x,ss,t);
+  const sb=x=>{let i;const n=((x.length+8)>>6)+1,b=new Array(n*16);
+    for(i=0;i<n*16;i++)b[i]=0;
+    for(i=0;i<x.length;i++)b[i>>2]|=x.charCodeAt(i)<<((i%4)*8);
+    b[i>>2]|=0x80<<((i%4)*8); b[n*16-2]=x.length*8; return b;};
+  const x=sb(unescape(encodeURIComponent(s)));
+  let a=1732584193,b=-271733879,c=-1732584194,d=271733878;
+  for(let i=0;i<x.length;i+=16){
+    const oa=a,ob=b,oc=c,od=d;
+    a=ff(a,b,c,d,x[i],7,-680876936);d=ff(d,a,b,c,x[i+1],12,-389564586);
+    c=ff(c,d,a,b,x[i+2],17,606105819);b=ff(b,c,d,a,x[i+3],22,-1044525330);
+    a=ff(a,b,c,d,x[i+4],7,-176418897);d=ff(d,a,b,c,x[i+5],12,1200080426);
+    c=ff(c,d,a,b,x[i+6],17,-1473231341);b=ff(b,c,d,a,x[i+7],22,-45705983);
+    a=ff(a,b,c,d,x[i+8],7,1770035416);d=ff(d,a,b,c,x[i+9],12,-1958414417);
+    c=ff(c,d,a,b,x[i+10],17,-42063);b=ff(b,c,d,a,x[i+11],22,-1990404162);
+    a=ff(a,b,c,d,x[i+12],7,1804603682);d=ff(d,a,b,c,x[i+13],12,-40341101);
+    c=ff(c,d,a,b,x[i+14],17,-1502002290);b=ff(b,c,d,a,x[i+15],22,1236535329);
+    a=gg(a,b,c,d,x[i+1],5,-165796510);d=gg(d,a,b,c,x[i+6],9,-1069501632);
+    c=gg(c,d,a,b,x[i+11],14,643717713);b=gg(b,c,d,a,x[i],20,-373897302);
+    a=gg(a,b,c,d,x[i+5],5,-701558691);d=gg(d,a,b,c,x[i+10],9,38016083);
+    c=gg(c,d,a,b,x[i+15],14,-660478335);b=gg(b,c,d,a,x[i+4],20,-405537848);
+    a=gg(a,b,c,d,x[i+9],5,568446438);d=gg(d,a,b,c,x[i+14],9,-1019803690);
+    c=gg(c,d,a,b,x[i+3],14,-187363961);b=gg(b,c,d,a,x[i+8],20,1163531501);
+    a=gg(a,b,c,d,x[i+13],5,-1444681467);d=gg(d,a,b,c,x[i+2],9,-51403784);
+    c=gg(c,d,a,b,x[i+7],14,1735328473);b=gg(b,c,d,a,x[i+12],20,-1926607734);
+    a=hh(a,b,c,d,x[i+5],4,-378558);d=hh(d,a,b,c,x[i+8],11,-2022574463);
+    c=hh(c,d,a,b,x[i+11],16,1839030562);b=hh(b,c,d,a,x[i+14],23,-35309556);
+    a=hh(a,b,c,d,x[i+1],4,-1530992060);d=hh(d,a,b,c,x[i+4],11,1272893353);
+    c=hh(c,d,a,b,x[i+7],16,-155497632);b=hh(b,c,d,a,x[i+10],23,-1094730640);
+    a=hh(a,b,c,d,x[i+13],4,681279174);d=hh(d,a,b,c,x[i],11,-358537222);
+    c=hh(c,d,a,b,x[i+3],16,-722521979);b=hh(b,c,d,a,x[i+6],23,76029189);
+    a=hh(a,b,c,d,x[i+9],4,-640364487);d=hh(d,a,b,c,x[i+12],11,-421815835);
+    c=hh(c,d,a,b,x[i+15],16,530742520);b=hh(b,c,d,a,x[i+2],23,-995338651);
+    a=ii(a,b,c,d,x[i],6,-198630844);d=ii(d,a,b,c,x[i+7],10,1126891415);
+    c=ii(c,d,a,b,x[i+14],15,-1416354905);b=ii(b,c,d,a,x[i+5],21,-57434055);
+    a=ii(a,b,c,d,x[i+12],6,1700485571);d=ii(d,a,b,c,x[i+3],10,-1894986606);
+    c=ii(c,d,a,b,x[i+10],15,-1051523);b=ii(b,c,d,a,x[i+1],21,-2054922799);
+    a=ii(a,b,c,d,x[i+8],6,1873313359);d=ii(d,a,b,c,x[i+15],10,-30611744);
+    c=ii(c,d,a,b,x[i+6],15,-1560198380);b=ii(b,c,d,a,x[i+13],21,1309151649);
+    a=ii(a,b,c,d,x[i+4],6,-145523070);d=ii(d,a,b,c,x[i+11],10,-1120210379);
+    c=ii(c,d,a,b,x[i+2],15,718787259);b=ii(b,c,d,a,x[i+9],21,-343485551);
+    a=ad(a,oa);b=ad(b,ob);c=ad(c,oc);d=ad(d,od);
+  }
+  return rh(a)+rh(b)+rh(c)+rh(d);
+}
+
+/* ── clipboard / download ───────────────────────────────── */
+function copy(txt){
+  const fb=()=>{
+    const ta=document.createElement('textarea'); ta.value=txt;
+    ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta);
+    ta.select(); try{ document.execCommand('copy'); toast('Copied'); }catch(e){ toast('Copy failed','bad'); } ta.remove();
+  };
+  if(navigator.clipboard&&window.isSecureContext) navigator.clipboard.writeText(txt).then(()=>toast('Copied')).catch(fb);
+  else fb();
+}
+function download(name,content,mime){
+  const b=new Blob([content],{type:mime||'text/plain'});
+  const u=URL.createObjectURL(b); const a=document.createElement('a');
+  a.href=u; a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(u);a.remove();},1200); ok('downloaded '+name);
+}
+
+/* ── paint ──────────────────────────────────────────────── */
+function paintCfg(){
+  const car=CARRIERS[CFG.carrier]||CARRIERS.auto;
+  $('s-car').textContent=car.name; $('car-show').textContent=car.name; $('car-mnc').textContent=car.mcc+'/'+car.mnc;
+  $('carrier').value=CFG.carrier;
+  const ap=APN_PROFILES[CFG.apn]||APN_PROFILES.standard;
+  $('s-apn').textContent=ap.label; $('apn-show').textContent=ap.label; $('apn-host').textContent=ap.host||'(none)';
+  $('apn').value=CFG.apn;
+  $('s-ja3').textContent=CFG.ja3==='off'?'off':CFG.ja3; $('s-ja3').className=CFG.ja3==='off'?'':'warn';
+  $('ja3-show').textContent=CFG.ja3; $('ja3-sel').value=CFG.ja3;
+  $('ja3-str').textContent=CFG.ja3==='off'?'---':(JA3_PROFILES[CFG.ja3]||{}).str||'---';
+  $('s-ai').textContent=CFG.aiEnabled?'on':'off'; $('s-ai').className=CFG.aiEnabled?'':'warn';
+  $('cfg-ai').checked=CFG.aiEnabled; $('ai-base').value=CFG.aiBase||''; $('ai-key').value=CFG.aiKey||''; $('ai-model').value=CFG.aiModel||'';
+  $('cfg-jitter').checked=CFG.jitter; $('cfg-uarot').checked=CFG.uaRotate;
+  $('cfg-hdr').checked=CFG.spoofHeaders; $('cfg-token').checked=CFG.tokenReplay; $('cfg-incap').checked=CFG.incapsula;
+  $('ua-show').textContent=currentUA().slice(0,60);
+  $('cfg-runs').textContent=CFG.runs; $('cfg-reqs').textContent=CFG.reqs;
+  $('cache-n').textContent=Object.keys(CFG.cache).length;
+  $('s-net').textContent=isOnline()?'UP':'DOWN'; $('s-net').className=isOnline()?'':'bad';
+  $('d-id').textContent=deviceId();
+  renderHeaders();
+  const sz=(localStorage.getItem(KEY)||'').length;
+  $('cfg-size').textContent=sz>1024?(sz/1024).toFixed(1)+' KB':sz+' B';
+}
+function renderHeaders(){
+  const box=$('pkt-list'); const keys=Object.keys(CFG.headers);
+  if(!keys.length){ box.innerHTML='<div class="hint">No manual headers.</div>'; return; }
+  box.innerHTML=keys.map(k=>'<div class="kv"><i>'+esc(k)+'</i><b>'+esc(CFG.headers[k])+'</b> <button class="ghost sm" style="width:auto;flex:0 0 auto" onclick="delHeader(\''+esc(k)+'\')">×</button></div>').join('');
+}
+function delHeader(k){ delete CFG.headers[k]; saveCfg(); renderHeaders(); ok('removed '+k); }
+function setCarrier(c){ CFG.carrier=c; saveCfg(); paintCfg(); ok('carrier -> '+c); }
+function setApn(a){ CFG.apn=a; saveCfg(); paintCfg(); ok('apn -> '+a); }
+function setJa3(j){ CFG.ja3=j; saveCfg(); paintCfg(); ok('ja3 -> '+j); }
+function saveAI(){ CFG.aiBase=v('ai-base'); CFG.aiKey=v('ai-key'); CFG.aiModel=v('ai-model'); saveCfg(); ok('AI saved'); }
+function saveCookie(){
+  const p=v('soc-platform'), c=v('soc-cookie');
+  if(!c) return toast('Paste a cookie','bad');
+  CFG.cookies[p]=c; saveCfg(); ok('cookie stored for '+p);
+  $('soc-log').textContent='Stored '+p+' ('+c.length+' chars)';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   COMMANDS
+   ═══════════════════════════════════════════════════════════ */
+const CMDS={};
+
+/* DASH */
+CMDS.DASH=async()=>{
+  hd('DASHBOARD');
+  ok('NET       '+(isOnline()?'online':'OFFLINE'));
+  const ip=isOnline()?await publicIP():'';
+  if(ip) $('s-ip').textContent=ip;
+  ok('IP        '+(ip||'n/a'));
+  ok('CARRIER   '+(CARRIERS[CFG.carrier]||{}).name);
+  ok('APN       '+CFG.apn+'   JA3 '+CFG.ja3);
+  ok('VAULT     '+Object.keys(CFG.vault).length+'   COOKIES '+Object.keys(CFG.cookies).length);
+  ok('CACHE     '+Object.keys(CFG.cache).length+' entries');
+  ok('COMMANDS  '+CFG.runs+'   REQUESTS '+CFG.reqs);
+  ok('UPTIME    '+Math.floor(performance.now()/1000)+'s');
+  dm('offline-capable: CRYPTO VAULT CACHE COMMAND SIM USSD RPT EXPORT');
+};
+
+/* USSD */
+CMDS.USSD=async(a)=>{
+  a=(a||'').trim();
+  if(!a) return wn('usage: USSD <code> | USSD HIST | USSD CLEAR');
+  if(a.toUpperCase()==='HIST'){
+    if(!CFG.ussdHist.length) return dm('no history');
+    CFG.ussdHist.forEach(h=>dm(h.t+'  '+h.code+'  ->  '+h.parsed));
+    $('ussd-log').textContent=CFG.ussdHist.map(h=>h.t+' '+h.code+' -> '+h.parsed).join('\n');
+    return;
+  }
+  if(a.toUpperCase()==='CLEAR'){ CFG.ussdHist=[]; saveCfg(); $('ussd-log').textContent=''; return ok('cleared'); }
+  if(!/^[*#\d]+#?$/.test(a)) return er('invalid USSD code');
+  const code=a;
+  hd('USSD '+code);
+  const parsed=parseUSSD(USSD_TABLE[code]||('Gateway response for '+code+'\nBalance: K 0.00\nData: 0 MB remaining'));
+  CFG.ussdHist.unshift({t:new Date().toLocaleTimeString(),code,parsed});
+  if(CFG.ussdHist.length>60) CFG.ussdHist.length=60;
+  saveCfg(); ok('parsed: '+parsed);
+  $('ussd-out').textContent=parsed;
+  $('ussd-log').textContent=CFG.ussdHist.map(h=>h.t+' '+h.code+' -> '+h.parsed).join('\n');
+  record('ussd',code,parsed);
+  if(/Android|iPhone|iPad/.test(navigator.userAgent)){ try{ location.href='tel:'+encodeURIComponent(code); }catch(e){} dm('handed to dialer'); }
+};
+function parseUSSD(t){
+  const bal=t.match(/(?:balance|credit|airtime)[^\d\-]*(-?[\d,]+(?:\.\d{1,2})?)/i)||t.match(/K\s*([\d,]+(?:\.\d{1,2})?)/i);
+  const dat=t.match(/([\d.]+)\s*(MB|GB|KB)\s*(?:remaining|left)?/i);
+  const loan=t.match(/(?:eligible|loan)[^\d]*K?\s*([\d,]+)/i);
+  const p=[];
+  if(bal) p.push('BALANCE K '+bal[1]);
+  if(dat) p.push('DATA '+dat[1]+' '+dat[2].toUpperCase());
+  if(loan) p.push('LOAN K '+loan[1]);
+  return p.length?p.join('  |  '):'MENU / no numeric fields';
+}
+function qU(c){ $('ussd-code').value=c; dispatch('USSD '+c); }
+
+/* PKT */
+CMDS.PKT=async(a)=>{
+  a=(a||'').trim(); const [s,...r]=a.split(/\s+/); const S=(s||'').toUpperCase();
+  if(S==='SET'){ if(!r[0]) return wn('PKT SET <header> <value>'); CFG.headers[r[0]]=r.slice(1).join(' '); saveCfg(); renderHeaders(); return ok('set '+r[0]); }
+  if(S==='DEL'){ delete CFG.headers[r[0]]; saveCfg(); renderHeaders(); return ok('del '+r[0]); }
+  if(S==='SHOW'||!a){
+    hd('ACTIVE HEADERS'); const h=baseHeaders();
+    Object.keys(h).forEach(k=>ok(k+': '+h[k]));
+    return;
+  }
+  const url=norm(a); if(!url) return wn('PKT <url>');
+  if(!await needNet()) return;
+  hd('PACKET '+url);
+  try{
+    const res=await zfetch(url);
+    ok('RESPONSE '+res.status);
+    res.headers.forEach((val,k)=>dm('  '+k+': '+val.slice(0,120)));
+  }catch(e){ er('failed: '+e.message); }
+};
+
+/* RECON */
+CMDS.RECON=async(a)=>{
+  const url=norm(a); if(!url) return wn('RECON <url>');
+  hd('RECON '+url);
+  if(!isOnline()){
+    const c=cacheGet(url);
+    if(!c) return er('offline and not cached');
+    wn('OFFLINE — showing cached copy from '+new Date(c.t).toLocaleString());
+    return setLast(c.body.slice(0,4000),'warn');
+  }
+  try{
+    const res=await zfetch(url); const body=await res.text(); cachePut(url,body);
+    ok('STATUS '+res.status);
+    ok('TECH '+(fingerprint(body,res.headers).join(', ')||'none'));
+    ok('TLS '+(await tlsIssuer(hostOf(url))||'unknown'));
+    const snip=body.replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,220);
+    dm('SNIPPET '+snip);
+    const pay=paywallSignals(body); if(pay.length) wn('PAYWALL '+pay.join(', '));
+    setLast(JSON.stringify({url,status:res.status,paywall:pay,snippet:snip},null,2),'ok');
+    record('recon',url,res.status+' tech='+fingerprint(body,res.headers).join(','));
+    if(CFG.aiEnabled) aiButton(body.slice(0,6000),'recon');
+  }catch(e){ er('recon failed: '+e.message); }
+};
+function fingerprint(body,headers){
+  const b=(body||'').toLowerCase();
+  const sig={WordPress:/wp-content|wp-includes/,Shopify:/cdn\.shopify/,Wix:/wixstatic/,NextJS:/_next\/static/,
+    React:/react(-dom)?\.production/,Vue:/vue(\.min)?\.js/,Angular:/ng-version/,jQuery:/jquery/,
+    Bootstrap:/bootstrap\.min/,Cloudflare:/cloudflare|cf-ray/,Nginx:/nginx/,Apache:/apache/,
+    Stripe:/js\.stripe\.com/,reCAPTCHA:/recaptcha/,GA:/googletagmanager|gtag\(/,CloudFront:/cloudfront/,Vercel:/vercel/};
+  const hits=Object.keys(sig).filter(k=>sig[k].test(b));
+  headers.forEach(val=>{ const s=String(val).toLowerCase();
+    if(s.includes('cloudflare'))hits.push('Cloudflare'); if(s.includes('nginx'))hits.push('Nginx'); if(s.includes('vercel'))hits.push('Vercel'); });
+  return [...new Set(hits)];
+}
+function paywallSignals(b){
+  b=(b||'').toLowerCase(); const s=[];
+  if(/paywall|premium|subscribe|metered/.test(b))s.push('paywall-markup');
+  if(/ispremium|is_premium|premium_user/.test(b))s.push('premium-flag');
+  if(/data-paywall|class="[^"]*gate/.test(b))s.push('gate-attr');
+  if(/regwall|login-required/.test(b))s.push('login-wall');
+  return s;
+}
+async function tlsIssuer(host){
+  if(!host||!isOnline()) return '';
+  try{ const r=await fetch('https://crt.sh/?q='+encodeURIComponent(host)+'&output=json'); const j=await r.json();
+    return Array.isArray(j)&&j.length?(j[0].issuer_name||'').split('\n')[0].slice(0,120):''; }catch(e){ return ''; }
+}
+
+/* SCAN */
+CMDS.SCAN=async(a)=>{
+  const host=(a||'').trim().replace(/^https?:\/\//,'').split('/')[0];
+  if(!host) return wn('SCAN <host>');
+  if(!await needNet()) return;
+  hd('SCAN '+host); dm('certificate transparency...');
+  try{
+    const r=await fetch('https://crt.sh/?q='+encodeURIComponent('%25.'+host)+'&output=json');
+    const j=await r.json(); const names=new Set();
+    (Array.isArray(j)?j:[]).forEach(x=>String(x.name_value||'').split('\n').forEach(n=>{n=n.trim().toLowerCase(); if(n&&n.charAt(0)!=='*')names.add(n);}));
+    const list=[...names].sort();
+    if(!list.length) return wn('no hosts');
+    ok(list.length+' hosts'); list.slice(0,80).forEach(h=>dm('  '+h));
+    setLast(list.join('\n'),'ok'); record('scan',host,list.length+' hosts');
+  }catch(e){ er('scan failed: '+e.message); }
+};
+
+/* SRC */
+CMDS.SRC=async(a)=>{
+  const parts=(a||'').trim().split(/\s+/); const url=norm(parts[0]);
+  if(!url) return wn('SRC <url> [text]');
+  hd('SOURCE '+url);
+  if(!isOnline()){
+    const c=cacheGet(url);
+    if(!c) return er('offline and not cached');
+    wn('OFFLINE — cached '+new Date(c.t).toLocaleString());
+    srcBuf=c.body; $('src-sz').textContent=srcBuf.length;
+    return setLast(c.body.slice(0,20000),'warn');
+  }
+  try{
+    let body;
+    if(parts[1]==='text'){ const r=await fetch('https://r.jina.ai/'+url); body=await r.text(); }
+    else { const res=await zfetch(url); body=await res.text(); ok('STATUS '+res.status); }
+    srcBuf=body; cachePut(url,body);
+    ok('BYTES '+body.length);
+    $('src-sz').textContent=body.length;
+    setLast(body.slice(0,20000),'ok');
+    record('src',url,body.length+' bytes');
+    if(CFG.aiEnabled) aiButton(body.slice(0,6000),'source');
+  }catch(e){ er('fetch failed: '+e.message); }
+};
+function saveSrc(){ if(!srcBuf) return wn('fetch first'); download('source-'+clockStamp()+'.html',srcBuf,'text/html'); }
+
+/* VAULT */
+CMDS.VAULT=async(a)=>{
+  const [s,k,...r]=(a||'').trim().split(/\s+/); const S=(s||'').toUpperCase(); const val=r.join(' ');
+  if(S==='LIST'||!S){
+    hd('VAULT'); const keys=Object.keys(CFG.vault);
+    if(!keys.length) return dm('empty');
+    keys.forEach(x=>{const it=CFG.vault[x];ok(x+' = '+(it.value.length>40?it.value.slice(0,40)+'…':it.value));});
+    return;
+  }
+  if(S==='SET'){ if(!k||!val) return wn('VAULT SET <k> <v>'); CFG.vault[k]={value:val,t:Date.now()}; saveCfg(); return ok('stored '+k); }
+  if(S==='GET'){ if(!CFG.vault[k]) return wn('not found'); return setLast(CFG.vault[k].value,'ok'); }
+  if(S==='DEL'){ delete CFG.vault[k]; saveCfg(); return ok('deleted'); }
+  if(S==='COOKIES'){
+    hd('COOKIES'); const keys=Object.keys(CFG.cookies);
+    if(!keys.length) return dm('none');
+    keys.forEach(x=>ok(x+'  ('+CFG.cookies[x].length+' chars)'));
+    return;
+  }
+  if(S==='COOKIE'){ if(!k||!val) return wn('VAULT COOKIE <domain> <cookie>'); CFG.cookies[k]=val; saveCfg(); return ok('stored '+k); }
+  wn('VAULT LIST|SET|GET|DEL|COOKIES|COOKIE');
+};
+
+/* CRYPTO */
+CMDS.CRYPTO=async(a)=>{
+  const [op,algo,...r]=(a||'').trim().split(/\s+/); const O=(op||'').toUpperCase(), A=(algo||'').toUpperCase();
+  if(O==='HASH'){ if(!A||!r.length) return wn('CRYPTO HASH <algo> <text>');
+    try{ return ok(A+'  '+await hashHex(A,r.join(' '))); }catch(e){ return er(e.message); } }
+  if(O==='AES'){
+    const pass=r[r.length-1], text=r.slice(0,-1).join(' ');
+    if(!pass||!text) return wn('CRYPTO AES ENC|DEC <text> <pass>');
+    if(A==='ENC') return ok(await aesEnc(text,pass));
+    try{ return ok(await aesDec(text,pass)); }catch(e){ return er('decrypt failed'); }
+  }
+  if(O==='RSA'){
+    if(A==='GEN'){ const kp=await rsaGen();
+      CFG.vault['rsa_priv']={value:JSON.stringify(kp.priv),t:Date.now()};
+      CFG.vault['rsa_pub']={value:JSON.stringify(kp.pub),t:Date.now()}; saveCfg();
+      return ok('keypair generated'); }
+    if(A==='ENC'){ const p=CFG.vault['rsa_pub']; if(!p) return wn('RSA GEN first'); return ok(await rsaEnc(r.join(' '),JSON.parse(p.value))); }
+    if(A==='DEC'){ const p=CFG.vault['rsa_priv']; if(!p) return wn('no key'); try{ return ok(await rsaDec(r.join(' '),JSON.parse(p.value))); }catch(e){ return er('failed'); } }
+  }
+  wn('CRYPTO HASH|AES|RSA');
+};
+
+/* SHELL */
+CMDS.SHELL=async(a)=>{
+  const [s,...r]=(a||'').trim().split(/\s+/); const S=(s||'').toUpperCase();
+  if(S==='SETENV'){ if(!r[0]) return wn('SHELL SETENV <k> <v>'); CFG.env[r[0]]=r.slice(1).join(' '); saveCfg(); return ok('set '+r[0]); }
+  if(S==='GETENV'){ if(!r[0]) return ok(Object.entries(CFG.env).map(([k,x])=>k+'='+x).join('\n')||'empty'); return ok(r[0]+'='+(CFG.env[r[0]]||'')); }
+  if(S==='RUN'){ const l=r.join(' '); if(!l) return wn('SHELL RUN <cmd>'); return dispatch(l); }
+  if(S==='ENV'){ hd('ENV'); Object.entries(CFG.env).forEach(([k,x])=>ok(k+'='+x)); return; }
+  wn('SHELL SETENV|GETENV|RUN|ENV');
+};
+
+/* RPT */
+CMDS.RPT=async()=>{
+  hd('SESSION REPORT '+ts());
+  const ip=isOnline()?await publicIP():'';
+  ok('NET '+(isOnline()?'online':'offline')+'  IP '+(ip||'n/a'));
+  ok('CARRIER '+(CARRIERS[CFG.carrier]||{}).name+'  APN '+CFG.apn+'  JA3 '+CFG.ja3);
+  ok('COMMANDS '+CFG.runs+'  REQUESTS '+CFG.reqs+'  FAILED '+CFG.netstat.filter(n=>n.flag==='ERR').length);
+  ok('VAULT '+Object.keys(CFG.vault).length+'  COOKIES '+Object.keys(CFG.cookies).length+'  CACHE '+Object.keys(CFG.cache).length);
+  ok('FINDINGS '+FINDINGS.length);
+  setLast(buildReport(ip),'ok');
+};
+function buildReport(ip){
+  const l=['ZMT/HUCK SESSION REPORT',ts(),'','ip: '+(ip||'n/a'),'carrier: '+CFG.carrier,'apn: '+CFG.apn,'ja3: '+CFG.ja3,
+    'commands: '+CFG.runs,'requests: '+CFG.reqs,'','--- netstat ---'];
+  CFG.netstat.slice(0,60).forEach(n=>l.push(new Date(n.t).toISOString()+' '+n.method+' '+n.status+' '+n.url));
+  l.push('','--- ussd ---'); CFG.ussdHist.forEach(u=>l.push(u.t+' '+u.code+' '+u.parsed));
+  l.push('','--- findings ---'); FINDINGS.forEach(f=>l.push(f.t+' '+f.module+' '+f.key+' '+f.value));
+  return l.join('\n');
+}
+
+/* APPS */
+CMDS.APPS=async()=>{
+  hd('NETWORK CATALOGUE');
+  NET_APPS.forEach(([n,h,d,t])=>{ ok(n+'  ['+t+']'); dm('  '+h+' — '+d); });
+  $('apps-out').textContent=NET_APPS.map(([n,h,d,t])=>n+' ['+t+']\n  '+h+' — '+d).join('\n\n');
+};
+
+/* DOMAIN */
+CMDS.DOMAIN=async(a)=>{
+  const d=(a||'').trim().replace(/^https?:\/\//,'').split('/')[0];
+  if(!d) return wn('DOMAIN <domain>');
+  if(!await needNet()) return;
+  hd('DOMAIN '+d);
+  for(const t of ['A','AAAA','MX','NS','TXT']){
+    try{ const r=await fetch('https://dns.google/resolve?name='+encodeURIComponent(d)+'&type='+t); const j=await r.json();
+      if(j.Answer&&j.Answer.length){ ok(t+':'); j.Answer.forEach(x=>dm('  '+x.data)); } else dm(t+': none');
+    }catch(e){ dm(t+': failed'); }
+  }
+  try{ const r=await fetch('https://rdap.org/domain/'+encodeURIComponent(d));
+    if(r.ok){ const j=await r.json(); (j.events||[]).forEach(e=>ok(e.eventAction+' '+e.eventDate)); if(j.status) ok('STATUS '+j.status.join(',')); }
+    else wn('RDAP '+r.status);
+  }catch(e){ dm('whois blocked'); }
+};
+
+/* EXPORT */
+CMDS.EXPORT=async(a)=>{
+  const fmt=((a||'json').trim().toLowerCase()==='txt')?'txt':'json';
+  if(fmt==='json') download('zmt-session-'+clockStamp()+'.json',JSON.stringify({generated:ts(),config:CFG,findings:FINDINGS},null,2),'application/json');
+  else download('zmt-session-'+clockStamp()+'.txt',buildReport(''),'text/plain');
+};
+
+/* OPEN */
+CMDS.OPEN=async(a)=>{
+  const p=(a||'').trim().split(/\s+/); const url=norm(p[0]);
+  if(!url) return wn('OPEN <url> [embed]');
+  if(p[1]==='embed'){
+    $('embed-box').innerHTML='<iframe class="embed" src="'+esc(url)+'" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>';
+    ok('embedded'); dm('cross-origin frames cannot be scripted — use the JS injector');
+  } else { window.open(url,'_blank','noopener'); ok('opened'); }
+};
+
+/* PHONE_INTEL */
+CMDS.PHONE_INTEL=async()=>{
+  hd('DEVICE INTEL');
+  ok('UA '+navigator.userAgent);
+  ok('PLATFORM '+(navigator.platform||'n/a'));
+  ok('CORES '+(navigator.hardwareConcurrency||'?')+'  MEM '+(navigator.deviceMemory||'?')+'GB');
+  ok('SCREEN '+screen.width+'x'+screen.height+' @'+(devicePixelRatio||1)+'x');
+  ok('TZ '+Intl.DateTimeFormat().resolvedOptions().timeZone+'  TOUCH '+(navigator.maxTouchPoints||0));
+  try{ const b=await navigator.getBattery(); ok('BATTERY '+Math.round(b.level*100)+'% '+(b.charging?'charging':'discharging')); }catch(e){ dm('battery n/a'); }
+  try{ const c=navigator.connection||{}; ok('CONN '+(c.effectiveType||'?')+' rtt '+(c.rtt||'?')); }catch(e){}
+  if(navigator.storage?.estimate){ const s=await navigator.storage.estimate(); ok('STORAGE '+(s.usage/1048576).toFixed(1)+'MB / '+(s.quota/1048576).toFixed(0)+'MB'); }
+  record('device','ua',navigator.userAgent);
+};
+
+/* ANALYSE */
+CMDS.ANALYSE=async(a)=>{
+  const url=norm(a); if(!url) return wn('ANALYSE <url>');
+  if(!await needNet()) return;
+  hd('POSTURE '+url); let score=100; const f=[];
+  try{
+    const r=await zfetch(url); const h=k=>(r.headers.get(k)||'').toLowerCase();
+    if(url.startsWith('https')) ok('TLS'); else { f.push('no TLS'); score-=25; }
+    if(h('strict-transport-security')) ok('HSTS'); else { f.push('no HSTS'); score-=12; }
+    const csp=h('content-security-policy');
+    if(csp) ok('CSP'); else { f.push('no CSP'); score-=15; }
+    if(h('x-frame-options')||csp.includes('frame-ancestors')) ok('clickjack guard'); else { f.push('frameable'); score-=8; }
+    if(h('x-content-type-options')) ok('nosniff'); else { f.push('no nosniff'); score-=6; }
+    const sc=h('set-cookie');
+    if(sc){ if(/httponly/.test(sc)) ok('cookie HttpOnly'); else { f.push('cookie no HttpOnly'); score-=8; }
+            if(/secure/.test(sc)) ok('cookie Secure'); else { f.push('cookie no Secure'); score-=8; } }
+    if(h('server')) wn('banner '+h('server'));
+    if(h('x-powered-by')) wn('x-powered-by '+h('x-powered-by'));
+    const body=await r.text();
+    if(/incap_ses|visid_incap/.test(body+sc)) f.push('Incapsula WAF');
+    const grade=score>=85?'A':score>=70?'B':score>=50?'C':score>=30?'D':'F';
+    ok(''); ok('GRADE '+grade+'  SCORE '+Math.max(score,0));
+    f.forEach(x=>wn('  - '+x));
+    setLast('grade '+grade+'\n'+f.join('\n'),grade==='A'?'ok':'warn');
+    record('analyse',url,grade);
+  }catch(e){ er('failed: '+e.message); }
+};
+
+/* BREACH */
+CMDS.BREACH=async(a)=>{
+  a=(a||'').trim();
+  if(!a) return wn('BREACH <email> | BREACH pw <password>');
+  if(a.toLowerCase().startsWith('pw ')){
+    if(!await needNet()) return;
+    const pw=a.slice(3); hd('PASSWORD BREACH');
+    try{
+      const hex=(await hashHex('SHA-1',pw)).toUpperCase();
+      const r=await fetch('https://api.pwnedpasswords.com/range/'+hex.slice(0,5));
+      const t=await r.text(); const hit=t.split('\n').find(l=>l.split(':')[0]===hex.slice(5));
+      if(hit){ er('PWNED '+hit.split(':')[1]+'x'); setLast('pwned','bad'); } else { ok('CLEAN'); setLast('clean','ok'); }
+    }catch(e){ er('failed: '+e.message); }
+    return;
+  }
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(a)) return er('invalid email');
+  if(!await needNet()) return;
+  hd('EMAIL BREACH');
+  try{
+    const r=await fetch('https://haveibeenpwned.com/api/v3/breachedaccount/'+encodeURIComponent(a)+'?truncateResponse=true');
+    if(r.status===404) return ok('no breaches');
+    if(!r.ok) return wn('HTTP '+r.status);
+    const j=await r.json(); er(j.length+' breaches'); j.forEach(b=>wn('  '+b.Name));
+  }catch(e){ er('failed: '+e.message); }
+};
+
+/* PASSWORD */
+CMDS.PASSWORD=async(a)=>{
+  const len=Math.min(Math.max(parseInt(a,10)||20,8),128);
+  hd('PASSWORD ('+len+')');
+  const sets=['abcdefghijkmnopqrstuvwxyz','ABCDEFGHJKLMNPQRSTUVWXYZ','23456789','!@#$%^&*-_=+?'];
+  const all=sets.join(''); const rnd=new Uint32Array(len); crypto.getRandomValues(rnd);
+  let pw=''; for(let i=0;i<len;i++) pw+=all[rnd[i]%all.length];
+  ok(pw); copy(pw);
+  ok('entropy ~'+Math.round(len*Math.log2(all.length))+' bits');
+  setLast(pw,'ok'); $('pe-out').textContent=pw;
+};
+
+/* EMAIL */
+CMDS.EMAIL=async(a)=>{
+  a=(a||'').trim(); if(!a) return wn('EMAIL <address>');
+  hd('EMAIL VALIDATION');
+  const m=a.match(/^[^@\s]+@([^@\s]+)\.[^@\s]+$/);
+  if(!m) return er('syntax invalid');
+  ok('syntax valid');
+  const dom=m[1].toLowerCase();
+  ok(['gmail','yahoo','outlook','hotmail','icloud','proton','aol','zoho'].includes(dom)?'free provider':'custom domain');
+  if(isOnline()){
+    try{ const r=await fetch('https://dns.google/resolve?name='+encodeURIComponent(dom)+'&type=MX'); const j=await r.json();
+      ok(j.Answer&&j.Answer.length?'MX present ('+j.Answer.length+')':'no MX'); }catch(e){ dm('MX failed'); }
+  } else dm('MX skipped (offline)');
+};
+
+/* COMMAND */
+CMDS.COMMAND=async(a)=>{
+  a=(a||'').trim(); if(!a) return wn('COMMAND <js | at|icu|phone|ports|tls|cf|asn|pkgs|snapshot|exportstore> ...');
+  const [s,...r]=a.split(/\s+/); const S=s.toLowerCase();
+  if(S==='at'){
+    const c=r.join(' ').toUpperCase(); hd('AT '+c);
+    const resp=AT_RESPONSES[c]||'ERROR';
+    ok(resp); $('at-out').textContent=resp; return;
+  }
+  if(S==='icu'){
+    const n=r.join('').replace(/\D/g,''); hd('ICU');
+    if(n.length<6) return er('need 6+ digits');
+    const hit=ICU_DB.find(e=>n.startsWith(e.iccid)||e.msisdn.some(p=>n.startsWith(p)));
+    if(!hit) return wn('no match');
+    ok('CARRIER '+hit.carrier); ok('REGION '+hit.region); ok('PLAN '+hit.plan); ok('ICCID '+hit.iccid);
+    $('icu-out').textContent=hit.carrier+' / '+hit.region+' / '+hit.plan;
+    record('icu',n,hit.carrier); return;
+  }
+  if(S==='phone'){
+    let n=r.join('').replace(/[^\d+]/g,'').replace(/^\+/,''); hd('PHONE INTEL');
+    if(!n) return er('number required');
+    const cc=Object.keys(CC_MAP).sort((x,y)=>y.length-x.length).find(k=>n.startsWith(k));
+    if(!cc){ $('ph-out').textContent='no country code'; return wn('no country code'); }
+    const [country,len]=CC_MAP[cc]; const nat=n.slice(cc.length);
+    ok('E164 +'+n); ok('COUNTRY '+country); ok('NATIONAL '+nat); ok('LENGTH '+(nat.length===len?'ok':'bad'));
+    if(cc==='260') ok('OPERATOR '+(ZM_PREFIX[nat.slice(0,2)]||'unknown'));
+    $('ph-out').textContent='+'+n+' '+country+' '+(cc==='260'?(ZM_PREFIX[nat.slice(0,2)]||'?'):'');
+    record('phone',n,country); return;
+  }
+  if(S==='ports'){
+    const host=r[0]; if(!host) return er('host required');
+    if(!await needNet()) return;
+    const ports=(r[1]||'80,443,8080').split(',').map(x=>parseInt(x,10)).filter(Boolean).slice(0,120);
+    hd('PORT PROBE '+host); let n=0;
+    for(const p of ports){
+      const proto=(p===443||p===8443)?'https':'http';
+      $('sc-prog').style.width=Math.round((++n/ports.length)*100)+'%';
+      try{ const t0=performance.now();
+        await fetch(proto+'://'+host+':'+p,{mode:'no-cors',cache:'no-store'});
+        ok(p+'/tcp open ('+Math.round(performance.now()-t0)+'ms)'); record('port',host+':'+p,'open');
+      }catch(e){ dm(p+'/tcp closed'); }
+    }
+    $('sc-out').textContent='probe complete'; return;
+  }
+  if(S==='tls'){
+    const h=r[0]; if(!h) return er('host required');
+    if(!await needNet()) return;
+    hd('TLS '+h);
+    const iss=await tlsIssuer(h);
+    if(iss){ ok('ISSUER '+iss); $('tls-out').textContent=iss; record('tls',h,iss); }
+    else wn('no certificate data'); return;
+  }
+  if(S==='cf'){ if(!await needNet()) return; const r2=await fetch('https://1.1.1.1/cdn-cgi/trace'); const t=await r2.text();
+    $('eg-out').textContent=t; ok(t); return; }
+  if(S==='asn'){ if(!await needNet()) return; const r2=await fetch('https://ipwho.is/'); const j=await r2.json();
+    const c=j.connection||{}; ok('ASN '+c.asn); ok('ISP '+c.isp); ok('ORG '+c.org);
+    $('eg-out').textContent='ASN '+c.asn+'\nISP '+c.isp; return; }
+  if(S==='pkgs'){
+    hd('PACKAGES');
+    if(!('getInstalledRelatedApps' in navigator)) wn('no package API in this browser');
+    try{
+      const apps=await navigator.getInstalledRelatedApps();
+      $('app-n').textContent=apps.length;
+      apps.forEach(a=>ok(a.id+' ('+a.platform+')'));
+      $('pkg-out').textContent=apps.map(a=>a.id).join('\n')||'none declared';
+    }catch(e){ wn(e.message); }
+    return;
+  }
+  if(S==='snapshot'){
+    download('snapshot-'+clockStamp()+'.json',JSON.stringify({
+      at:ts(),ua:navigator.userAgent,screen:screen.width+'x'+screen.height,
+      carrier:CFG.carrier,apn:CFG.apn,ja3:CFG.ja3,findings:FINDINGS,
+      cache:Object.keys(CFG.cache),vault:Object.keys(CFG.vault)
+    },null,2),'application/json'); return;
+  }
+  if(S==='exportstore'){ download('store-'+clockStamp()+'.json',JSON.stringify(CFG, null, 2),'application/json'); return; }
+  hd('JS EVAL');
+  try{ const res=await (new Function('return (async()=>{return ('+a+');})()'))();
+    ok(typeof res==='object'?JSON.stringify(res,null,2):String(res));
+  }catch(e){
+    try{ const r2=await (new Function('return (async()=>{'+a+'})()'))(); ok(r2===undefined?'done':String(r2)); }
+    catch(e2){ er(e2.message); }
+  }
+};
+
+/* NATIVE */
+CMDS.NATIVE=async(a)=>{
+  a=(a||'').trim().toLowerCase(); hd('NATIVE '+(a||'info'));
+  if(a==='gps'){
+    if(!navigator.geolocation) return er('no geolocation');
+    return navigator.geolocation.getCurrentPosition(
+      p=>{ ok('LAT '+p.coords.latitude.toFixed(6)); ok('LON '+p.coords.longitude.toFixed(6)); ok('ACC '+p.coords.accuracy.toFixed(1)+'m');
+        $('g-lat').textContent=p.coords.latitude.toFixed(6); $('g-lon').textContent=p.coords.longitude.toFixed(6);
+        record('gps','fix',p.coords.latitude.toFixed(6)+','+p.coords.longitude.toFixed(6)); },
+      e=>er('denied: '+e.message),{enableHighAccuracy:true,timeout:15000});
+  }
+  if(a==='camera'){
+    try{ const st=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+      const vid=document.createElement('video'); vid.srcObject=st; vid.autoplay=true; vid.playsInline=true;
+      vid.style.cssText='width:100%;border:1px solid var(--line);margin-top:6px';
+      $('lastout').after(vid); ok('camera live');
+    }catch(e){ er('camera: '+e.message); } return;
+  }
+  if(a==='clip'){ try{ ok(await navigator.clipboard.readText()); }catch(e){ er('denied'); } return; }
+  if(a==='vibrate'){ navigator.vibrate&&navigator.vibrate([40,60,40]); return ok('vibrated'); }
+  if(a==='contacts'){
+    if(!('contacts' in navigator)) return wn('Contacts API unsupported');
+    try{ const s=await navigator.contacts.select(['name','tel'],{multiple:true});
+      s.forEach(c=>ok((c.name||[]).join(' ')+' '+(c.tel||[]).join(','))); }catch(e){ er(e.message); } return;
+  }
+  ok('targets: gps camera clip vibrate contacts');
+};
+
+/* JA3 */
+CMDS.JA3=async(a)=>{
+  a=(a||'').trim();
+  if(!a){ hd('JA3 PROFILES'); Object.keys(JA3_PROFILES).forEach(k=>ok((k===CFG.ja3?'* ':'  ')+k)); return wn('JA3 <profile|off>'); }
+  if(a==='off'){ setJa3('off'); return ok('off'); }
+  if(!JA3_PROFILES[a]) return er('unknown profile');
+  setJa3(a); wn('UA + headers now match the claimed stack');
+};
+
+/* RUN */
+CMDS.RUN=async(a)=>{ if((a||'').trim()) return dispatch(a.trim()); return runBlock(); };
+
+/* IP_ADDR */
+CMDS.IP_ADDR=async()=>{
+  if(!await needNet()) return;
+  hd('PUBLIC IP'); const ip=await publicIP();
+  if(!ip) return er('failed');
+  ok(ip); $('s-ip').textContent=ip;
+  try{ const r=await fetch('https://ipwho.is/'); const j=await r.json();
+    ok(j.city+', '+j.country); ok('ISP '+(j.connection?.isp||'?')); ok('ASN '+(j.connection?.asn||'?'));
+  }catch(e){ dm('geo blocked'); }
+};
+async function publicIP(){
+  const src=[
+    async()=>{ const r=await fetch('https://1.1.1.1/cdn-cgi/trace'); return ((await r.text()).match(/ip=([\d.]+)/)||[])[1]; },
+    async()=>{ const r=await fetch('https://ipwho.is/'); return (await r.json()).ip; },
+    async()=>{ const r=await fetch('https://api.ipify.org?format=json'); return (await r.json()).ip; }
+  ];
+  for(const s of src){ try{ const ip=await s(); if(ip) return ip; }catch(e){} }
+  return '';
+}
+
+/* NETSTAT */
+CMDS.NETSTAT=async()=>{
+  hd('CONNECTIONS');
+  if(!CFG.netstat.length) return dm('none');
+  CFG.netstat.slice(0,50).forEach(n=>{
+    const l=new Date(n.t).toLocaleTimeString()+'  '+n.method.padEnd(4)+' '+String(n.status).padEnd(4)+' '+n.ms+'ms  '+n.url.slice(0,70);
+    n.flag==='ERR'?er(l):ok(l);
+  });
+};
+
+/* GETPROP */
+CMDS.GETPROP=async()=>{
+  hd('SYSTEM PROPS');
+  const car=CARRIERS[CFG.carrier]||CARRIERS.auto;
+  ok('ro.product.model    '+(navigator.platform||'unknown'));
+  ok('gsm.operator.alpha  '+car.name);
+  ok('gsm.operator.mcc    '+car.mcc);
+  ok('gsm.operator.mnc    '+car.mnc);
+  ok('gsm.network.type    '+(navigator.connection?.effectiveType||'unknown'));
+  ok('device.id           '+deviceId());
+  wn('IMEI/IMSI not exposed to browsers');
+  ok('derived.imsi        '+car.mcc+car.mnc+'0000000000');
+};
+
+/* PS */
+CMDS.PS=async()=>{
+  hd('PROCESSES');
+  [['1','zmt-huck','R','main'],['22','zfetch','S','net'],['34','vault','S','store'],
+   ['41','cookie-jar','S','store'],['58','ja3-shim','S','tls'],['63','ussd-parser','S','sim'],
+   ['77','recon','S','net'],['90','ai-bridge','S',CFG.aiEnabled?'active':'idle'],
+   ['95','cache','S','store']].forEach(([p,n,s,note])=>ok(p.padStart(4)+'  '+n.padEnd(14)+s+'  '+note));
+  dm('simulated — browsers expose no process table');
+};
+
+/* SAVE_OUTPUT */
+CMDS.SAVE_OUTPUT=async(a)=>{
+  const label=(a||'output').trim().replace(/\W+/g,'-');
+  CFG.history.unshift({t:ts(),label,text:$('term').innerText});
+  if(CFG.history.length>40) CFG.history.length=40;
+  saveCfg(); ok('saved "'+label+'"');
+};
+
+/* CACHE */
+CMDS.CACHE=async(a)=>{
+  const [s,k]=(a||'').trim().split(/\s+/); const S=(s||'LIST').toUpperCase();
+  if(S==='LIST'){
+    hd('OFFLINE CACHE'); const keys=Object.keys(CFG.cache);
+    if(!keys.length) return dm('empty');
+    keys.forEach(x=>ok(new Date(CFG.cache[x].t).toLocaleString()+'  '+CFG.cache[x].body.length+'B  '+x.slice(0,80)));
+    return;
+  }
+  if(S==='GET'){ const c=cacheGet(k); if(!c) return wn('not cached'); return setLast(c.body.slice(0,8000),'warn'); }
+  if(S==='PUT'){ cachePut(k, (a||'').split(' ').slice(2).join(' ')); return ok('cached'); }
+  if(S==='CLEAR'){ CFG.cache={}; saveCfg(); return ok('cache cleared'); }
+  wn('CACHE LIST|GET <url>|CLEAR');
+};
+
+/* SWEEP */
+CMDS.SWEEP=async(a)=>{
+  const h=(a||'').trim().replace(/^@/,'');
+  if(!h) return wn('SWEEP <username>');
+  if(!await needNet()) return;
+  stopSweep=false; hd('SWEEP '+h);
+  const grid=$('sw-grid'); grid.innerHTML=''; $('sw-out').textContent='';
+  const chips=SWEEP_TARGETS.map(([n])=>{ const c=document.createElement('span'); c.className='chip busy'; c.textContent=n; grid.appendChild(c); return c; });
+  let hits=0;
+  for(let i=0;i<SWEEP_TARGETS.length;i++){
+    if(stopSweep){ wn('aborted'); break; }
+    $('sw-prog').style.width=Math.round(i/SWEEP_TARGETS.length*100)+'%';
+    try{
+      const r=await zfetch(SWEEP_TARGETS[i][1](h));
+      if(r.status===200){ chips[i].className='chip hit'; hits++; record('sweep',SWEEP_TARGETS[i][0],'FOUND'); }
+      else if(r.status===404) chips[i].className='chip miss';
+      else { chips[i].className='chip'; chips[i].textContent=SWEEP_TARGETS[i][0]+' '+r.status; }
+    }catch(e){ chips[i].className='chip'; chips[i].textContent=SWEEP_TARGETS[i][0]+' err'; }
+    await sleep(90);
+  }
+  $('sw-prog').style.width='100%';
+  ok('HITS '+hits+'/'+SWEEP_TARGETS.length);
+  $('sw-out').textContent='HITS '+hits+'/'+SWEEP_TARGETS.length;
+  chips.forEach((c,i)=>{ if(c.classList.contains('hit')) c.onclick=()=>window.open(SWEEP_TARGETS[i][1](h),'_blank'); });
+};
+
+/* FB / WA / IG / TT / X / TG / RD / GH */
+CMDS.FB=async(a)=>{
+  const u=(a||'').trim().replace(/^@/,''); if(!u) return wn('FB <username>');
+  if(!await needNet()) return;
+  hd('FACEBOOK '+u);
+  try{
+    const r=await zfetch('https://www.facebook.com/'+u); const b=await r.text();
+    const t=b.match(/<title[^>]*>([^<]{1,160})<\/title>/i);
+    const d=b.match(/content="([^"]{20,300})"\s*(?:name|property)="(?:og:)?description"/i);
+    ok('HTTP '+r.status); if(t) ok('TITLE '+t[1]); if(d) ok('BIO '+d[1]);
+    if(r.status===404) wn('handle appears FREE');
+    $('fb-out').textContent='HTTP '+r.status+'\n'+(t?t[1]:'')+'\n'+(d?d[1]:'');
+    record('social','facebook:'+u,r.status);
+  }catch(e){ er('failed: '+e.message); }
+};
+CMDS.WA=async(a)=>{
+  const p=(a||'').trim().split(/\s+/); const n=(p[0]||'').replace(/[^\d]/g,'');
+  if(!n) return wn('WA <number> [presence]');
+  hd('WHATSAPP +'+n);
+  ok('wa.me/'+n); ok('api.whatsapp.com/send?phone='+n);
+  $('wa-out').textContent='wa.me/'+n;
+  window.open('https://wa.me/'+n,'_blank','noopener');
+  record('social','whatsapp',n);
+};
+CMDS.IG=async(a)=>{
+  const u=(a||'').trim().replace(/^@/,''); if(!u) return wn('IG <handle>');
+  if(!await needNet()) return;
+  hd('INSTAGRAM '+u);
+  try{
+    const r=await zfetch('https://www.instagram.com/'+u+'/'); const b=await r.text();
+    const t=b.match(/<title[^>]*>([^<]{1,200})<\/title>/i);
+    const d=b.match(/content="([^"]{10,400})"\s*(?:name|property)="(?:og:)?description"/i);
+    ok('HTTP '+r.status); if(t) ok('TITLE '+t[1]); if(d) ok('META '+d[1]);
+    if(r.status===404) wn('handle appears FREE');
+    $('ig-out').textContent='HTTP '+r.status+'\n'+(t?t[1]:'')+'\n'+(d?d[1]:'');
+    record('social','instagram:'+u,r.status);
+  }catch(e){ er('failed: '+e.message); }
+};
+CMDS.TT=async(a)=>{
+  const u=(a||'').trim().replace(/^@/,''); if(!u) return wn('TT <handle>');
+  if(!await needNet()) return;
+  hd('TIKTOK '+u);
+  try{
+    const r=await zfetch('https://www.tiktok.com/oembed?url='+encodeURIComponent('https://www.tiktok.com/@'+u));
+    const j=JSON.parse(await r.text());
+    ok('AUTHOR '+j.author_name); ok('ID '+j.author_unique_id);
+    $('tt-out').textContent='AUTHOR '+j.author_name+'\nID '+j.author_unique_id;
+    record('social','tiktok:'+u,j.author_name);
+  }catch(e){ er('failed: '+e.message); }
+};
+CMDS.XPROBE=async(a)=>{
+  const u=(a||'').trim().replace(/^@/,''); if(!u) return wn('XPROBE <handle>');
+  if(!await needNet()) return;
+  hd('X @'+u);
+  try{ const r=await zfetch('https://api.fxtwitter.com/'+u); const j=JSON.parse(await r.text()).user;
+    ok('NAME '+j.name); ok('FOLLOWERS '+j.followers); ok('JOINED '+j.joined);
+    $('misc-out').textContent=j.name+'\n'+j.followers+' followers';
+  }catch(e){ er('failed: '+e.message); }
+};
+CMDS.TG=async(a)=>{
+  const u=(a||'').trim().replace(/^@/,''); if(!u) return wn('TG <handle>');
+  if(!await needNet()) return;
+  hd('TELEGRAM '+u);
+  try{ const r=await zfetch('https://t.me/'+u); const b=await r.text();
+    const t=b.match(/tgme_page_title[^>]*>(?:<span[^>]*>)?([^<]{1,120})/i);
+    ok('HTTP '+r.status); if(t) ok('TITLE '+t[1]);
+    $('misc-out').textContent='HTTP '+r.status+(t?'\n'+t[1]:'');
+  }catch(e){ er('failed: '+e.message); }
+};
+CMDS.REDDIT=async(a)=>{
+  const u=(a||'').trim().replace(/^u\//,''); if(!u) return wn('REDDIT <handle>');
+  if(!await needNet()) return;
+  hd('REDDIT '+u);
+  try{ const r=await zfetch('https://www.reddit.com/user/'+u+'/about.json');
+    if(r.status===404){ $('misc-out').textContent='FREE'; return wn('FREE'); }
+    const d=JSON.parse(await r.text()).data;
+    ok('KARMA '+(d.link_karma+d.comment_karma)); $('misc-out').textContent='karma '+(d.link_karma+d.comment_karma);
+  }catch(e){ er('failed: '+e.message); }
+};
+CMDS.GITHUB=async(a)=>{
+  const u=(a||'').trim().replace(/^@/,''); if(!u) return wn('GITHUB <handle>');
+  if(!await needNet()) return;
+  hd('GITHUB '+u);
+  try{ const r=await zfetch('https://api.github.com/users/'+u);
+    if(r.status===404){ $('misc-out').textContent='FREE'; return wn('FREE'); }
+    const j=JSON.parse(await r.text());
+    ok('NAME '+(j.name||'-')); ok('REPOS '+j.public_repos); ok('FOLLOWERS '+j.followers);
+    $('misc-out').textContent=(j.name||'-')+'\n'+j.public_repos+' repos';
+  }catch(e){ er('failed: '+e.message); }
+};
+
+/* PAYWALL / ARCHIVE / JINA */
+CMDS.PAYWALL=async(a)=>{
+  const url=norm(a); if(!url) return wn('PAYWALL <url>');
+  if(!await needNet()) return;
+  hd('PURGE '+url);
+  try{ const r=await fetch('https://archive.org/wayback/available?url='+encodeURIComponent(url)); const j=await r.json();
+    const s=j.archived_snapshots?.closest;
+    s?ok('SNAPSHOT '+s.url):dm('no snapshot'); }catch(e){ dm('wayback failed'); }
+  try{ const r=await fetch('https://r.jina.ai/'+url); const t=await r.text();
+    ok('EXTRACTED '+t.length+' chars'); setLast(t.slice(0,6000),'ok');
+    $('pw-out').textContent=t.slice(0,6000); cachePut(url,t);
+  }catch(e){ wn('extractor blocked'); }
+};
+CMDS.ARCHIVE=async(a)=>{
+  const url=norm(a); if(!url) return wn('ARCHIVE <url>');
+  if(!await needNet()) return;
+  try{ const r=await fetch('https://archive.org/wayback/available?url='+encodeURIComponent(url)); const j=await r.json();
+    const s=j.archived_snapshots?.closest;
+    if(s){ ok(s.url); $('pw-out').textContent=s.url; window.open(s.url,'_blank'); } else wn('none');
+  }catch(e){ er('failed'); }
+};
+CMDS.JINA=async(a)=>{
+  const url=norm(a); if(!url) return wn('JINA <url>');
+  if(!await needNet()) return;
+  try{ const r=await fetch('https://r.jina.ai/'+url); const t=await r.text();
+    $('pw-out').textContent=t.slice(0,9000); download('extract-'+clockStamp()+'.txt',t);
+  }catch(e){ er('failed'); }
+};
+
+/* SNIFF */
+CMDS.SNIFF=async(a)=>{
+  if((a||'').toUpperCase()==='EXPORT'){
+    if(!pkts.length) return wn('nothing captured');
+    return download('packets-'+clockStamp()+'.csv','time,host,type,len,ms\n'+pkts.map(p=>[p.t,p.host,p.type,p.len,p.ms].join(',')).join('\n'),'text/csv');
+  }
+  toggleSniff();
+};
+function toggleSniff(){
+  sniffing=!sniffing; $('sniff-btn').textContent=sniffing?'STOP':'START';
+  if(sniffing){
+    try{ po=new PerformanceObserver(l=>{ for(const e of l.getEntries()) if(sniffing) pktRow({
+      t:new Date().toLocaleTimeString(),host:e.name.replace(/^https?:\/\//,'').split('/')[0].slice(0,32),
+      type:(e.initiatorType||'fetch').toUpperCase(),len:e.transferSize||0,ms:Math.round(e.duration),real:true}); });
+      po.observe({type:'resource',buffered:true});
+    }catch(e){ er('observer: '+e.message); }
+    ok('sniffer armed');
+  } else { if(po){po.disconnect();po=null;} ok('sniffer stopped'); }
+}
+function pktRow(r){
+  const tb=$('p-body'); if(!tb) return;
+  const tr=document.createElement('tr');
+  tr.innerHTML='<td>'+esc(r.t)+'</td><td>'+esc(r.host)+'</td><td>'+esc(r.type)+'</td><td>'+r.len+'</td><td>'+r.ms+'</td>';
+  if(r.real) tr.style.color='#00ff9c';
+  tb.prepend(tr); while(tb.rows.length>40) tb.deleteRow(-1);
+  pkts.push(r); pbytes+=r.len;
+  $('p-count').textContent=pkts.length; $('p-bytes').textContent=pbytes;
+  const vz=$('viz'), d=document.createElement('div');
+  d.className='pkt'; d.textContent=r.type; d.style.left='-40px'; d.style.top=(Math.random()*85+6)+'px';
+  vz.appendChild(d); const w=vz.clientWidth||300;
+  requestAnimationFrame(()=>{ d.style.transition='left 1.1s linear'; d.style.left=w+'px'; });
+  setTimeout(()=>d.remove(),1200);
+}
+function clearPkts(){ pkts=[]; pbytes=0; $('p-body').innerHTML=''; $('p-count').textContent=0; $('p-bytes').textContent=0; }
+
+/* RTC */
+CMDS.RTC=async()=>{
+  hd('WEBRTC ICE');
+  if(!window.RTCPeerConnection) return er('unavailable');
+  const found=new Set();
+  const pc=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
+  pc.createDataChannel('x');
+  pc.onicecandidate=e=>{ if(!e.candidate) return;
+    const m=e.candidate.candidate.match(/(\d{1,3}(?:\.\d{1,3}){3})/); if(m) found.add(m[1]); };
+  await pc.setLocalDescription(await pc.createOffer());
+  await sleep(3200);
+  found.size?[...found].forEach(x=>ok(x)):dm('no host candidates (mDNS)');
+  $('rtc-out').textContent=[...found].join('\n')||'none';
+  pc.close();
+};
+
+/* RAN */
+CMDS.RAN=async()=>{
+  hd('RAN SCAN');
+  const c=navigator.connection||{}; const rtt=c.rtt||0, dl=c.downlink||0;
+  let mnc='02'; if(rtt>260||dl<0.6) mnc='03'; else if(rtt>160||dl<1.4) mnc='01';
+  const tac='59'+String(Math.floor(Math.random()*90)+10)+String(Math.floor(Math.random()*90)+10);
+  const cid='0x'+Math.floor(Math.random()*0xFFFFFF).toString(16).toUpperCase().padStart(6,'0');
+  const rssi=Math.round(-60-(rtt/8)-Math.random()*12);
+  $('n-op').textContent=CARRIERS[Object.keys(CARRIERS).find(k=>CARRIERS[k].mnc===mnc)]?.name||'?';
+  $('n-mcc').textContent='645/'+mnc; $('n-tac')&&($('n-tac').textContent=tac);
+  $('n-cid')&&($('n-cid').textContent=cid);
+  $('n-state').textContent='READY'; $('n-roam').textContent='NO';
+  $('n-type').textContent=(c.effectiveType||'unknown').toUpperCase();
+  $('n-dbm').textContent=rssi+' dBm';
+  ok('MCC/MNC 645/'+mnc); ok('TAC '+tac); ok('CID '+cid); ok('RSSI '+rssi+' dBm');
+  drawMap(); record('ran','operator','645/'+mnc+' rssi '+rssi);
+};
+function drawMap(){
+  const cv=$('map'); if(!cv) return; const ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
+  ctx.fillStyle='#03080c'; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='#0f2a35';
+  for(let x=0;x<W;x+=20){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=20){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  ctx.fillStyle='#00ff9c'; ctx.font='9px monospace';
+  ctx.beginPath(); ctx.arc(W/2,H/2,5,0,7); ctx.fill();
+  ctx.fillText('DEVICE',W/2-18,H/2+18);
+  [[60,32],[W-70,36],[80,H-30],[W-90,H-26]].forEach((t,i)=>{
+    ctx.strokeStyle='#00ff9c'; ctx.strokeRect(t[0]-8,t[1]-8,16,16);
+    ctx.fillStyle='#0a8a6a'; ctx.fillText('T'+i,t[0]-6,t[1]-12);
+    ctx.strokeStyle='#0a4a3a'; ctx.beginPath(); ctx.moveTo(W/2,H/2); ctx.lineTo(t[0],t[1]); ctx.stroke();
+  });
+}
+
+/* CELLS */
+CMDS.CELLS=async()=>{
+  hd('CELLS');
+  wn('cell enumeration needs the native bridge — showing derived values');
+  ok('serving MCC/MNC '+($('n-mcc').textContent||'---'));
+  ok('type '+($('n-type').textContent||'---'));
+  $('cell-out').textContent=$('n-mcc').textContent+'\n'+$('n-type').textContent;
+};
+
+/* DNS */
+CMDS.DNS=async(a)=>{
+  const [t,d]=(a||'').trim().split(/\s+/);
+  if(!t||!d) return wn('DNS <type> <domain>');
+  if(!await needNet()) return;
+  hd('DNS '+t+' '+d);
+  try{ const r=await fetch('https://dns.google/resolve?name='+encodeURIComponent(d)+'&type='+t); const j=await r.json();
+    if(j.Answer&&j.Answer.length){ j.Answer.forEach(x=>ok(x.type+' '+x.name+' '+x.data)); $('dns-out').textContent=j.Answer.map(x=>x.data).join('\n'); }
+    else { wn('none'); $('dns-out').textContent='none'; }
+  }catch(e){ er('failed'); }
+};
+
+/* LATENCY / PTR */
+CMDS.LATENCY=async()=>{
+  if(!await needNet()) return;
+  hd('LATENCY FAN');
+  const t=[['Cloudflare','https://1.1.1.1/cdn-cgi/trace'],['Google','https://dns.google/resolve?name=a.com&type=A'],
+    ['GitHub','https://api.github.com/zen'],['ipwho','https://ipwho.is/'],['Wayback','https://archive.org/wayback/available?url=a.com']];
+  const res=[];
+  for(const [n,u] of t){
+    try{ const t0=performance.now(); await fetch(u); res.push([n,Math.round(performance.now()-t0)]); }
+    catch(e){ res.push([n,-1]); }
+    $('lat-out').textContent=res.map(r=>r[0]+' '+(r[1]<0?'FAIL':r[1]+'ms')).join('\n');
+  }
+  const v=res.filter(r=>r[1]>=0).map(r=>r[1]).sort((x,y)=>x-y);
+  const med=v[Math.floor(v.length/2)]||0;
+  ok('MEDIAN '+med+'ms  JITTER '+((v[v.length-1]||0)-(v[0]||0))+'ms');
+};
+CMDS.PTR=async(a)=>{
+  const ip=(a||'').trim(); if(!ip) return wn('PTR <ip>');
+  if(!await needNet()) return;
+  hd('PTR '+ip);
+  try{ const rev=ip.split('.').reverse().join('.')+'.in-addr.arpa';
+    const r=await fetch('https://dns.google/resolve?name='+rev+'&type=PTR'); const j=await r.json();
+    if(j.Answer&&j.Answer.length){ j.Answer.forEach(x=>ok(x.data)); $('ptr-out').textContent=j.Answer.map(x=>x.data).join('\n'); }
+    else wn('no PTR');
+  }catch(e){ er('failed'); }
+};
+
+/* ROBOTS / TECH / HDRS / HARVEST */
+CMDS.ROBOTS=async(a)=>{
+  const d=(a||'').trim().replace(/^https?:\/\//,'').split('/')[0];
+  if(!d) return wn('ROBOTS <domain>');
+  if(!await needNet()) return;
+  hd('ROBOTS '+d); const acc=[];
+  for(const p of ['/robots.txt','/sitemap.xml']){
+    try{ const r=await zfetch('https://'+d+p); const b=await r.text(); acc.push('=== '+p+' ['+r.status+']\n'+b.slice(0,1800)); }
+    catch(e){ acc.push('=== '+p+' ERR'); }
+  }
+  setLast(acc.join('\n\n'),'ok'); $('rc-out').textContent=acc.join('\n\n').slice(0,4000);
+};
+CMDS.TECH=async(a)=>{
+  const d=(a||'').trim().replace(/^https?:\/\//,'').split('/')[0];
+  if(!d) return wn('TECH <domain>');
+  if(!await needNet()) return;
+  hd('FINGERPRINT '+d);
+  try{ const r=await zfetch('https://'+d); const b=await r.text();
+    const hit=fingerprint(b,r.headers);
+    ok('HTTP '+r.status); hit.length?hit.forEach(h=>ok('  '+h)):dm('none');
+    $('rc-out').textContent=hit.join('\n')||'none'; record('recon',d+' tech',hit.join(','));
+  }catch(e){ er('failed'); }
+};
+CMDS.HDRS=async(a)=>{
+  const d=(a||'').trim().replace(/^https?:\/\//,'').split('/')[0];
+  if(!d) return wn('HDRS <domain>');
+  if(!await needNet()) return;
+  hd('HEADERS '+d);
+  try{ const r=await zfetch('https://'+d); ok('STATUS '+r.status);
+    r.headers.forEach((val,k)=>dm(k+': '+val.slice(0,100)));
+  }catch(e){ er('failed'); }
+};
+CMDS.HARVEST=async()=>{
+  if(!srcBuf) return wn('SRC a page first');
+  hd('HARVEST');
+  const d=new DOMParser().parseFromString(srcBuf,'text/html');
+  const a=[...d.querySelectorAll('a[href]')].map(x=>x.getAttribute('href'));
+  const s=[...d.querySelectorAll('script[src]')].map(x=>x.getAttribute('src'));
+  const f=[...d.querySelectorAll('form')].map(x=>(x.getAttribute('action')||'-')+' ['+(x.getAttribute('method')||'GET')+']');
+  ok('LINKS '+a.length); a.slice(0,50).forEach(x=>dm('  '+x));
+  ok('SCRIPTS '+s.length); s.slice(0,50).forEach(x=>dm('  '+x));
+  ok('FORMS '+f.length); f.forEach(x=>dm('  '+x));
+  $('hv-out').textContent='LINKS '+a.length+'\n'+a.slice(0,40).join('\n')+'\n\nSCRIPTS '+s.length+'\n'+s.slice(0,40).join('\n')+'\n\nFORMS\n'+f.join('\n');
+};
+
+/* STORAGE */
+CMDS.COOKIES=async()=>{ const c=document.cookie; hd('COOKIES'); c?c.split('; ').forEach(x=>ok(x)):dm('none'); $('st-out').textContent=c||'none'; };
+CMDS.LS=async()=>{ hd('LOCALSTORAGE'); const o=[]; for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);o.push(k+' = '+String(localStorage.getItem(k)).slice(0,200));} o.length?o.forEach(x=>ok(x)):dm('empty'); $('st-out').textContent=o.join('\n'); };
+CMDS.SS=async()=>{ hd('SESSIONSTORAGE'); const o=[]; for(let i=0;i<sessionStorage.length;i++){const k=sessionStorage.key(i);o.push(k+' = '+String(sessionStorage.getItem(k)).slice(0,200));} o.length?o.forEach(x=>ok(x)):dm('empty'); $('st-out').textContent=o.join('\n'); };
+CMDS.IDB=async()=>{ hd('INDEXEDDB'); if(!indexedDB.databases) return wn('unsupported');
+  const d=await indexedDB.databases(); d.length?d.forEach(x=>ok(x.name+' v'+x.version)):dm('none'); $('st-out').textContent=d.map(x=>x.name).join('\n'); };
+CMDS.FINGERPRINT=async()=>{
+  hd('FINGERPRINT');
+  const p=[navigator.userAgent,navigator.platform,screen.width+'x'+screen.height,navigator.hardwareConcurrency,
+    Intl.DateTimeFormat().resolvedOptions().timeZone,navigator.maxTouchPoints];
+  try{ const c=document.createElement('canvas'); c.width=200;c.height=50;
+    const x=c.getContext('2d'); x.textBaseline='top'; x.font='15px Arial';
+    x.fillStyle='#f60'; x.fillRect(0,0,90,25); x.fillStyle='#069'; x.fillText('ZMT',2,5);
+    p.push(c.toDataURL().slice(-70)); }catch(e){}
+  const h=await hashHex('SHA-1',p.join('||'));
+  ok('FP '+h); p.forEach(x=>dm(x));
+  $('fp-out').textContent='FP '+h+'\n'+p.join('\n'); record('vault','fingerprint',h);
+};
+CMDS.PERMS=async()=>{
+  hd('PERMISSIONS');
+  for(const n of ['geolocation','notifications','camera','microphone','clipboard-read','clipboard-write','persistent-storage','midi']){
+    try{ const s=await navigator.permissions.query({name:n}); ok(n.padEnd(18,'.')+' '+s.state); $('perm-out').textContent+=n+' '+s.state+'\n'; }
+    catch(e){ dm(n.padEnd(18,'.')+' unsupported'); }
+  }
+};
+CMDS.SMS=async()=>{
+  hd('SMS');
+  wn('inbox read requires the native Android build');
+  $('sms-out').textContent='requires native bridge';
+};
+
+/* HASHID / JWT / B64 */
+CMDS.HASHID=async()=>{
+  const v2=v('h-in')||'';
+  if(!v2) return wn('put a hash in the input');
+  const r=[[/^[a-f0-9]{32}$/i,'MD5/NTLM'],[/^[a-f0-9]{40}$/i,'SHA-1'],[/^[a-f0-9]{64}$/i,'SHA-256'],
+    [/^[a-f0-9]{128}$/i,'SHA-512'],[/^\$2[aby]\$/,'bcrypt'],[/^\$argon2/,'Argon2'],[/^ey[A-Za-z0-9_-]+\./,'JWT']];
+  const hit=r.filter(p=>p[0].test(v2)).map(p=>p[1]);
+  hit.length?hit.forEach(x=>ok(x)):wn('unrecognised');
+  $('h-out').textContent=hit.join('\n')||'unrecognised';
+};
+CMDS.JWT=async(a)=>{
+  const t=(a||'').trim()||v('j-in');
+  const p=t.split('.');
+  if(p.length<2) return wn('not a JWT');
+  const d=x=>{try{return JSON.stringify(JSON.parse(decodeURIComponent(escape(atob(x.replace(/-/g,'+').replace(/_/g,'/'))))),null,2);}catch(e){return '?';}};
+  hd('JWT'); ok('HEADER'); ok(d(p[0])); ok('PAYLOAD'); ok(d(p[1]));
+  $('j-out').textContent='HEADER\n'+d(p[0])+'\n\nPAYLOAD\n'+d(p[1]);
+};
+CMDS.B64=async(a)=>{
+  const [m,...r]=(a||'').trim().split(/\s+/); const t=r.join(' ');
+  try{
+    if(m==='enc') ok(btoa(unescape(encodeURIComponent(t))));
+    else if(m==='dec') ok(decodeURIComponent(escape(atob(t.trim()))));
+    else if(m==='url') ok(encodeURIComponent(t));
+    else if(m==='hex') ok([...new TextEncoder().encode(t)].map(b=>b.toString(16).padStart(2,'0')).join(''));
+    else if(m==='rot') ok(t.replace(/[a-z]/gi,c=>String.fromCharCode((c<='Z'?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26)));
+    else if(m==='rev') ok([...t].reverse().join(''));
+    else wn('B64 enc|dec|url|hex|rot|rev <text>');
+  }catch(e){ er(e.message); }
+};
+
+/* GPS / BATTERY / WIFI / IFACES */
+CMDS.GPS=async()=>{ await CMDS.NATIVE('gps'); };
+CMDS.BATTERY=async()=>{ try{ const b=await navigator.getBattery(); ok('LEVEL '+Math.round(b.level*100)+'%  '+(b.charging?'charging':'battery'));
+  $('b-lvl').textContent=Math.round(b.level*100)+'%'; $('b-chg').textContent=b.charging?'AC':'BATTERY'; }catch(e){ er('unavailable'); } };
+CMDS.WIFI=async()=>{
+  hd('WIFI');
+  const c=navigator.connection||{};
+  ok('TYPE '+(c.type||'unknown')); ok('EFFECTIVE '+(c.effectiveType||'?'));
+  $('l-trans').textContent=c.type||'unknown'; $('l-eff').textContent=c.effectiveType||'?'; $('l-rtt').textContent=(c.rtt||'?')+'ms';
+  wn('SSID/BSSID need the native build');
+};
+CMDS.IFACES=async()=>{
+  hd('INTERFACES');
+  wn('NetworkInterface enumeration needs native — showing WebRTC candidates');
+  await CMDS.RTC();
+};
+
+/* FINDINGS */
+CMDS.FINDINGS=async()=>{
+  hd('FINDINGS');
+  if(!FINDINGS.length) return dm('none');
+  FINDINGS.forEach(f=>ok('['+f.t.slice(11,19)+'] '+f.module+' '+f.key+' => '+f.value));
+};
+
+/* AI */
+const AI_PROMPT='You are a web security analyst. In the following payload find hidden paywalls, embedded API keys, auth bypass opportunities, premium flags and weak headers. Be terse and cite evidence.';
+async function askAI(payload){
+  if(!CFG.aiEnabled) return wn('enable AI first');
+  if(!CFG.aiBase||!CFG.aiKey) return wn('set base URL and key');
+  if(!payload) return wn('nothing to send');
+  if(!await needNet()) return;
+  hd('AI QUERY');
+  try{
+    const r=await fetch(CFG.aiBase.replace(/\/$/,'')+'/chat/completions',{method:'POST',
+      headers:{'Content-Type':'application/json',Authorization:'Bearer '+CFG.aiKey},
+      body:JSON.stringify({model:CFG.aiModel||'gpt-4o-mini',temperature:0.2,
+        messages:[{role:'system',content:AI_PROMPT},{role:'user',content:payload}]})});
+    if(!r.ok) return er('HTTP '+r.status);
+    const j=await r.json(); const t=j.choices?.[0]?.message?.content||'(empty)';
+    setLast(t,'ok'); $('ai-out').textContent=t;
+  }catch(e){ er('failed: '+e.message); }
+}
+function aiButton(payload,kind){
+  const b=document.createElement('button');
+  b.className='alt sm'; b.style.marginTop='8px'; b.textContent='ASK AI';
+  b.onclick=()=>askAI(payload); $('lastout').after(b);
+  setTimeout(()=>b.remove(),25000);
+}
+
+/* bookmarklet */
+function injectBookmarklet(){
+  const js="javascript:(function(){window.isPremium=true;window.premium=true;window.is_premium=true;"+
+    "document.cookie='premium=1;path=/';var s=document.createElement('style');"+
+    "s.textContent='[class*=paywall],[id*=paywall],[class*=overlay],[id*=overlay],[class*=gate],[class*=modal]{display:none!important}"+
+    "*{overflow:auto!important;max-height:none!important;filter:none!important}';"+
+    "document.head.appendChild(s);document.body.style.overflow='auto';"+
+    "document.querySelectorAll('[style*=blur]').forEach(function(e){e.style.filter='none'});"+
+    "alert('premium injected, overlays stripped');})();";
+  copy(js); $('bm').value=js;
+  $('soc-log').textContent='Injector copied — paste in the address bar on the target page.';
+}
+
+/* ── helpers ────────────────────────────────────────────── */
+function norm(u){ u=(u||'').trim(); if(!u) return ''; if(!/^https?:\/\//i.test(u)) u='https://'+u; try{ new URL(u); return u; }catch(e){ return ''; } }
+function exportCfg(){ download('zmt-config-'+clockStamp()+'.json',JSON.stringify(CFG,null,2),'application/json'); }
+function wipeCfg(){ if(!confirm('Wipe everything?')) return; localStorage.removeItem(KEY); CFG=defaults(); FINDINGS=[]; saveCfg(); paintCfg();
+  $('term').innerHTML=''; termLines=0; ok('wiped'); }
+function dlReport(fmt){
+  if(!FINDINGS.length) return wn('no findings');
+  const n='report-'+clockStamp();
+  if(fmt==='json') download(n+'.json',JSON.stringify({meta:{at:ts()},findings:FINDINGS},null,2),'application/json');
+  else if(fmt==='md'){ let s='# Report\n\n| Time | Module | Key | Value |\n|---|---|---|---|\n';
+    FINDINGS.forEach(f=>s+='| '+f.t+' | '+f.module+' | '+f.key+' | '+f.value+' |\n'); download(n+'.md',s,'text/markdown'); }
+  else download(n+'.txt',FINDINGS.map(f=>f.t+' '+f.module+' '+f.key+' '+f.value).join('\n'));
+}
+
+/* ── dispatch ───────────────────────────────────────────── */
+async function dispatch(line){
+  const raw=(line||'').trim(); if(!raw) return;
+  out('> '+raw,'in');
+  CFG.runs++; saveCfg(); $('cfg-runs').textContent=CFG.runs;
+  CFG.cmdHistory.unshift(raw); if(CFG.cmdHistory.length>80) CFG.cmdHistory.length=80;
+  CFG.lastCmd=raw; saveCfg();
+  const [name,...rest]=raw.split(/\s+/); const key=name.toUpperCase(); const args=rest.join(' ');
+  if(args==='?') return usage(key);
+  const fn=CMDS[key];
+  if(!fn){ er('unknown: '+key); return dm('try DASH or append ?'); }
+  try{ await fn(args); }catch(e){ er(key+' crashed: '+(e?.message||e)); }
+}
+function usage(k){
+  const u={USSD:'USSD <code>|HIST',RECON:'RECON <url>',SCAN:'SCAN <host>',SRC:'SRC <url> [text]',
+    VAULT:'VAULT LIST|SET|GET|DEL|COOKIES',CRYPTO:'CRYPTO HASH|AES|RSA',SHELL:'SHELL SETENV|GETENV|RUN',
+    DOMAIN:'DOMAIN <domain>',OPEN:'OPEN <url> [embed]',BREACH:'BREACH <email>|pw <password>',
+    PASSWORD:'PASSWORD [len]',EMAIL:'EMAIL <address>',COMMAND:'COMMAND <js|at|icu|phone|ports|tls|cf|asn|pkgs|snapshot>',
+    NATIVE:'NATIVE gps|camera|clip|vibrate|contacts',JA3:'JA3 <profile|off>',EXPORT:'EXPORT [json|txt]',
+    CACHE:'CACHE LIST|GET|CLEAR',DNS:'DNS <type> <domain>',SWEEP:'SWEEP <handle>',FB:'FB <user>',WA:'WA <number>',
+    IG:'IG <handle>',TT:'TT <handle>',PTR:'PTR <ip>',ROBOTS:'ROBOTS <domain>',TECH:'TECH <domain>',HDRS:'HDRS <domain>',
+    PAYWALL:'PAYWALL <url>',ARCHIVE:'ARCHIVE <url>',JINA:'JINA <url>',B64:'B64 enc|dec|url|hex|rot|rev <text>'};
+  u[k]?ok(u[k]):ok('no arguments required');
+}
+
+/* ── command bar ────────────────────────────────────────── */
+let histIdx=-1;
+$('cmd').addEventListener('keydown',e=>{
+  if(e.key==='Enter'){ e.preventDefault(); submitCmd(); }
+  else if(e.key==='ArrowUp'){ e.preventDefault(); if(histIdx<CFG.cmdHistory.length-1){histIdx++;$('cmd').value=CFG.cmdHistory[histIdx]||'';} }
+  else if(e.key==='ArrowDown'){ e.preventDefault(); if(histIdx>0){histIdx--;$('cmd').value=CFG.cmdHistory[histIdx]||'';} else {histIdx=-1;$('cmd').value='';} }
+});
+function submitCmd(){ const val=$('cmd').value; if(!val.trim()) return; $('cmd').value=''; histIdx=-1; dispatch(val); }
+function ui(c){ dispatch(c); }
+document.querySelectorAll('[data-cmd]').forEach(b=>b.addEventListener('click',()=>dispatch(b.dataset.cmd)));
+function runBlock(){
+  const lines=($('runblock').value||'').split('\n').map(l=>l.trim()).filter(Boolean);
+  if(!lines.length) return toast('empty','warn');
+  let i=0; ok('running '+lines.length+' lines');
+  (function nx(){ if(i>=lines.length) return ok('complete'); dispatch(lines[i++]).then(()=>setTimeout(nx,120)); })();
+}
+
+/* ── boot ───────────────────────────────────────────────── */
+(function boot(){
+  loadCfg(); paintCfg();
+  if(CFG.lastTab){ const t=document.querySelector('.tab[data-p="'+CFG.lastTab+'"]'); if(t) t.click(); }
+  out('ZMT/HUCK PRO — full','hd');
+  ok('storage restored');
+  dm((isOnline()?'online':'OFFLINE')+' · type DASH to begin · ? for usage');
+  if(CFG.lastCmd) dm('last: '+CFG.lastCmd);
+  if(CFG.history.length) dm(CFG.history.length+' saved output blocks');
+  if(isOnline()) publicIP().then(ip=>{ if(ip) $('s-ip').textContent=ip; });
+  drawMap();
+  window.addEventListener('online',()=>{ paintCfg(); ok('link restored'); });
+  window.addEventListener('offline',()=>{ paintCfg(); wn('link lost — local modules still run'); });
+  window.addEventListener('error',e=>er('runtime: '+e.message));
+  window.addEventListener('unhandledrejection',e=>er('async: '+(e.reason?.message||e.reason)));
+  $('cmd').focus();
+})();
+</script>
+</body>
+</html>
