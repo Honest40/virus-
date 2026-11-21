@@ -1,0 +1,611 @@
+
+
+<div id="top">
+  <div class="logo">ZMT<b>/</b>HUCK</div>
+  <div id="status">
+    <span>NET <b id="s-net">---</b></span>
+    <span>IP <b id="s-ip">---</b></span>
+    <span>CAR <b id="s-car">---</b></span>
+    <span>APN <b id="s-apn">---</b></span>
+    <span>JA3 <b id="s-ja3">off</b></span>
+    <span>AI <b id="s-ai">off</b></span>
+  </div>
+</div>
+
+<div id="tabs">
+  <button class="tab on" data-p="shell">Shell</button>
+  <button class="tab" data-p="dash">Dash</button>
+  <button class="tab" data-p="ussd">USSD</button>
+  <button class="tab" data-p="pkt">PKT</button>
+  <button class="tab" data-p="social">Social</button>
+  <button class="tab" data-p="paywall">Paywall</button>
+  <button class="tab" data-p="net">Net</button>
+  <button class="tab" data-p="isp">ISP</button>
+  <button class="tab" data-p="recon">Recon</button>
+  <button class="tab" data-p="scan">Scan</button>
+  <button class="tab" data-p="src">Src</button>
+  <button class="tab" data-p="vault">Vault</button>
+  <button class="tab" data-p="crypto">Crypto</button>
+  <button class="tab" data-p="sim">SIM</button>
+  <button class="tab" data-p="ai">AI</button>
+  <button class="tab" data-p="apps">Apps</button>
+  <button class="tab" data-p="report">Report</button>
+  <button class="tab" data-p="settings">Settings</button>
+</div>
+
+<div id="panels">
+
+
+<div class="panel on" id="p-shell">
+  <div class="card">
+    <h3>Command Deck <em>bar below</em></h3>
+    <div class="g3">
+      <button class="sm" data-cmd="DASH">DASH</button>
+      <button class="sm" data-cmd="IP_ADDR">IP_ADDR</button>
+      <button class="sm" data-cmd="NETSTAT">NETSTAT</button>
+      <button class="sm" data-cmd="GETPROP">GETPROP</button>
+      <button class="sm" data-cmd="PS">PS</button>
+      <button class="sm" data-cmd="CACHE LIST">CACHE</button>
+      <button class="sm" data-cmd="VAULT LIST">VAULT</button>
+      <button class="sm" data-cmd="RPT">RPT</button>
+      <button class="sm" data-cmd="EXPORT json">EXPORT</button>
+    </div>
+    <p class="hint">All commands: DASH USSD PKT RECON SCAN SRC VAULT CRYPTO SHELL RPT APPS DOMAIN EXPORT OPEN PHONE_INTEL ANALYSE BREACH PASSWORD EMAIL COMMAND NATIVE JA3 RUN IP_ADDR NETSTAT GETPROP PS SAVE_OUTPUT · plus SWEEP FB WA IG TT XPROBE TG REDDIT GITHUB PAYWALL ARCHIVE JINA SNIFF RTC RAN DNS PTR LATENCY ROBOTS TECH HDRS HARVEST COOKIES LS SS IDB FINGERPRINT PERMS SMS HASHID JWT B64 GPS BATTERY WIFI IFACES CELLS CACHE FINDINGS. Append <code>?</code> for usage.</p>
+  </div>
+  <div class="card">
+    <h3>RUN Block</h3>
+    <textarea id="runblock" placeholder="DASH
+RECON https://example.com
+SAVE_OUTPUT recon"></textarea>
+    <button class="alt">EXECUTE BLOCK</button>
+  </div>
+  <div class="card"><h3>Output</h3><pre class="out" id="lastout"></pre></div>
+</div>
+
+
+<div class="panel" id="p-dash">
+  <div class="card">
+    <h3>Device <span class="badge b-real">LOCAL</span></h3>
+    <div class="kv"><i>PLATFORM</i><b id="d-plat">---</b></div>
+    <div class="kv"><i>CORES / RAM</i><b id="d-hw">---</b></div>
+    <div class="kv"><i>SCREEN</i><b id="d-scr">---</b></div>
+    <div class="kv"><i>TZ</i><b id="d-tz">---</b></div>
+    <div class="kv"><i>DEVICE ID</i><b id="d-id">---</b></div>
+    <div class="kv"><i>UPTIME</i><b id="d-up">00:00:00</b></div>
+    <button class="sm">FULL INTEL</button>
+  </div>
+  <div class="card">
+    <h3>Link <span class="badge b-real">LOCAL</span></h3>
+    <div class="kv"><i>TRANSPORT</i><b id="l-trans">---</b></div>
+    <div class="kv"><i>EFFECTIVE</i><b id="l-eff">---</b></div>
+    <div class="kv"><i>RTT</i><b id="l-rtt">---</b></div>
+    <div class="kv"><i>SSID</i><b id="l-ssid">---</b></div>
+    <div class="kv"><i>LOCAL IP</i><b id="l-ip">---</b></div>
+    <button class="sm">READ WIFI</button>
+  </div>
+  <div class="card">
+    <h3>Interfaces <span class="badge b-real">LOCAL</span></h3>
+    <button class="sm">ENUMERATE</button>
+    <pre class="out" id="if-out"></pre>
+  </div>
+  <div class="card">
+    <h3>GPS <span class="badge b-real">LOCAL</span></h3>
+    <div class="kv"><i>LAT</i><b id="g-lat">---</b></div>
+    <div class="kv"><i>LON</i><b id="g-lon">---</b></div>
+    <div class="kv"><i>ACC</i><b id="g-acc">---</b></div>
+    <button class="sm">ACQUIRE</button>
+  </div>
+  <div class="card">
+    <h3>Battery <span class="badge b-real">LOCAL</span></h3>
+    <div class="kv"><i>LEVEL</i><b id="b-lvl">---</b></div>
+    <div class="kv"><i>STATE</i><b id="b-chg">---</b></div>
+  </div>
+  <div class="card"><h3>Event Log</h3><div id="evlog" class="hint"></div></div>
+</div>
+
+
+<div class="panel" id="p-ussd">
+  <div class="card">
+    <h3>Dial <span class="badge b-real">REAL</span></h3>
+    <div class="row"><input type="tel" id="ussd-code" value="*185#"><button class="sm" style="flex:0 0 76px">SEND</button></div>
+    <pre class="out" id="ussd-out"></pre>
+    <p class="hint">Parses balance / data / loan fields. On mobile the code is also handed to the native dialer.</p>
+  </div>
+  <div class="card">
+    <h3>MTN</h3>
+    <div class="g2">
+      <button>BALANCE</button><button>DATA</button>
+      <button class="sm">MOMO</button><button class="sm">ME2U</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>AIRTEL</h3>
+    <div class="g2">
+      <button>MENU</button><button>LOAN</button>
+      <button class="sm">BALANCE</button><button class="sm">MONEY</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>ZAMTEL</h3>
+    <div class="g2">
+      <button>TOP UP</button><button>SOS</button>
+      <button class="sm">BALANCE</button><button class="sm">KWACHA</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>History <span class="badge b-off">OFFLINE</span></h3>
+    <pre class="out" id="ussd-log"></pre>
+    <div class="g2"><button class="sm">SHOW</button><button class="sm">CLEAR</button></div>
+  </div>
+</div>
+
+
+<div class="panel" id="p-pkt">
+  <div class="card">
+    <h3>Traffic <span class="badge b-real">OBSERVER</span></h3>
+    <div class="pkt-box" id="viz"></div>
+    <div class="g2"><button id="sniff-btn">START</button><button>CLEAR</button></div>
+    <div class="kv"><i>COUNT</i><b id="p-count">0</b></div>
+    <div class="kv"><i>BYTES</i><b id="p-bytes">0</b></div>
+    <table><thead><tr><th>T</th><th>Host</th><th>Type</th><th>Len</th><th>ms</th></tr></thead><tbody id="p-body"></tbody></table>
+    <button class="sm" style="margin-top:6px">EXPORT CSV</button>
+  </div>
+  <div class="card">
+    <h3>Header Injection <span class="badge b-real">REAL</span></h3>
+    <input id="pkt-h" placeholder="X-Premium"><input id="pkt-v" placeholder="true">
+    <div class="g2"><button>SET</button><button class="ghost">SHOW</button></div>
+    <div id="pkt-list" style="margin-top:6px"></div>
+  </div>
+  <div class="card">
+    <h3>WebRTC Leak <span class="badge b-real">LOCAL</span></h3>
+    <button>PROBE ICE</button>
+    <pre class="out" id="rtc-out"></pre>
+  </div>
+</div>
+
+
+<div class="panel" id="p-social">
+  <div class="card">
+    <h3>Handle Sweep <span class="badge b-real">ONLINE</span></h3>
+    <input id="handle" placeholder="username">
+    <div class="g2"><button>SWEEP 16</button><button>ABORT</button></div>
+    <div class="progress-bg"><div id="sw-prog" class="progress-fill"></div></div>
+    <div id="sw-grid" style="margin-top:6px"></div>
+    <pre class="out" id="sw-out"></pre>
+  </div>
+  <div class="card" style="border-color:#1877F2">
+    <h3 style="color:#1877F2">Facebook</h3>
+    <input id="fb-in" placeholder="username or ID">
+    <div class="g2"><button style="color:#1877F2;border-color:#1877F2">SCRAPE</button><button class="ghost">OPEN</button></div>
+    <pre class="out" id="fb-out"></pre>
+  </div>
+  <div class="card" style="border-color:#25D366">
+    <h3 style="color:#25D366">WhatsApp</h3>
+    <input type="tel" id="wa-in" placeholder="+260...">
+    <div class="g2"><button style="color:#25D366;border-color:#25D366">SESSION</button><button class="ghost">PRESENCE</button></div>
+    <pre class="out" id="wa-out"></pre>
+  </div>
+  <div class="card" style="border-color:#f09433">
+    <h3 style="color:#f09433">Instagram</h3>
+    <input id="ig-in" placeholder="handle">
+    <div class="g2"><button style="color:#f09433;border-color:#f09433">SCRAPE</button><button class="ghost">OPEN</button></div>
+    <pre class="out" id="ig-out"></pre>
+  </div>
+  <div class="card" style="border-color:#25f4ee">
+    <h3 style="color:#25f4ee">TikTok</h3>
+    <input id="tt-in" placeholder="handle">
+    <button style="color:#25f4ee;border-color:#25f4ee">OEMBED</button>
+    <pre class="out" id="tt-out"></pre>
+  </div>
+  <div class="card">
+    <h3>X / TG / REDDIT / GH</h3>
+    <input id="misc-in" placeholder="handle">
+    <div class="g2">
+      <button class="sm">X</button>
+      <button class="sm">TELEGRAM</button>
+      <button class="sm">REDDIT</button>
+      <button class="sm">GITHUB</button>
+    </div>
+    <pre class="out" id="misc-out"></pre>
+  </div>
+  <div class="card">
+    <h3>Social Vault <em>session cookies</em></h3>
+    <select id="soc-platform">
+      <option value="facebook.com">Facebook</option><option value="instagram.com">Instagram</option>
+      <option value="x.com">X / Twitter</option><option value="tiktok.com">TikTok</option>
+      <option value="whatsapp.com">WhatsApp</option><option value="linkedin.com">LinkedIn</option>
+    </select>
+    <textarea id="soc-cookie" placeholder="c_user=...; xs=...; datr=..."></textarea>
+    <div class="g2"><button>STORE</button><button class="ghost">LIST</button></div>
+    <p class="hint">Cookies attach automatically to any matching host in RECON / SRC / ANALYSE / FB / IG.</p>
+  </div>
+  <div class="card">
+    <h3>Evasion <span class="badge b-real">REAL</span></h3>
+    <label class="chk"><input type="checkbox" id="cfg-jitter"> Randomised delay</label>
+    <label class="chk"><input type="checkbox" id="cfg-uarot"> Rotate User-Agent</label>
+    <div class="kv"><i>UA</i><b id="ua-show">---</b></div>
+    <button class="ghost sm">ROLL UA</button>
+  </div>
+  <div class="card">
+    <h3>Auth Bypass <span class="badge b-note">VECTORS</span></h3>
+    <label class="chk"><input type="checkbox" id="cfg-hdr"> Header spoof (X-Premium / Auth / X-Device-ID)</label>
+    <label class="chk"><input type="checkbox" id="cfg-token"> Token replay on 401/403</label>
+    <label class="chk"><input type="checkbox" id="cfg-incap"> Incapsula cookie handler</label>
+    <button class="alt sm">COPY JS INJECTOR</button>
+    <div id="soc-log" class="hint"></div>
+  </div>
+</div>
+
+
+<div class="panel" id="p-paywall">
+  <div class="card">
+    <h3>Purge <span class="badge b-real">ONLINE</span></h3>
+    <input id="pw-url" placeholder="https://target/article">
+    <button>ENACT</button>
+    <div class="g2"><button class="sm">ARCHIVE</button><button class="sm">TEXT EXTRACT</button></div>
+    <pre class="out" id="pw-out"></pre>
+  </div>
+  <div class="card">
+    <h3>Overlay Killer <span class="badge b-off">OFFLINE</span></h3>
+    <button>COPY BOOKMARKLET</button>
+    <textarea id="bm" readonly="" style="font-size:8.5px;margin-top:6px"></textarea>
+    <div class="g2"><button class="ghost sm">OPEN URL</button><button class="ghost sm">ARCHIVE.PH</button></div>
+  </div>
+  <div class="card">
+    <h3>Embed</h3>
+    <input id="embed-url" placeholder="https://target">
+    <button class="ghost">LOAD FRAME</button>
+    <div id="embed-box"></div>
+  </div>
+</div>
+
+
+<div class="panel" id="p-net">
+  <div class="card">
+    <h3>Carrier Read <span class="badge b-real">LOCAL</span></h3>
+    <div class="kv"><i>OPERATOR</i><b id="n-op">---</b></div>
+    <div class="kv"><i>MCC/MNC</i><b id="n-mcc">---</b></div>
+    <div class="kv"><i>SIM STATE</i><b id="n-state">---</b></div>
+    <div class="kv"><i>ROAMING</i><b id="n-roam">---</b></div>
+    <div class="kv"><i>NET TYPE</i><b id="n-type">---</b></div>
+    <div class="kv"><i>SIGNAL</i><b id="n-dbm">---</b></div>
+    <button>DEEP SCAN RAN</button>
+    <canvas id="map" width="440" height="140"></canvas>
+    <button class="ghost sm" style="margin-top:6px">REDRAW</button>
+  </div>
+  <div class="card">
+    <h3>Cells <span class="badge b-sim">SIM</span></h3>
+    <button class="sm">ENUMERATE</button>
+    <pre class="out" id="cell-out"></pre>
+  </div>
+  <div class="card">
+    <h3>DNS <span class="badge b-real">ONLINE</span></h3>
+    <input id="dns-d" placeholder="example.com">
+    <div class="g3">
+      <button class="sm">A</button>
+      <button class="sm">MX</button>
+      <button class="sm">TXT</button>
+      <button class="sm">NS</button>
+      <button class="sm">AAAA</button>
+      <button class="sm">CNAME</button>
+    </div>
+    <pre class="out" id="dns-out"></pre>
+  </div>
+</div>
+
+
+<div class="panel" id="p-isp">
+  <div class="card">
+    <h3>Egress <span class="badge b-real">ONLINE</span></h3>
+    <button>PROBE</button>
+    <div class="g2"><button class="sm">CF TRACE</button><button class="sm">ASN</button></div>
+    <pre class="out" id="eg-out"></pre>
+  </div>
+  <div class="card">
+    <h3>Latency <span class="badge b-real">ONLINE</span></h3>
+    <button>MEASURE</button>
+    <pre class="out" id="lat-out"></pre>
+  </div>
+  <div class="card">
+    <h3>Reverse PTR <span class="badge b-real">ONLINE</span></h3>
+    <input id="ptr-ip" placeholder="8.8.8.8">
+    <button class="sm">RESOLVE</button>
+    <pre class="out" id="ptr-out"></pre>
+  </div>
+</div>
+
+
+<div class="panel" id="p-recon">
+  <div class="card">
+    <h3>Domain <span class="badge b-real">ONLINE</span></h3>
+    <input id="rc-d" placeholder="target.com">
+    <div class="g2">
+      <button>CT SUBDOMAINS</button>
+      <button>ROBOTS</button>
+      <button class="sm">FINGERPRINT</button>
+      <button class="sm">HTTP STATUS</button>
+    </div>
+    <pre class="out" id="rc-out"></pre>
+    <div class="g2" style="margin-top:6px">
+      <button class="sm">WHOIS/DNS</button>
+      <button class="sm">ANALYSE</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Phone Intel <span class="badge b-off">OFFLINE</span></h3>
+    <input type="tel" id="ph-in" placeholder="+260977123456">
+    <button>ANALYSE</button>
+    <pre class="out" id="ph-out"></pre>
+  </div>
+  <div class="card">
+    <h3>Breach <span class="badge b-real">ONLINE</span></h3>
+    <input id="br-in" placeholder="email or password">
+    <div class="g2"><button class="sm">PASSWORD</button><button class="sm">EMAIL</button></div>
+    <pre class="out" id="br-out"></pre>
+  </div>
+</div>
+
+
+<div class="panel" id="p-scan">
+  <div class="card">
+    <h3>Port Probe <span class="badge b-real">ONLINE</span></h3>
+    <input id="sc-host" placeholder="host / IP">
+    <input id="sc-ports" value="21,22,23,25,53,80,110,143,443,445,993,995,3306,3389,5432,6379,8080,8443,27017">
+    <button>SCAN</button>
+    <div class="progress-bg"><div id="sc-prog" class="progress-fill"></div></div>
+    <pre class="out" id="sc-out"></pre>
+  </div>
+  <div class="card">
+    <h3>TLS Certificate <span class="badge b-real">ONLINE</span></h3>
+    <input id="tls-h" placeholder="host">
+    <button>INSPECT</button>
+    <pre class="out" id="tls-out"></pre>
+  </div>
+</div>
+
+
+<div class="panel" id="p-src">
+  <div class="card">
+    <h3>Source <span class="badge b-real">ONLINE</span></h3>
+    <input id="src-u" placeholder="https://target">
+    <div class="g2"><button>FETCH</button><button>TEXT ONLY</button></div>
+    <div class="kv"><i>BYTES</i><b id="src-sz">0</b></div>
+    <div class="g2"><button class="sm">DOWNLOAD</button><button class="sm">COPY</button></div>
+    <pre class="out" id="src-out" style="max-height:300px;font-size:8.5px"></pre>
+  </div>
+  <div class="card">
+    <h3>Harvest <span class="badge b-off">OFFLINE</span></h3>
+    <button>LINKS / SCRIPTS / FORMS</button>
+    <pre class="out" id="hv-out"></pre>
+  </div>
+</div>
+
+
+<div class="panel" id="p-vault">
+  <div class="card">
+    <h3>Storage <span class="badge b-real">LOCAL</span></h3>
+    <div class="g2">
+      <button class="sm">COOKIES</button>
+      <button class="sm">LOCALSTORAGE</button>
+      <button class="sm">SESSION</button>
+      <button class="sm">INDEXEDDB</button>
+    </div>
+    <pre class="out" id="st-out" style="max-height:260px"></pre>
+    <div class="g2" style="margin-top:6px"><button class="sm">EXPORT</button><button class="sm">CLIPBOARD</button></div>
+  </div>
+  <div class="card">
+    <h3>Fingerprint <span class="badge b-real">LOCAL</span></h3>
+    <button>GENERATE</button>
+    <pre class="out" id="fp-out"></pre>
+  </div>
+  <div class="card">
+    <h3>Permissions <span class="badge b-real">LOCAL</span></h3>
+    <button class="sm">AUDIT</button>
+    <pre class="out" id="perm-out"></pre>
+  </div>
+  <div class="card">
+    <h3>SMS <span class="badge b-sim">SIM</span></h3>
+    <button class="sm">READ 25</button>
+    <pre class="out" id="sms-out"></pre>
+  </div>
+  <div class="card">
+    <h3>Vault Keys <span class="badge b-real">LOCAL</span></h3>
+    <input id="v-k" placeholder="key"><input id="v-v" placeholder="value">
+    <div class="g2"><button class="sm">SET</button><button class="sm">LIST</button></div>
+  </div>
+</div>
+
+
+<div class="panel" id="p-crypto">
+  <div class="card">
+    <h3>Hash <span class="badge b-off">OFFLINE</span></h3>
+    <textarea id="h-in" placeholder="input"></textarea>
+    <div class="g3">
+      <button class="sm">MD5</button>
+      <button class="sm">SHA1</button>
+      <button class="sm">SHA256</button>
+      <button class="sm">SHA384</button>
+      <button class="sm">SHA512</button>
+      <button class="sm">IDENTIFY</button>
+    </div>
+    <pre class="out" id="h-out"></pre>
+  </div>
+  <div class="card">
+    <h3>Encode <span class="badge b-off">OFFLINE</span></h3>
+    <textarea id="e-in" placeholder="input"></textarea>
+    <div class="g3">
+      <button class="sm">B64E</button>
+      <button class="sm">B64D</button>
+      <button class="sm">URL</button>
+      <button class="sm">HEX</button>
+      <button class="sm">ROT13</button>
+      <button class="sm">REV</button>
+    </div>
+    <pre class="out" id="e-out"></pre>
+  </div>
+  <div class="card">
+    <h3>AES / RSA <span class="badge b-off">OFFLINE</span></h3>
+    <input id="aes-pass" placeholder="passphrase">
+    <input id="aes-text" placeholder="text or base64">
+    <div class="g2"><button class="sm">AES ENC</button><button class="sm">AES DEC</button></div>
+    <div class="g2"><button class="sm">RSA GEN</button><button class="sm">RSA ENC</button></div>
+    <button class="sm">RSA DEC</button>
+    <pre class="out" id="aes-out"></pre>
+  </div>
+  <div class="card">
+    <h3>JWT <span class="badge b-off">OFFLINE</span></h3>
+    <textarea id="j-in" placeholder="eyJ..."></textarea>
+    <button>DECODE</button>
+    <pre class="out" id="j-out"></pre>
+  </div>
+  <div class="card">
+    <h3>Password / Email <span class="badge b-off">OFFLINE</span></h3>
+    <input id="pw-len" placeholder="length (20)" type="number">
+    <button class="sm">GENERATE</button>
+    <input id="em-in" placeholder="address@host.tld">
+    <button class="sm">VALIDATE</button>
+    <pre class="out" id="pe-out"></pre>
+  </div>
+</div>
+
+
+<div class="panel" id="p-sim">
+  <div class="card">
+    <h3>Carrier Profile <span class="badge b-sim">SIM</span></h3>
+    <select id="carrier">
+      <option value="auto">Auto-detect</option><option value="mtn">MTN Zambia</option>
+      <option value="airtel">Airtel Zambia</option><option value="zamtel">Zamtel</option>
+      <option value="liquid">Liquid Intelligent</option>
+    </select>
+    <div class="kv"><i>ACTIVE</i><b id="car-show">auto</b></div>
+    <div class="kv"><i>MCC/MNC</i><b id="car-mnc">---</b></div>
+  </div>
+  <div class="card">
+    <h3>APN Swapper <span class="badge b-sim">SIM</span></h3>
+    <select id="apn">
+      <option value="standard">Standard</option><option value="enterprise">Enterprise</option><option value="zero">Zero-Rated</option>
+    </select>
+    <div class="kv"><i>PROFILE</i><b id="apn-show">standard</b></div>
+    <div class="kv"><i>HOST HDR</i><b id="apn-host">---</b></div>
+  </div>
+  <div class="card">
+    <h3>ICU Lookup <span class="badge b-off">OFFLINE DB</span></h3>
+    <input id="icu-in" placeholder="0977123456 or 8926012345">
+    <button>RESOLVE</button>
+    <pre class="out" id="icu-out"></pre>
+  </div>
+  <div class="card">
+    <h3>AT Console <span class="badge b-off">OFFLINE</span></h3>
+    <input id="at-in" placeholder="AT+CSQ">
+    <button>SEND</button>
+    <pre class="out" id="at-out"></pre>
+  </div>
+  <div class="card">
+    <h3>SIM Reads <span class="badge b-sim">SIM</span></h3>
+    <div class="g2"><button class="ghost">CONTACTS</button><button class="ghost">SMS</button></div>
+  </div>
+</div>
+
+
+<div class="panel" id="p-ai">
+  <div class="card">
+    <h3>AI Config <span class="badge b-note">OPTIONAL</span></h3>
+    <label class="chk"><input type="checkbox" id="cfg-ai"> Enable globally</label>
+    <input id="ai-base" placeholder="https://api.openai.com/v1">
+    <input id="ai-key" type="password" placeholder="API key">
+    <input id="ai-model" placeholder="gpt-4o-mini">
+    <button>SAVE</button>
+    <p class="hint">OpenAI-compatible. RECON / SRC / ANALYSE add an Ask AI button forwarding the payload with a bypass-hunting prompt.</p>
+  </div>
+  <div class="card">
+    <h3>Prompt</h3>
+    <textarea id="ai-prompt" placeholder="Paste snippet or question..."></textarea>
+    <button class="alt">ASK</button>
+    <pre class="out" id="ai-out"></pre>
+  </div>
+</div>
+
+
+<div class="panel" id="p-apps">
+  <div class="card">
+    <h3>Network Catalogue <span class="badge b-off">OFFLINE</span></h3>
+    <button>LIST</button>
+    <pre class="out" id="apps-out"></pre>
+  </div>
+  <div class="card">
+    <h3>Installed Packages <span class="badge b-sim">SIM</span></h3>
+    <input id="app-f" placeholder="filter">
+    <button>ENUMERATE</button>
+    <div class="kv"><i>TOTAL</i><b id="app-n">0</b></div>
+    <pre class="out" id="pkg-out" style="max-height:360px"></pre>
+  </div>
+</div>
+
+
+<div class="panel" id="p-report">
+  <div class="card">
+    <h3>Findings</h3>
+    <div class="kv"><i>ENTRIES</i><b id="r-n">0</b></div>
+    <button>GENERATE</button>
+    <div class="g2">
+      <button class="sm">.MD</button>
+      <button class="sm">.JSON</button>
+      <button class="sm">.TXT</button>
+      <button class="sm">CLEAR</button>
+    </div>
+    <pre class="out" id="r-out" style="max-height:380px"></pre>
+  </div>
+  <div class="card">
+    <h3>Snapshot</h3>
+    <button>FULL SNAPSHOT</button>
+    <p class="hint">Works offline — captures device, vault counts, findings and cache index.</p>
+  </div>
+</div>
+
+
+<div class="panel" id="p-settings">
+  <div class="card">
+    <h3>JA3 Cloning <span class="badge b-sim">EMULATED</span></h3>
+    <select id="ja3-sel">
+      <option value="chrome_ios15">Chrome iOS 15</option><option value="chrome_120">Chrome 120</option>
+      <option value="safari_17">Safari 17</option><option value="firefox_121">Firefox 121</option>
+      <option value="android_14">Chrome Android 14</option><option value="off">Off</option>
+    </select>
+    <div class="kv"><i>PROFILE</i><b id="ja3-show">off</b></div>
+    <div class="kv"><i>STRING</i><b id="ja3-str">---</b></div>
+    <p class="hint">JS cannot rewrite a real ClientHello. This aligns UA, Accept-Language and header set with the claimed stack.</p>
+  </div>
+  <div class="card">
+    <h3>Offline Cache <span class="badge b-off">LOCAL</span></h3>
+    <div class="kv"><i>ENTRIES</i><b id="cache-n">0</b></div>
+    <div class="g2"><button class="sm">LIST</button><button class="sm">CLEAR</button></div>
+    <p class="hint">Every RECON / SRC / DOMAIN result is cached. Re-run those commands offline to read the stored copy.</p>
+  </div>
+  <div class="card">
+    <h3>Persistence</h3>
+    <div class="kv"><i>KEY</i><b>zmt_pro_config</b></div>
+    <div class="kv"><i>SIZE</i><b id="cfg-size">0 B</b></div>
+    <div class="g2"><button class="ghost">DUMP</button><button class="ghost">WIPE</button></div>
+  </div>
+  <div class="card">
+    <h3>Session</h3>
+    <div class="kv"><i>COMMANDS</i><b id="cfg-runs">0</b></div>
+    <div class="kv"><i>REQUESTS</i><b id="cfg-reqs">0</b></div>
+    <button class="ghost">SAVE TERMINAL</button>
+  </div>
+</div>
+</div>
+
+<div id="termwrap">
+  <div id="termhead"><b>TERMINAL</b><span id="term-count">0 lines</span><span class="sp">tap to collapse</span></div>
+  <div id="term"></div>
+  <div id="cmdbar">
+    <div class="pre">&gt;</div>
+    <input id="cmd" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="DASH">
+    <button id="send">RUN</button>
+  </div>
+</div>
+<div id="toast"></div>
+
+
+
